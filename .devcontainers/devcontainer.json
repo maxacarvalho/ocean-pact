@@ -1,0 +1,25 @@
+{
+    "name": "codespaces-ocean-pact",
+    "dockerComposeFile": [
+        "docker-compose.yml"
+    ],
+    "workspaceFolder": "/workspace",
+    "service": "app",
+    "shutdownAction": "stopCompose",
+    "extensions": [
+        "editorconfig.editorconfig",
+        "esbenp.prettier-vscode"
+    ],
+    "settings": {
+        "#terminal.integrated.shell.linux": "/bin/bash"
+    },
+    "forwardPorts": [
+        80
+    ],
+    "postCreateCommand": "cp .env.example .env && composer install && php artisan key:generate && npm install && npm run dev",
+    "portsAttributes": {
+        "80": {
+            "label": "HTTP"
+        }
+    }
+}
