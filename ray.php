@@ -93,7 +93,7 @@ return [
      * Absolute base path for your sites or projects in Homestead,
      * Vagrant, Docker, or another remote development server.
      */
-    'remote_path' => env('RAY_REMOTE_PATH', null),
+    'remote_path' => env('RAY_REMOTE_PATH', '/app'),
 
     /*
      * Absolute base path for your sites or projects on your local
