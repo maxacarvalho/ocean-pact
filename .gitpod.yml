@@ -1,5 +1,0 @@
-tasks:
-  - init: |
-      docker-compose -f gitpod/docker-compose.yml build && docker-compose -f gitpod/docker-compose.yml pull
-  - command: |
-      docker-compose -f gitpod/docker-compose.yml up

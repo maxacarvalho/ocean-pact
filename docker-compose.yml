@@ -84,9 +84,11 @@ services:
             - '${FORWARD_MAILHOG_DASHBOARD_PORT:-8026}:8025'
         networks:
             - ocean-pact
+
 networks:
     ocean-pact:
         driver: bridge
+
 volumes:
     ocean-pact-mysql:
         driver: local

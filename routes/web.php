@@ -13,8 +13,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/caddy-check', [\App\Http\Controllers\CaddyController::class, 'check']);
-
-Route::get('/', function () {
-    return view('welcome');
+Route::get('/', static function () {
+    return redirect()->route('filament.pages.dashboard');
 });

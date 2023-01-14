@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table(config("filament-breezy.users_table"), static function (
+        Schema::table(config('filament-breezy.users_table'), static function (
             Blueprint $table
         ) {
             $table->text('two_factor_secret')
@@ -23,12 +23,11 @@ return new class extends Migration
                 ->after('two_factor_recovery_codes')
                 ->nullable();
         });
-
     }
 
     public function down(): void
     {
-        Schema::table(config("filament-breezy.users_table"), function (
+        Schema::table(config('filament-breezy.users_table'), function (
             Blueprint $table
         ) {
             $table->dropColumn([
@@ -37,6 +36,5 @@ return new class extends Migration
                 'two_factor_confirmed_at',
             ]);
         });
-
     }
 };
