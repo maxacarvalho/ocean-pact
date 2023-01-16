@@ -18,12 +18,10 @@ return new class extends Migration
             $table->string(Company::LEGAL_NAME, 255);
             $table->string(Company::TRADE_NAME, 255);
             $table->timestamps();
-            $table->softDeletes();
 
             $table->unique([Company::CODE, Company::BRANCH]);
             $table->index(Company::CREATED_AT);
             $table->index(Company::UPDATED_AT);
-            $table->index(Company::DELETED_AT);
         });
     }
 

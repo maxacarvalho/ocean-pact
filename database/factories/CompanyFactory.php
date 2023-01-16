@@ -17,6 +17,7 @@ class CompanyFactory extends Factory
             Company::CNPJ => $this->faker->cnpj(),
             Company::DESCRIPTION => $this->faker->company(),
             Company::LEGAL_NAME => $this->faker->company(),
+            Company::TRADE_NAME => $this->faker->company(),
         ];
     }
 }

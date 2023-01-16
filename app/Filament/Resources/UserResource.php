@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\UserResource\Pages;
+use App\Filament\Resources\UserResource\RelationManagers\CompaniesRelationManager;
 use App\Models\User;
 use Filament\Forms;
 use Filament\Resources\Form;
@@ -35,14 +36,14 @@ class UserResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name')
+                Forms\Components\TextInput::make(User::NAME)
                     ->required()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('email')
+                Forms\Components\TextInput::make(User::EMAIL)
                     ->email()
                     ->required()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('password')
+                Forms\Components\TextInput::make(User::PASSWORD)
                     ->password()
                     ->required()
                     ->maxLength(255),
@@ -53,11 +54,11 @@ class UserResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name'),
-                Tables\Columns\TextColumn::make('email'),
-                Tables\Columns\TextColumn::make('created_at')
+                Tables\Columns\TextColumn::make(User::NAME),
+                Tables\Columns\TextColumn::make(User::EMAIL),
+                Tables\Columns\TextColumn::make(User::CREATED_AT)
                     ->dateTime(),
-                Tables\Columns\TextColumn::make('updated_at')
+                Tables\Columns\TextColumn::make(User::UPDATED_AT)
                     ->dateTime(),
             ])
             ->filters([
@@ -69,6 +70,13 @@ class UserResource extends Resource
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),
             ]);
+    }
+
+    public static function getRelations(): array
+    {
+        return [
+            CompaniesRelationManager::class,
+        ];
     }
 
     public static function getPages(): array
