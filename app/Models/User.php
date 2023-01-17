@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Carbon\Carbon;
+use Filament\Models\Contracts\FilamentUser;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -27,7 +28,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property Carbon|null               $updated_at
  * @property-read Company[]|Collection $companies
  */
-class User extends Authenticatable
+class User extends Authenticatable implements FilamentUser
 {
     public const TABLE_NAME = 'users';
     public const ID = 'id';
@@ -83,5 +84,10 @@ class User extends Authenticatable
                 CompanyUser::USER_ID,
                 CompanyUser::COMPANY_ID
             );
+    }
+
+    public function canAccessFilament(): bool
+    {
+        return true;
     }
 }
