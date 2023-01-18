@@ -42,8 +42,6 @@ class Company extends Model
         self::ID,
     ];
 
-    public $timestamps = true;
-
     public static array $columns = [
         self::ID,
         self::CODE,
