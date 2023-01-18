@@ -50,6 +50,10 @@ class UserResource extends Resource
                     ->dehydrateStateUsing(fn ($state) => Hash::make($state))
                     ->dehydrated(fn ($state) => filled($state))
                     ->required(fn (string $context): bool => $context === 'create'),
+                Forms\Components\Select::make(User::ROLES)
+                    ->multiple()
+                    ->relationship(User::ROLES, 'name')
+                    ->required(),
             ]);
     }
 

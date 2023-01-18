@@ -12,6 +12,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use JeffGreco13\FilamentBreezy\Traits\TwoFactorAuthenticatable;
 use Laravel\Sanctum\HasApiTokens;
+use Spatie\Permission\Models\Role;
 use Spatie\Permission\Traits\HasRoles;
 
 /**
@@ -27,6 +28,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property Carbon|null               $created_at
  * @property Carbon|null               $updated_at
  * @property-read Company[]|Collection $companies
+ * @property-read Role[]|Collection    $roles
  */
 class User extends Authenticatable implements FilamentUser
 {
@@ -42,6 +44,10 @@ class User extends Authenticatable implements FilamentUser
     public const REMEMBER_TOKEN = 'remember_token';
     public const CREATED_AT = 'created_at';
     public const UPDATED_AT = 'updated_at';
+
+    // Relations
+    public const COMPANIES = 'companies';
+    public const ROLES = 'roles';
 
     use HasApiTokens, HasFactory, HasRoles, Notifiable, TwoFactorAuthenticatable;
 
@@ -75,6 +81,11 @@ class User extends Authenticatable implements FilamentUser
         return $this->hasRole(config('filament-shield.super_admin.name'));
     }
 
+    public function canAccessFilament(): bool
+    {
+        return true;
+    }
+
     public function companies(): BelongsToMany
     {
         return $this
@@ -84,10 +95,5 @@ class User extends Authenticatable implements FilamentUser
                 CompanyUser::USER_ID,
                 CompanyUser::COMPANY_ID
             );
-    }
-
-    public function canAccessFilament(): bool
-    {
-        return true;
     }
 }
