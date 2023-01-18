@@ -11,6 +11,7 @@ use Filament\Resources\Resource;
 use Filament\Resources\Table;
 use Filament\Tables;
 use Illuminate\Support\Facades\Hash;
+use STS\FilamentImpersonate\Impersonate;
 
 class UserResource extends Resource
 {
@@ -67,6 +68,7 @@ class UserResource extends Resource
                 //
             ])
             ->actions([
+                Impersonate::make('impersonate'),
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([

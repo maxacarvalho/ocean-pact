@@ -2,8 +2,8 @@
 
 namespace App\Policies;
 
-use App\Models\User;
 use App\Models\Company;
+use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class CompanyPolicy
@@ -69,5 +69,4 @@ class CompanyPolicy
     {
         return $user->can('reorder_company');
     }
-
 }

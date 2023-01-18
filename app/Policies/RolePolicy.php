@@ -3,8 +3,8 @@
 namespace App\Policies;
 
 use App\Models\User;
-use Spatie\Permission\Models\Role;
 use Illuminate\Auth\Access\HandlesAuthorization;
+use Spatie\Permission\Models\Role;
 
 class RolePolicy
 {
@@ -14,7 +14,6 @@ class RolePolicy
     {
         return $user->can('view_any_role');
     }
-
 
     public function view(User $user, Role $role): bool
     {
@@ -70,5 +69,4 @@ class RolePolicy
     {
         return $user->can('{{ Reorder }}');
     }
-
 }
