@@ -2,8 +2,12 @@
 
 namespace App\Filament\Resources;
 
+use App\Enums\IntegrationHandlingTypeEnum;
+use App\Enums\IntegrationTypeEnum;
 use App\Filament\Resources\IntegrationTypeResource\Pages;
 use App\Models\IntegrationType;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Resources\Form;
 use Filament\Resources\Resource;
 use Filament\Resources\Table;
@@ -15,11 +19,40 @@ class IntegrationTypeResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-collection';
 
+    public static function getNavigationLabel(): string
+    {
+        return __('integration_type.IntegrationTypes');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('integration_type.IntegrationType');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('integration_type.IntegrationTypes');
+    }
+
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                //
+                TextInput::make(IntegrationType::DESCRIPTION)
+                    ->required()
+                    ->label(__('integration_type.Description')),
+                Select::make(IntegrationType::TYPE)
+                    ->required()
+                    ->options(IntegrationTypeEnum::toArray())
+                    ->label(__('integration_type.Type')),
+                Select::make(IntegrationType::HANDLING_TYPE)
+                    ->required()
+                    ->options(IntegrationHandlingTypeEnum::toArray())
+                    ->label(__('integration_type.HandlingType')),
+                TextInput::make(IntegrationType::TARGET_URL)
+                    ->required()
+                    ->url()
+                    ->label(__('integration_type.TargetURL')),
             ]);
     }
 
@@ -27,7 +60,14 @@ class IntegrationTypeResource extends Resource
     {
         return $table
             ->columns([
-                //
+                Tables\Columns\TextColumn::make(IntegrationType::DESCRIPTION)
+                    ->label(__('integration_type.Description')),
+                Tables\Columns\TextColumn::make(IntegrationType::TYPE)
+                    ->label(__('integration_type.Type')),
+                Tables\Columns\TextColumn::make(IntegrationType::HANDLING_TYPE)
+                    ->label(__('integration_type.HandlingType')),
+                Tables\Columns\TextColumn::make(IntegrationType::TARGET_URL)
+                    ->label(__('integration_type.TargetURL')),
             ])
             ->filters([
                 //
@@ -38,13 +78,6 @@ class IntegrationTypeResource extends Resource
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),
             ]);
-    }
-
-    public static function getRelations(): array
-    {
-        return [
-            //
-        ];
     }
 
     public static function getPages(): array

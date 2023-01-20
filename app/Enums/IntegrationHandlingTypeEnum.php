@@ -11,4 +11,12 @@ use Spatie\Enum\Laravel\Enum;
  */
 final class IntegrationHandlingTypeEnum extends Enum
 {
+    protected static function labels(): array
+    {
+        return [
+            'SEND' => __('integration_type.SEND'),
+            'STORE' => __('integration_type.STORE'),
+            'STORE_AND_SEND' => __('integration_type.STORE_AND_SEND'),
+        ];
+    }
 }
