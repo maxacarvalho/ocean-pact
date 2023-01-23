@@ -72,7 +72,7 @@ class UserResource extends Resource
                 //
             ])
             ->actions([
-                Impersonate::make('impersonate'),
+                Impersonate::make('impersonate')->label(__('Impersonate')),
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
