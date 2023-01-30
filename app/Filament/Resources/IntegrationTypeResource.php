@@ -19,7 +19,7 @@ class IntegrationTypeResource extends Resource
 {
     protected static ?string $model = IntegrationType::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-collection';
+    protected static ?string $navigationIcon = 'heroicon-o-wifi';
 
     public static function getNavigationLabel(): string
     {

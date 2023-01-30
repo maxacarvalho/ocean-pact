@@ -14,7 +14,7 @@ class PayloadResource extends Resource
 {
     protected static ?string $model = Payload::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-collection';
+    protected static ?string $navigationIcon = 'heroicon-o-mail';
 
     public static function getNavigationLabel(): string
     {
@@ -69,18 +69,11 @@ class PayloadResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\ViewAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),
             ]);
-    }
-
-    public static function getRelations(): array
-    {
-        return [
-            //
-        ];
     }
 
     public static function getPages(): array
@@ -88,7 +81,7 @@ class PayloadResource extends Resource
         return [
             'index' => Pages\ListPayloads::route('/'),
             'create' => Pages\CreatePayload::route('/create'),
-            'edit' => Pages\EditPayload::route('/{record}/edit'),
+            'view' => Pages\ViewPayload::route('/{record}'),
         ];
     }
 }
