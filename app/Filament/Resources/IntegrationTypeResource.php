@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Enums\IntegrationHandlingTypeEnum;
 use App\Enums\IntegrationTypeEnum;
 use App\Filament\Resources\IntegrationTypeResource\Pages;
+use App\Filament\Resources\IntegrationTypeResource\RelationManagers\FieldsRelationManager;
 use App\Models\Company;
 use App\Models\IntegrationType;
 use Filament\Forms\Components\Select;
@@ -92,6 +93,13 @@ class IntegrationTypeResource extends Resource
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),
             ]);
+    }
+
+    public static function getRelations(): array
+    {
+        return [
+            FieldsRelationManager::class,
+        ];
     }
 
     public static function getPages(): array

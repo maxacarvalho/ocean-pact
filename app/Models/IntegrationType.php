@@ -4,18 +4,22 @@ namespace App\Models;
 
 use App\Enums\IntegrationHandlingTypeEnum;
 use App\Enums\IntegrationTypeEnum;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
 
 /**
- * @property int                         $id
- * @property int|null                    $company_id
- * @property string                      $code
- * @property string                      $description
- * @property IntegrationTypeEnum         $type
- * @property IntegrationHandlingTypeEnum $handling_type
- * @property string                      $target_url
+ * @property int                                     $id
+ * @property int|null                                $company_id
+ * @property string                                  $code
+ * @property string                                  $description
+ * @property IntegrationTypeEnum                     $type
+ * @property IntegrationHandlingTypeEnum             $handling_type
+ * @property string                                  $target_url
+ * @property-read Company|null                       $company
+ * @property-read  IntegrationTypeField[]|Collection $fields
  */
 class IntegrationType extends Model
 {
@@ -61,5 +65,10 @@ class IntegrationType extends Model
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
+    }
+
+    public function fields(): HasMany
+    {
+        return $this->hasMany(IntegrationTypeField::class);
     }
 }
