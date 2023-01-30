@@ -4,6 +4,7 @@ return [
     'IntegrationType' => 'Tipo de Integração',
     'IntegrationTypes' => 'Tipos de Integração',
     'Code' => 'Código',
+    'CodeHelperText' => 'Use apenas letras, números e hífens. Caso não informado será gerado automaticamente.',
     'Company' => 'Empresa',
     'Description' => 'Descrição',
     'Type' => 'Tipo',

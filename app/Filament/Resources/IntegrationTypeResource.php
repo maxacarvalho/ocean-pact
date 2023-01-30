@@ -42,7 +42,8 @@ class IntegrationTypeResource extends Resource
             ->schema([
                 TextInput::make(IntegrationType::CODE)
                     ->rules(['nullable', 'string', 'alpha_dash'])
-                    ->label(__('integration_type.Code')),
+                    ->label(__('integration_type.Code'))
+                    ->helperText(__('integration_type.CodeHelperText')),
                 Select::make(IntegrationType::COMPANY_ID)
                     ->required()
                     ->options(self::getCompanyOptions())
