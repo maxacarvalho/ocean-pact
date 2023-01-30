@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Enums\IntegrationHandlingTypeEnum;
 use App\Enums\IntegrationTypeEnum;
 use App\Filament\Resources\IntegrationTypeResource\Pages;
+use App\Models\Company;
 use App\Models\IntegrationType;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -12,6 +13,7 @@ use Filament\Resources\Form;
 use Filament\Resources\Resource;
 use Filament\Resources\Table;
 use Filament\Tables;
+use Illuminate\Support\Collection;
 
 class IntegrationTypeResource extends Resource
 {
@@ -38,6 +40,15 @@ class IntegrationTypeResource extends Resource
     {
         return $form
             ->schema([
+                TextInput::make(IntegrationType::CODE)
+                    ->rules(['nullable', 'string', 'alpha_dash'])
+                    ->label(__('integration_type.Code')),
+                Select::make(IntegrationType::COMPANY_ID)
+                    ->required()
+                    ->options(self::getCompanyOptions())
+                    ->default(0)
+                    ->label(__('integration_type.Company'))
+                    ->preload(),
                 TextInput::make(IntegrationType::DESCRIPTION)
                     ->required()
                     ->label(__('integration_type.Description')),
@@ -60,6 +71,8 @@ class IntegrationTypeResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make(IntegrationType::CODE)
+                    ->label(__('integration_type.Code')),
                 Tables\Columns\TextColumn::make(IntegrationType::DESCRIPTION)
                     ->label(__('integration_type.Description')),
                 Tables\Columns\TextColumn::make(IntegrationType::TYPE)
@@ -87,5 +100,11 @@ class IntegrationTypeResource extends Resource
             'create' => Pages\CreateIntegrationType::route('/create'),
             'edit' => Pages\EditIntegrationType::route('/{record}/edit'),
         ];
+    }
+
+    public static function getCompanyOptions(): Collection
+    {
+        return Collection::make([0 => __('company.All')])
+            ->merge(Company::query()->pluck(Company::DESCRIPTION, Company::ID));
     }
 }

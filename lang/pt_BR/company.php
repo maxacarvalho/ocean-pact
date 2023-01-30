@@ -9,4 +9,5 @@ return [
     'Description' => 'Filial',
     'LegalName' => 'Razão Social',
     'TradeName' => 'Nome Fantasia',
+    'All' => 'Todas as Empresas',
 ];

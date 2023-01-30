@@ -3,6 +3,8 @@
 return [
     'IntegrationType' => 'Tipo de Integração',
     'IntegrationTypes' => 'Tipos de Integração',
+    'Code' => 'Código',
+    'Company' => 'Empresa',
     'Description' => 'Descrição',
     'Type' => 'Tipo',
     'HandlingType' => 'Tipo de Envio',
