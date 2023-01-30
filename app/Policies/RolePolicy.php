@@ -39,34 +39,4 @@ class RolePolicy
     {
         return $user->can('delete_any_role');
     }
-
-    public function forceDelete(User $user, Role $role): bool
-    {
-        return $user->can('{{ ForceDelete }}');
-    }
-
-    public function forceDeleteAny(User $user): bool
-    {
-        return $user->can('{{ ForceDeleteAny }}');
-    }
-
-    public function restore(User $user, Role $role): bool
-    {
-        return $user->can('{{ Restore }}');
-    }
-
-    public function restoreAny(User $user): bool
-    {
-        return $user->can('{{ RestoreAny }}');
-    }
-
-    public function replicate(User $user, Role $role): bool
-    {
-        return $user->can('{{ Replicate }}');
-    }
-
-    public function reorder(User $user): bool
-    {
-        return $user->can('{{ Reorder }}');
-    }
 }

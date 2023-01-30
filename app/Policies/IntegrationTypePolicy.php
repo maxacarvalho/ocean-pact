@@ -39,34 +39,4 @@ class IntegrationTypePolicy
     {
         return $user->can('delete_any_company');
     }
-
-    public function forceDelete(User $user, IntegrationType $integrationType): bool
-    {
-        return $user->can('force_delete_integration_type');
-    }
-
-    public function forceDeleteAny(User $user): bool
-    {
-        return $user->can('force_delete_any_company');
-    }
-
-    public function restore(User $user, IntegrationType $integrationType): bool
-    {
-        return $user->can('restore_integration_type');
-    }
-
-    public function restoreAny(User $user): bool
-    {
-        return $user->can('restore_any_company');
-    }
-
-    public function replicate(User $user, IntegrationType $integrationType): bool
-    {
-        return $user->can('replicate_integration_type');
-    }
-
-    public function reorder(User $user): bool
-    {
-        return $user->can('reorder_company');
-    }
 }
