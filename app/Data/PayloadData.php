@@ -4,8 +4,11 @@ namespace App\Data;
 
 use App\Enums\PayloadProcessedStatusEnum;
 use App\Enums\PayloadStoredStatusEnum;
+use App\Models\IntegrationType;
 use Illuminate\Support\Carbon;
-use Spatie\LaravelData\Attributes\Validation\Rule;
+use Spatie\LaravelData\Attributes\Validation\ArrayType;
+use Spatie\LaravelData\Attributes\Validation\Exists;
+use Spatie\LaravelData\Attributes\Validation\Required;
 use Spatie\LaravelData\Attributes\WithCast;
 use Spatie\LaravelData\Casts\EnumCast;
 use Spatie\LaravelData\Data;
@@ -13,11 +16,11 @@ use Spatie\LaravelData\Data;
 class PayloadData extends Data
 {
     public function __construct(
-        public readonly int $id,
-        #[Rule('required')]
+        public readonly ?int $id,
+        #[Required, Exists(IntegrationType::TABLE_NAME, IntegrationType::ID)]
         public readonly int $integration_type_id,
-        #[Rule('required')]
-        public readonly string $payload,
+        #[Required, ArrayType]
+        public readonly array $payload,
         public readonly ?Carbon $stored_at,
         #[WithCast(EnumCast::class)]
         public readonly ?PayloadStoredStatusEnum $stored_status,

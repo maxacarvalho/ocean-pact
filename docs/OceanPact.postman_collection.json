@@ -1,0 +1,126 @@
+{
+	"info": {
+		"_postman_id": "b10d973d-6743-4b4f-bb1b-3385aeb25a57",
+		"name": "OceanPact",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "791424"
+	},
+	"item": [
+		{
+			"name": "GET Usuário",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/api/user",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"api",
+						"user"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST Envelope",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"integration_type_id\": 1,\n    \"payload\": {\n        \"campo1\": \"valor\",\n        \"campo2\": \"valor\",\n        \"campo3\": {\n            \"campo\": 1,\n            \"campo2\": \"valor\"\n        }\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/api/payload",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"api",
+						"payload"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET Envelopes",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/api/payload",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"api",
+						"payload"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{token}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"pm.request.headers.add({ key: \"Accept\", value: \"application/json\" });",
+					"",
+					"pm.sendRequest({",
+					"  url: pm.variables.get(\"host\"),",
+					"  method: \"GET\",",
+					"}, function (error, response, { cookies }) {",
+					"  if (!error) {",
+					"    pm.variables.set(\"xsrf-token\", cookies.get(\"XSRF-TOKEN\"));",
+					"    pm.request.headers.add({ key: \"X-XSRF-TOKEN\", value: pm.variables.get(\"xsrf-token\") });",
+					"  }",
+					"});",
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "host",
+			"value": "https://oceanpact.test",
+			"type": "string"
+		},
+		{
+			"key": "token",
+			"value": "",
+			"type": "string"
+		}
+	]
+}

@@ -8,16 +8,16 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
- * @property int                        $id
- * @property int                        $integration_type_id
- * @property string                     $payload
- * @property string|null                $stored_at
- * @property PayloadStoredStatusEnum    $stored_status
- * @property string|null                $processed_at
- * @property PayloadProcessedStatusEnum $processed_status
- * @property string                     $created_at
- * @property string                     $updated_at
- * @property-read IntegrationType       $integrationType
+ * @property int                             $id
+ * @property int                             $integration_type_id
+ * @property string                          $payload
+ * @property string|null                     $stored_at
+ * @property PayloadStoredStatusEnum         $stored_status
+ * @property string|null                     $processed_at
+ * @property PayloadProcessedStatusEnum|null $processed_status
+ * @property string                          $created_at
+ * @property string                          $updated_at
+ * @property-read IntegrationType            $integrationType
  */
 class Payload extends Model
 {
@@ -55,7 +55,7 @@ class Payload extends Model
         self::STORED_AT => 'datetime',
         self::STORED_STATUS => PayloadStoredStatusEnum::class,
         self::PROCESSED_AT => 'datetime',
-        self::PROCESSED_STATUS => PayloadProcessedStatusEnum::class,
+        self::PROCESSED_STATUS => PayloadProcessedStatusEnum::class.':nullable',
     ];
 
     public function integrationType(): BelongsTo
