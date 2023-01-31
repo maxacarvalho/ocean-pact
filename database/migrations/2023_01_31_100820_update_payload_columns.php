@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\PayloadStoringStatusEnum;
 use App\Models\Payload;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -10,16 +11,20 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table(Payload::TABLE_NAME, static function (Blueprint $table) {
-            $table->renameColumn('stored_status', Payload::STORING_STATUS);
-            $table->renameColumn('processed_status', Payload::PROCESSING_STATUS);
+            $table->string(Payload::STORING_STATUS)->default(PayloadStoringStatusEnum::STORED());
+            $table->string(Payload::PROCESSING_STATUS)->nullable();
         });
-    }
 
-    public function down(): void
-    {
+        Payload::query()->each(static function (Payload $payload) {
+            $payload->update([
+                Payload::STORING_STATUS => $payload->stored_status,
+                Payload::PROCESSING_STATUS => $payload->processed_status,
+            ]);
+        });
+
         Schema::table(Payload::TABLE_NAME, static function (Blueprint $table) {
-            $table->renameColumn(Payload::STORING_STATUS, 'stored_status');
-            $table->renameColumn(Payload::PROCESSING_STATUS, 'processed_status');
+            $table->dropColumn('stored_status');
+            $table->dropColumn('processed_status');
         });
     }
 };
