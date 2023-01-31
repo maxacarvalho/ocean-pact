@@ -31,7 +31,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"integration_type_id\": 1,\n    \"payload\": {\n        \"campo1\": \"valor\",\n        \"campo2\": \"valor\",\n        \"campo3\": {\n            \"campo\": 1,\n            \"campo2\": \"valor\"\n        }\n    }\n}",
+					"raw": "{\n    \"payload\": {\n        \"campo1\": \"valor\",\n        \"campo2\": \"valor\",\n        \"campo3\": {\n            \"campo\": 1,\n            \"campo2\": \"valor\"\n        }\n    }\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -39,13 +39,56 @@
 					}
 				},
 				"url": {
-					"raw": "{{host}}/api/payload",
+					"raw": "{{host}}/api/payload/:integration_type_code",
 					"host": [
 						"{{host}}"
 					],
 					"path": [
 						"api",
-						"payload"
+						"payload",
+						":integration_type_code"
+					],
+					"variable": [
+						{
+							"key": "integration_type_code",
+							"value": null,
+							"description": "Código identificador do Tipo de Integração."
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PUT Envelope Status",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"status\": \"SUCCESS | FAILED\",\n    \"message\": \"Obrigatório caso o `status` seja 'FAILED'\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/api/payload/:payload_id",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"api",
+						"payload",
+						":payload_id"
+					],
+					"variable": [
+						{
+							"key": "payload_id",
+							"value": null,
+							"description": "ID do payload para ser atualizado."
+						}
 					]
 				}
 			},
@@ -113,13 +156,13 @@
 	],
 	"variable": [
 		{
-			"key": "host",
-			"value": "https://oceanpact.test",
+			"key": "token",
+			"value": "3|aYnM7xSaJPchsa5gkyRxNY2rKn4ubzCxiQfHu4zX",
 			"type": "string"
 		},
 		{
-			"key": "token",
-			"value": "",
+			"key": "host",
+			"value": "https://oceanpact.test",
 			"type": "string"
 		}
 	]
