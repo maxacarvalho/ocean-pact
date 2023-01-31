@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Enums\PayloadProcessingStatusEnum;
 use App\Enums\PayloadStoringStatusEnum;
 use App\Filament\Resources\PayloadResource\Pages;
+use App\Filament\Resources\PayloadResource\RelationManagers\ProcessingAttemptsRelationManager;
 use App\Models\Payload;
 use Filament\Forms;
 use Filament\Resources\Form;
@@ -81,6 +82,13 @@ class PayloadResource extends Resource
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),
             ]);
+    }
+
+    public static function getRelations(): array
+    {
+        return [
+            ProcessingAttemptsRelationManager::class,
+        ];
     }
 
     public static function getPages(): array
