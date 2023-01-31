@@ -2,22 +2,24 @@
 
 namespace App\Models;
 
-use App\Enums\PayloadProcessedStatusEnum;
-use App\Enums\PayloadStoredStatusEnum;
+use App\Enums\PayloadProcessingStatusEnum;
+use App\Enums\PayloadStoringStatusEnum;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
- * @property int                             $id
- * @property int                             $integration_type_id
- * @property string                          $payload
- * @property string|null                     $stored_at
- * @property PayloadStoredStatusEnum         $stored_status
- * @property string|null                     $processed_at
- * @property PayloadProcessedStatusEnum|null $processed_status
- * @property string                          $created_at
- * @property string                          $updated_at
- * @property-read IntegrationType            $integrationType
+ * @property int                              $id
+ * @property int                              $integration_type_id
+ * @property string                           $payload
+ * @property string|null                      $stored_at
+ * @property PayloadStoringStatusEnum         $storing_status
+ * @property string|null                      $processed_at
+ * @property PayloadProcessingStatusEnum|null $processing_status
+ * @property string                           $created_at
+ * @property string                           $updated_at
+ * @property-read IntegrationType             $integrationType
+ * @property-read PayloadProcessingAttempt    $processingAttempts
  */
 class Payload extends Model
 {
@@ -26,9 +28,9 @@ class Payload extends Model
     public const INTEGRATION_TYPE_ID = 'integration_type_id';
     public const PAYLOAD = 'payload';
     public const STORED_AT = 'stored_at';
-    public const STORED_STATUS = 'stored_status';
+    public const STORING_STATUS = 'storing_status';
     public const PROCESSED_AT = 'processed_at';
-    public const PROCESSED_STATUS = 'processed_status';
+    public const PROCESSING_STATUS = 'processing_status';
     public const CREATED_AT = 'created_at';
     public const UPDATED_AT = 'updated_at';
 
@@ -43,9 +45,9 @@ class Payload extends Model
         self::INTEGRATION_TYPE_ID,
         self::PAYLOAD,
         self::STORED_AT,
-        self::STORED_STATUS,
+        self::STORING_STATUS,
         self::PROCESSED_AT,
-        self::PROCESSED_STATUS,
+        self::PROCESSING_STATUS,
         self::CREATED_AT,
         self::UPDATED_AT,
     ];
@@ -53,13 +55,18 @@ class Payload extends Model
     protected $casts = [
         self::PAYLOAD => 'array',
         self::STORED_AT => 'datetime',
-        self::STORED_STATUS => PayloadStoredStatusEnum::class,
+        self::STORING_STATUS => PayloadStoringStatusEnum::class,
         self::PROCESSED_AT => 'datetime',
-        self::PROCESSED_STATUS => PayloadProcessedStatusEnum::class.':nullable',
+        self::PROCESSING_STATUS => PayloadProcessingStatusEnum::class.':nullable',
     ];
 
     public function integrationType(): BelongsTo
     {
         return $this->belongsTo(IntegrationType::class);
+    }
+
+    public function processingAttempts(): HasMany
+    {
+        return $this->hasMany(PayloadProcessingAttempt::class);
     }
 }

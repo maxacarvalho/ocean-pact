@@ -20,6 +20,7 @@ use Illuminate\Support\Str;
  * @property string                                  $target_url
  * @property-read Company|null                       $company
  * @property-read  IntegrationTypeField[]|Collection $fields
+ * @property-read  Payload[]|Collection              $payloads
  */
 class IntegrationType extends Model
 {
@@ -70,5 +71,10 @@ class IntegrationType extends Model
     public function fields(): HasMany
     {
         return $this->hasMany(IntegrationTypeField::class);
+    }
+
+    public function payloads(): HasMany
+    {
+        return $this->hasMany(Payload::class);
     }
 }

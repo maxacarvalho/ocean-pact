@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Controllers\API\Payload\IndexPayloadController;
+use App\Http\Controllers\API\Payload\StorePayloadController;
+use App\Http\Controllers\API\Payload\UpdatePayloadStatusController;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Route;
@@ -21,7 +24,10 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::middleware('auth:sanctum')->group(static function (Router $router) {
     $router->name('payload.')->prefix('payload')->group(static function (Router $router) {
-        $router->get('', \App\Http\Controllers\API\Payload\IndexPayloadController::class)->name('index');
-        $router->post('', \App\Http\Controllers\API\Payload\StorePayloadController::class)->name('store');
+        $router->get('', IndexPayloadController::class)->name('index');
+
+        $router->post('{integration_type:code}', StorePayloadController::class)->name('store');
+
+        $router->put('{payload}', UpdatePayloadStatusController::class)->name('update-status');
     });
 });

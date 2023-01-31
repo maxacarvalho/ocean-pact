@@ -1,7 +1,6 @@
 <?php
 
 return [
-    'IntegrationType' => 'Tipo de Integração',
     'IntegrationTypeField' => 'Campo do Tipo de Integração',
     'IntegrationTypeFields' => 'Campos do Tipo de Integração',
     'FieldName' => 'Nome do Campo',

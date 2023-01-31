@@ -8,7 +8,7 @@ use Spatie\Enum\Laravel\Enum;
  * @method static self STORED()
  * @method static self FAILED()
  */
-class PayloadStoredStatusEnum extends Enum
+class PayloadStoringStatusEnum extends Enum
 {
     protected static function labels(): array
     {

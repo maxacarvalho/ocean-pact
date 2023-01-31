@@ -9,8 +9,9 @@ use Spatie\Enum\Laravel\Enum;
  * @method static self COLLECTED()
  * @method static self SENT_TO_CLIENT()
  * @method static self VALIDATION_ERROR()
+ * @method static self FAILED()
  */
-class PayloadProcessedStatusEnum extends Enum
+class PayloadProcessingStatusEnum extends Enum
 {
     protected static function labels(): array
     {
@@ -19,6 +20,7 @@ class PayloadProcessedStatusEnum extends Enum
             'COLLECTED' => __('payload.COLLECTED'),
             'SENT_TO_CLIENT' => __('payload.SEND_TO_CLIENT'),
             'VALIDATION_ERROR' => __('payload.VALIDATION_ERROR'),
+            'FAILED' => __('payload.FAILED'),
         ];
     }
 }

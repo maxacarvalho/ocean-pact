@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources;
 
+use App\Enums\PayloadProcessingStatusEnum;
+use App\Enums\PayloadStoringStatusEnum;
 use App\Filament\Resources\PayloadResource\Pages;
 use App\Models\Payload;
 use Filament\Forms;
@@ -38,7 +40,7 @@ class PayloadResource extends Resource
                 Forms\Components\Select::make(Payload::INTEGRATION_TYPE_ID)
                     ->required()
                     ->relationship('integrationType', 'code')
-                    ->label(__('payload.IntegrationType'))
+                    ->label(__('integration_type.IntegrationType'))
                     ->preload(),
                 Forms\Components\Textarea::make(Payload::PAYLOAD)
                     ->required()
@@ -53,17 +55,22 @@ class PayloadResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('integrationType.code')
-                    ->label(__('payload.IntegrationType')),
+                    ->label(__('integration_type.IntegrationType')),
                 Tables\Columns\TextColumn::make(Payload::STORED_AT)
                     ->dateTime()
                     ->label(__('payload.StoredAt')),
-                Tables\Columns\TextColumn::make(Payload::STORED_STATUS)
+                Tables\Columns\TextColumn::make(Payload::STORING_STATUS)
+                    ->formatStateUsing(fn (string $state): string => PayloadStoringStatusEnum::from($state)->label)
                     ->label(__('payload.StoredStatus')),
                 Tables\Columns\TextColumn::make(Payload::PROCESSED_AT)
                     ->dateTime()
                     ->label(__('payload.ProcessedAt')),
-                Tables\Columns\TextColumn::make(Payload::PROCESSED_STATUS)
+                Tables\Columns\TextColumn::make(Payload::PROCESSING_STATUS)
+                    ->formatStateUsing(fn (?string $state): ?string => $state !== null ? PayloadProcessingStatusEnum::from($state)->label : null)
                     ->label(__('payload.ProcessedStatus')),
+                Tables\Columns\TextColumn::make('processing_attempts_count')
+                    ->counts('processingAttempts')
+                    ->label(__('payload.AttemptsCount')),
             ])
             ->filters([
                 //

@@ -13,5 +13,7 @@ return [
     'VALIDATION_ERROR' => 'Erro de Validação',
     'STORED' => 'Armazenado',
     'FAILED' => 'Falha',
-    'IntegrationType' => 'Tipo de Integração',
+    'PayloadAlreadyCollected' => 'Envelope já coletado',
+    'PayloadAlreadyCollectedDetail' => 'Envelope com ID `:payload_id` já coletado anteriormente.',
+    'AttemptsCount' => 'N de Tentativas',
 ];
