@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API\Payload;
 
+use App\Enums\PayloadProcessingAttemptsStatusEnum;
 use App\Enums\PayloadProcessingStatusEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UpdatePayloadStatusRequest;
@@ -28,7 +29,9 @@ class UpdatePayloadStatusController extends Controller
         $processingAttempt = $payload->processingAttempts()->create($request->validated());
 
         $payload->update([
-            Payload::PROCESSING_STATUS => $processingAttempt->status,
+            Payload::PROCESSING_STATUS => $processingAttempt->status->equals(PayloadProcessingAttemptsStatusEnum::SUCCESS())
+                ? PayloadProcessingStatusEnum::COLLECTED()
+                : PayloadProcessingStatusEnum::FAILED(),
             Payload::PROCESSED_AT => now(),
         ]);
 
