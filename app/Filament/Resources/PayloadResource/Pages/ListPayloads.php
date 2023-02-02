@@ -12,6 +12,8 @@ class ListPayloads extends ListRecords
 
     protected function getActions(): array
     {
-        return [];
+        return [
+            Actions\CreateAction::make(),
+        ];
     }
 }

@@ -44,11 +44,18 @@ class PayloadResource extends Resource
                     ->relationship('integrationType', 'code')
                     ->label(__('integration_type.IntegrationType'))
                     ->preload(),
+                Forms\Components\Textarea::make(Payload::PAYLOAD)
+                    ->required()
+                    ->json()
+                    ->label(__('payload.Payload'))
+                    ->columnSpanFull()
+                    ->hiddenOn('view'),
                 HighlightField::make(Payload::PAYLOAD)
                     ->required()
                     ->json()
                     ->label(__('payload.Payload'))
-                    ->columnSpanFull(),
+                    ->columnSpanFull()
+                    ->hiddenOn('create'),
             ]);
     }
 
