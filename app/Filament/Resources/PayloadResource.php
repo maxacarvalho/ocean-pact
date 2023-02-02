@@ -96,7 +96,6 @@ class PayloadResource extends Resource
     {
         return [
             'index' => Pages\ListPayloads::route('/'),
-            'create' => Pages\CreatePayload::route('/create'),
             'view' => Pages\ViewPayload::route('/{record}'),
         ];
     }
