@@ -6,7 +6,7 @@ services:
         depends_on:
             - app
         ports:
-            - '88:80'
+#            - '88:80'
             - '8443:443'
         volumes:
             - "$PWD/docker/web/nginx.conf:/etc/nginx/nginx.conf"

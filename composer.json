@@ -17,6 +17,7 @@
         "laravel/sanctum": "^3.0",
         "laravel/tinker": "^2.7",
         "livewire/livewire": "^2.10",
+        "sentry/sentry-laravel": "^3.2",
         "spatie/laravel-data": "^2.2",
         "spatie/laravel-enum": "^3.0",
         "spatie/laravel-permission": "^5.7",
