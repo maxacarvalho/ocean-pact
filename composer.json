@@ -9,6 +9,7 @@
         "aws/aws-sdk-php": "^3.257",
         "bezhansalleh/filament-shield": "^2.3",
         "blade-ui-kit/blade-heroicons": "^1.4",
+        "desilva/filament-simple-highlight-field": "^1.2",
         "filament/filament": "^2.0",
         "guzzlehttp/guzzle": "^7.2",
         "jeffgreco13/filament-breezy": "v1.4.10.1",

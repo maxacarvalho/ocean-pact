@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1cf7386b506bc557319f2ba883d270bf",
+    "content-hash": "69734b34adc7b5b1be4193af77309657",
     "packages": [
         {
             "name": "akaunting/laravel-money",
@@ -718,6 +718,63 @@
                 "source": "https://github.com/DASPRiD/Enum/tree/1.0.3"
             },
             "time": "2020-10-02T16:03:48+00:00"
+        },
+        {
+            "name": "desilva/filament-simple-highlight-field",
+            "version": "v1.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/caendesilva/filament-simple-highlight-field-plugin.git",
+                "reference": "001af92d3049f3f85ad231b2d430bdea1a5d397f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/caendesilva/filament-simple-highlight-field-plugin/zipball/001af92d3049f3f85ad231b2d430bdea1a5d397f",
+                "reference": "001af92d3049f3f85ad231b2d430bdea1a5d397f",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/contracts": "^9.0",
+                "illuminate/support": "^9.0",
+                "php": "^8.0",
+                "spatie/laravel-package-tools": "^1.9.2"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Desilva\\FilamentSimpleHighlightField\\FilamentSimpleHighlightFieldServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Desilva\\FilamentSimpleHighlightField\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Caen De Silva",
+                    "email": "caen@desilva.se",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Adds a simple read-only Highlight.js pseudo-field to FilamentPHP",
+            "homepage": "https://github.com/desilva/filament-simple-highlight-field",
+            "keywords": [
+                "desilva",
+                "filament-simple-highlight-field",
+                "laravel"
+            ],
+            "support": {
+                "issues": "https://github.com/caendesilva/filament-simple-highlight-field-plugin/issues",
+                "source": "https://github.com/caendesilva/filament-simple-highlight-field-plugin/tree/v1.2.0"
+            },
+            "time": "2022-09-18T10:20:42+00:00"
         },
         {
             "name": "dflydev/dot-access-data",

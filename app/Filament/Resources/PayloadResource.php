@@ -7,6 +7,7 @@ use App\Enums\PayloadStoringStatusEnum;
 use App\Filament\Resources\PayloadResource\Pages;
 use App\Filament\Resources\PayloadResource\RelationManagers\ProcessingAttemptsRelationManager;
 use App\Models\Payload;
+use Desilva\FilamentSimpleHighlightField\HighlightField;
 use Filament\Forms;
 use Filament\Resources\Form;
 use Filament\Resources\Resource;
@@ -43,7 +44,7 @@ class PayloadResource extends Resource
                     ->relationship('integrationType', 'code')
                     ->label(__('integration_type.IntegrationType'))
                     ->preload(),
-                Forms\Components\Textarea::make(Payload::PAYLOAD)
+                HighlightField::make(Payload::PAYLOAD)
                     ->required()
                     ->json()
                     ->label(__('payload.Payload'))
