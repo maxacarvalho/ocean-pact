@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Str;
 use JeffGreco13\FilamentBreezy\Traits\TwoFactorAuthenticatable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Models\Role;
@@ -81,6 +82,18 @@ class User extends Authenticatable implements FilamentUser
         return $this->hasRole(config('filament-shield.super_admin.name'));
     }
 
+    public function isNotSuperAdmin(): bool
+    {
+        return ! $this->isSuperAdmin();
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->hasRole(
+            Str::lower('admin')
+        );
+    }
+
     public function canAccessFilament(): bool
     {
         return true;
@@ -88,7 +101,12 @@ class User extends Authenticatable implements FilamentUser
 
     public function canImpersonate(): bool
     {
-        return $this->isSuperAdmin() === false;
+        return $this->isSuperAdmin() || $this->isAdmin();
+    }
+
+    public function canBeImpersonated(): bool
+    {
+        return $this->isNotSuperAdmin();
     }
 
     public function companies(): BelongsToMany
