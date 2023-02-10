@@ -86,6 +86,11 @@ class User extends Authenticatable implements FilamentUser
         return true;
     }
 
+    public function canImpersonate(): bool
+    {
+        return $this->isSuperAdmin() === false;
+    }
+
     public function companies(): BelongsToMany
     {
         return $this
