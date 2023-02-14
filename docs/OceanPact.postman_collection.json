@@ -31,7 +31,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"payload\": {\n        \"campo1\": \"valor\",\n        \"campo2\": \"valor\",\n        \"campo3\": {\n            \"campo\": 1,\n            \"campo2\": \"valor\"\n        }\n    }\n}",
+					"raw": "{\n    \"payload\": {\n        \"fornecedor\": \"XYZ\",\n        \"comprador\": \"Joao\",\n        \"items\": [\n            {\n                \"campo\": 1,\n                \"campo2\": \"valor\"\n            },\n            {\n                \"campo\": 1,\n                \"campo2\": \"valor\"\n            },\n            {\n                \"campo\": 1,\n                \"campo2\": \"valor\"\n            },\n            {\n                \"campo\": 1,\n                \"campo2\": \"valor\"\n            }\n        ]\n    }\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -51,7 +51,7 @@
 					"variable": [
 						{
 							"key": "integration_type_code",
-							"value": null,
+							"value": "pedidos",
 							"description": "Código identificador do Tipo de Integração."
 						}
 					]
@@ -66,7 +66,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"status\": \"SUCCESS | FAILED\",\n    \"message\": \"Obrigatório caso o `status` seja 'FAILED'\"\n}",
+					"raw": "{\n    \"status\": \"SUCCESS\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -86,7 +86,7 @@
 					"variable": [
 						{
 							"key": "payload_id",
-							"value": null,
+							"value": "12",
 							"description": "ID do payload para ser atualizado."
 						}
 					]
@@ -157,12 +157,12 @@
 	"variable": [
 		{
 			"key": "token",
-			"value": "3|aYnM7xSaJPchsa5gkyRxNY2rKn4ubzCxiQfHu4zX",
+			"value": "7|5pX3Peh5LGmP9H50IbEiEOX6jgsCtBaUTgRqEzKY",
 			"type": "string"
 		},
 		{
 			"key": "host",
-			"value": "https://oceanpact.test",
+			"value": "https://oceanpact.squickup.com",
 			"type": "string"
 		}
 	]
