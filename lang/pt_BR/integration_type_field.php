@@ -19,7 +19,7 @@ return [
     'Settings' => 'Configurações',
     'Date' => 'Data',
     'DateFormat' => 'Formato da Data',
-    'DateFormatHelperText' => '<a href="https://www.php.net/manual/pt_BR/datetime.formats.php" target="_blank">Clique aqui para uma lista de possíveis formatos</a>.',
+    'DateFormatHelperText' => 'Clique aqui para uma lista de possíveis formatos.',
     'Alpha' => 'Somente letras',
     'AlphaNum' => 'Somente letras e números',
     'AlphaDash' => 'Somente letras, números e traços',
