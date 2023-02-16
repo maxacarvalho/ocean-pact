@@ -4,10 +4,10 @@ namespace App\Filament\Resources;
 
 use App\Enums\PayloadProcessingStatusEnum;
 use App\Enums\PayloadStoringStatusEnum;
+use App\Filament\Plugins\FilamentSimpleHighlightField\HighlightField;
 use App\Filament\Resources\PayloadResource\Pages;
 use App\Filament\Resources\PayloadResource\RelationManagers\ProcessingAttemptsRelationManager;
 use App\Models\Payload;
-use Desilva\FilamentSimpleHighlightField\HighlightField;
 use Filament\Forms;
 use Filament\Resources\Form;
 use Filament\Resources\Resource;
