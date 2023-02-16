@@ -26,7 +26,7 @@ class StorePayloadController extends Controller
 
         $payload = $request->validated(Payload::PAYLOAD);
 
-        Validator::make($payload, $validationRules, customAttributes: $validationAttributes)->validate();
+        Validator::make($payload, $validationRules, attributes: $validationAttributes)->validate();
 
         $integrationType->payloads()->create(
             array_merge(
