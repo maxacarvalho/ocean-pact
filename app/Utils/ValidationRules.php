@@ -11,6 +11,7 @@ class ValidationRules
     {
         return $rules
             ->map(function ($rawRules, $fieldName) {
+
                 $rules = [];
 
                 if (Arr::has($rawRules, 'numeric')) {
@@ -38,11 +39,13 @@ class ValidationRules
                     $rawRules = array_merge(['required' => true], $rawRules);
                 }
 
-                foreach ($rawRules as $key => $value) {
-                    if (true === $value) {
-                        $rules[] = $key;
-                    } else {
-                        $rules[] = "$key:$value";
+                if (is_array($rawRules)) {
+                    foreach ($rawRules as $key => $value) {
+                        if (true === $value) {
+                            $rules[] = $key;
+                        } else {
+                            $rules[] = "$key:$value";
+                        }
                     }
                 }
 
