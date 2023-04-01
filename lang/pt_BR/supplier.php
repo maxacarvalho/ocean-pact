@@ -1,0 +1,26 @@
+<?php
+
+return [
+    'suppliers' => 'fornecedores',
+    'supplier' => 'fornecedor',
+    'ID' => 'ID',
+    'branch' => 'filial',
+    'code' => 'código',
+    'store' => 'loja',
+    'name' => 'nome',
+    'business_name' => 'nome fantasia',
+    'address' => 'endereço',
+    'number' => 'número',
+    'neighborhood' => 'bairro',
+    'state_code' => 'estado',
+    'state_name' => 'estado',
+    'postal_code' => 'CEP',
+    'cnpj_cpf' => 'CNPJ/CPF',
+    'phone_code' => 'DDD',
+    'phone_number' => 'telefone',
+    'contact' => 'contato',
+    'email' => 'e-mail',
+    'created_at' => 'criado em',
+    'updated_at' => 'atualizado em',
+    'all' => 'todos os fornecedores',
+];

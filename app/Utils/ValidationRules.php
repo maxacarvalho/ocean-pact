@@ -11,7 +11,6 @@ class ValidationRules
     {
         return $rules
             ->map(function ($rawRules, $fieldName) {
-
                 $rules = [];
 
                 if (Arr::has($rawRules, 'numeric')) {

@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\UserResource\RelationManagers;
 
 use App\Models\Company;
+use App\Utils\Str;
 use Filament\Forms;
 use Filament\Resources\Form;
 use Filament\Resources\RelationManagers\RelationManager;
@@ -17,19 +18,19 @@ class CompaniesRelationManager extends RelationManager
 
     public static function getModelLabel(): string
     {
-        return __('company.Company');
+        return Str::formatTitle(__('company.company'));
     }
 
     public static function getPluralModelLabel(): string
     {
-        return __('company.Companies');
+        return Str::formatTitle(__('company.companies'));
     }
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make(Company::DESCRIPTION)
+                Forms\Components\TextInput::make(Company::BRANCH)
                     ->required()
                     ->maxLength(255),
             ]);
@@ -40,11 +41,11 @@ class CompaniesRelationManager extends RelationManager
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make(Company::CODE)
-                    ->label(__('company.Code')),
+                    ->label(Str::formatTitle(__('company.code'))),
                 Tables\Columns\TextColumn::make(Company::BRANCH)
-                    ->label(__('company.Branch')),
-                Tables\Columns\TextColumn::make(Company::DESCRIPTION)
-                    ->label(__('company.Description')),
+                    ->label(Str::formatTitle(__('company.branch'))),
+                Tables\Columns\TextColumn::make(Company::BRANCH)
+                    ->label(Str::formatTitle(__('company.description'))),
             ])
             ->filters([
                 //

@@ -4,6 +4,7 @@ namespace App\Filament\Resources\PayloadResource\RelationManagers;
 
 use App\Enums\PayloadProcessingAttemptsStatusEnum;
 use App\Models\PayloadProcessingAttempt;
+use App\Utils\Str;
 use Filament\Forms;
 use Filament\Resources\Form;
 use Filament\Resources\RelationManagers\RelationManager;
@@ -19,17 +20,17 @@ class ProcessingAttemptsRelationManager extends RelationManager
 
     public static function getNavigationLabel(): string
     {
-        return __('payload_processing_attempt.PayloadProcessingAttempts');
+        return Str::formatTitle(__('payload_processing_attempt.payload_processing_attempts'));
     }
 
     public static function getModelLabel(): string
     {
-        return __('payload_processing_attempt.PayloadProcessingAttempt');
+        return Str::formatTitle(__('payload_processing_attempt.payload_processing_attempt'));
     }
 
     public static function getPluralModelLabel(): string
     {
-        return __('payload_processing_attempt.PayloadProcessingAttempts');
+        return Str::formatTitle(__('payload_processing_attempt.payload_processing_attempts'));
     }
 
     public static function form(Form $form): Form
@@ -48,12 +49,12 @@ class ProcessingAttemptsRelationManager extends RelationManager
             ->columns([
                 Tables\Columns\TextColumn::make(PayloadProcessingAttempt::STATUS)
                     ->formatStateUsing(fn (?string $state): ?string => $state !== null ? PayloadProcessingAttemptsStatusEnum::from($state)->label : null)
-                    ->label(__('payload_processing_attempt.Status')),
+                    ->label(Str::formatTitle(__('payload_processing_attempt.status'))),
                 Tables\Columns\TextColumn::make(PayloadProcessingAttempt::MESSAGE)
-                    ->label(__('payload_processing_attempt.Message')),
+                    ->label(Str::formatTitle(__('payload_processing_attempt.message'))),
                 Tables\Columns\TextColumn::make(PayloadProcessingAttempt::CREATED_AT)
                     ->dateTime()
-                    ->label(__('payload_processing_attempt.CreatedAt')),
+                    ->label(Str::formatTitle(__('payload_processing_attempt.created_at'))),
             ])
             ->filters([
                 //

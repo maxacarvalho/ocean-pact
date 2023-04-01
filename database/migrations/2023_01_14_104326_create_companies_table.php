@@ -13,10 +13,10 @@ return new class extends Migration
             $table->id();
             $table->string(Company::CODE, 10);
             $table->string(Company::BRANCH, 10);
-            $table->string(Company::CNPJ, 18)->unique();
-            $table->string(Company::DESCRIPTION, 255);
-            $table->string(Company::LEGAL_NAME, 255);
-            $table->string(Company::TRADE_NAME, 255);
+            $table->string('cnpj', 18)->unique();
+            $table->string('description', 255);
+            $table->string('legal_name', 255);
+            $table->string('trade_name', 255);
             $table->timestamps();
 
             $table->unique([Company::CODE, Company::BRANCH]);

@@ -3,8 +3,9 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\CompanyResource\Pages;
+use App\Forms\Components\CnpjCpf;
 use App\Models\Company;
-use App\Rules\Cnpj;
+use App\Utils\Str;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Form;
 use Filament\Resources\Resource;
@@ -19,17 +20,17 @@ class CompanyResource extends Resource
 
     public static function getNavigationLabel(): string
     {
-        return __('company.Companies');
+        return Str::formatTitle(__('company.companies'));
     }
 
     public static function getModelLabel(): string
     {
-        return __('company.Company');
+        return Str::formatTitle(__('company.company'));
     }
 
     public static function getPluralModelLabel(): string
     {
-        return __('company.Companies');
+        return Str::formatTitle(__('company.companies'));
     }
 
     public static function form(Form $form): Form
@@ -37,30 +38,60 @@ class CompanyResource extends Resource
         return $form
             ->schema([
                 TextInput::make(Company::CODE)
+                    ->label(Str::formatTitle(__('company.code')))
                     ->required()
-                    ->minLength(2)
-                    ->maxLength(4)
-                    ->label(__('company.Code')),
+                    ->minLength(1)
+                    ->maxLength(6),
+                TextInput::make(Company::CODE_BRANCH)
+                    ->label(Str::formatTitle(__('company.code_branch')))
+                    ->required()
+                    ->minLength(1)
+                    ->maxLength(6),
                 TextInput::make(Company::BRANCH)
+                    ->label(Str::formatTitle(__('company.branch')))
                     ->required()
-                    ->minLength(2)
-                    ->maxLength(4)
-                    ->label(__('company.Branch')),
-                TextInput::make(Company::CNPJ)
+                    ->minLength(1)
+                    ->maxLength(2),
+                TextInput::make(Company::NAME)
+                    ->label(Str::formatTitle(__('company.name')))
+                    ->required(),
+                TextInput::make(Company::BUSINESS_NAME)
+                    ->label(Str::formatTitle(__('company.business_name')))
+                    ->required(),
+                TextInput::make(Company::PHONE_NUMBER)
+                    ->label(Str::formatTitle(__('company.phone_number'))),
+                TextInput::make(Company::FAX_NUMBER)
+                    ->label(Str::formatTitle(__('company.fax_number'))),
+                CnpjCpf::make(Company::CNPJ_CPF)
+                    ->label(Str::formatTitle(__('company.cnpj_cpf')))
+                    ->rule('min:14')
                     ->required()
-                    ->unique(table: Company::TABLE_NAME, column: Company::CNPJ)
-                    ->rules([new Cnpj()])
-                    ->mask(fn (TextInput\Mask $mask) => $mask->pattern('00.000.000/0000-00'))
-                    ->label(__('company.CNPJ')),
-                TextInput::make(Company::DESCRIPTION)
-                    ->required()
-                    ->label(__('company.Description')),
-                TextInput::make(Company::LEGAL_NAME)
-                    ->required()
-                    ->label(__('company.LegalName')),
-                TextInput::make(Company::TRADE_NAME)
-                    ->required()
-                    ->label(__('company.TradeName')),
+                    ->unique(table: Company::TABLE_NAME, column: Company::CNPJ_CPF)
+                    ->dehydrateStateUsing(function (string $state): string {
+                        return preg_replace('/\D/', '', $state);
+                    }),
+                TextInput::make(Company::STATE_INSCRIPTION)
+                    ->label(Str::formatTitle(__('company.state_inscription'))),
+                TextInput::make(Company::INSCM)
+                    ->label(Str::formatTitle(__('company.inscm'))),
+                TextInput::make(Company::ADDRESS)
+                    ->label(Str::formatTitle(__('company.address')))
+                    ->required(),
+                TextInput::make(Company::COMPLEMENT)
+                    ->label(Str::formatTitle(__('company.complement'))),
+                TextInput::make(Company::NEIGHBORHOOD)
+                    ->label(Str::formatTitle(__('company.neighborhood'))),
+                TextInput::make(Company::CITY)
+                    ->label(Str::formatTitle(__('company.city'))),
+                TextInput::make(Company::STATE)
+                    ->label(Str::formatTitle(__('company.state'))),
+                TextInput::make(Company::POSTAL_CODE)
+                    ->label(Str::formatTitle(__('company.postal_code')))
+                    ->mask(fn (TextInput\Mask $mask) => $mask->pattern('00000-000')),
+                TextInput::make(Company::CITY_CODE)
+                    ->label(Str::formatTitle(__('company.city_code'))),
+                TextInput::make(Company::CNAE)
+                    ->label(Str::formatTitle(__('company.cnae'))),
             ]);
     }
 
@@ -69,13 +100,15 @@ class CompanyResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make(Company::CODE)
-                    ->label(__('company.Code')),
+                    ->label(Str::formatTitle(__('company.code'))),
+                Tables\Columns\TextColumn::make(Company::CODE_BRANCH)
+                    ->label(Str::formatTitle(__('company.code_branch'))),
                 Tables\Columns\TextColumn::make(Company::BRANCH)
-                    ->label(__('company.Branch')),
-                Tables\Columns\TextColumn::make(Company::CNPJ)
-                    ->label(__('company.CNPJ')),
-                Tables\Columns\TextColumn::make(Company::DESCRIPTION)
-                    ->label(__('company.Description')),
+                    ->label(Str::formatTitle(__('company.branch'))),
+                Tables\Columns\TextColumn::make(Company::CNPJ_CPF)
+                    ->label(Str::formatTitle(__('company.cnpj_cpf'))),
+                Tables\Columns\TextColumn::make(Company::NAME)
+                    ->label(Str::formatTitle(__('company.name'))),
             ])
             ->filters([
                 //
@@ -84,7 +117,7 @@ class CompanyResource extends Resource
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\DeleteBulkAction::make(),
+                //
             ]);
     }
 

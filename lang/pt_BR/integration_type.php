@@ -1,16 +1,16 @@
 <?php
 
 return [
-    'IntegrationType' => 'Tipo de Integração',
-    'IntegrationTypes' => 'Tipos de Integração',
-    'Code' => 'Código',
-    'CodeHelperText' => 'Use apenas letras, números e hífens. Caso não informado será gerado automaticamente.',
-    'Company' => 'Empresa',
-    'Description' => 'Descrição',
-    'Type' => 'Tipo',
-    'HandlingType' => 'Tipo de Envio',
-    'TargetURL' => 'URL de Destino',
-    'SEND' => 'Enviar',
-    'STORE' => 'Armazenar',
-    'STORE_AND_SEND' => 'Armazenar e Enviar',
+    'integration_type' => 'tipo de integração',
+    'integration_types' => 'tipos de integração',
+    'code' => 'código',
+    'code_helper_text' => 'use apenas letras, números e hífens. caso não informado será gerado automaticamente.',
+    'company' => 'empresa',
+    'description' => 'descrição',
+    'type' => 'tipo',
+    'handling_type' => 'tipo de envio',
+    'target_url' => 'url de destino',
+    'send' => 'enviar',
+    'store' => 'armazenar',
+    'store_and_send' => 'armazenar e enviar',
 ];

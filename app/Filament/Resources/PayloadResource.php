@@ -8,6 +8,7 @@ use App\Filament\Plugins\FilamentSimpleHighlightField\HighlightField;
 use App\Filament\Resources\PayloadResource\Pages;
 use App\Filament\Resources\PayloadResource\RelationManagers\ProcessingAttemptsRelationManager;
 use App\Models\Payload;
+use App\Utils\Str;
 use Filament\Forms;
 use Filament\Resources\Form;
 use Filament\Resources\Resource;
@@ -22,17 +23,17 @@ class PayloadResource extends Resource
 
     public static function getNavigationLabel(): string
     {
-        return __('payload.Payloads');
+        return Str::formatTitle(__('payload.payloads'));
     }
 
     public static function getModelLabel(): string
     {
-        return __('payload.Payload');
+        return Str::formatTitle(__('payload.payload'));
     }
 
     public static function getPluralModelLabel(): string
     {
-        return __('payload.Payloads');
+        return Str::formatTitle(__('payload.payloads'));
     }
 
     public static function form(Form $form): Form
@@ -42,18 +43,18 @@ class PayloadResource extends Resource
                 Forms\Components\Select::make(Payload::INTEGRATION_TYPE_ID)
                     ->required()
                     ->relationship('integrationType', 'code')
-                    ->label(__('integration_type.IntegrationType'))
+                    ->label(Str::formatTitle(__('integration_type.integration_type')))
                     ->preload(),
                 Forms\Components\Textarea::make(Payload::PAYLOAD)
                     ->required()
                     ->json()
-                    ->label(__('payload.Payload'))
+                    ->label(Str::formatTitle(__('payload.payload')))
                     ->columnSpanFull()
                     ->hiddenOn('view'),
                 HighlightField::make(Payload::PAYLOAD)
                     ->required()
                     ->json()
-                    ->label(__('payload.Payload'))
+                    ->label(Str::formatTitle(__('payload.payload')))
                     ->columnSpanFull()
                     ->hiddenOn('create'),
             ]);
@@ -64,22 +65,22 @@ class PayloadResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('integrationType.code')
-                    ->label(__('integration_type.IntegrationType')),
+                    ->label(Str::formatTitle(__('integration_type.integration_type'))),
                 Tables\Columns\TextColumn::make(Payload::STORED_AT)
                     ->dateTime()
-                    ->label(__('payload.StoredAt')),
+                    ->label(Str::formatTitle(__('payload.stored_at'))),
                 Tables\Columns\TextColumn::make(Payload::STORING_STATUS)
                     ->formatStateUsing(fn (string $state): string => PayloadStoringStatusEnum::from($state)->label)
-                    ->label(__('payload.StoredStatus')),
+                    ->label(Str::formatTitle(__('payload.stored_status'))),
                 Tables\Columns\TextColumn::make(Payload::PROCESSED_AT)
                     ->dateTime()
-                    ->label(__('payload.ProcessedAt')),
+                    ->label(Str::formatTitle(__('payload.processed_at'))),
                 Tables\Columns\TextColumn::make(Payload::PROCESSING_STATUS)
                     ->formatStateUsing(fn (?string $state): ?string => $state !== null ? PayloadProcessingStatusEnum::from($state)->label : null)
-                    ->label(__('payload.ProcessedStatus')),
+                    ->label(Str::formatTitle(__('payload.processed_status'))),
                 Tables\Columns\TextColumn::make('processing_attempts_count')
                     ->counts('processingAttempts')
-                    ->label(__('payload.AttemptsCount')),
+                    ->label(Str::formatTitle(__('payload.attempts_count'))),
             ])
             ->filters([
                 //

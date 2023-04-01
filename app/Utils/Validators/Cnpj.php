@@ -1,28 +1,10 @@
 <?php
 
-namespace App\Rules;
+namespace App\Utils\Validators;
 
-use Closure;
-use Illuminate\Contracts\Validation\InvokableRule;
-use Illuminate\Translation\PotentiallyTranslatedString;
-
-class Cnpj implements InvokableRule
+final class Cnpj
 {
-    /**
-     * Validates a Brazilian CNPJ.
-     *
-     * @param  string  $attribute
-     * @param  mixed  $value
-     * @param  Closure(string): PotentiallyTranslatedString  $fail
-     */
-    public function __invoke($attribute, $value, $fail): void
-    {
-        if (! $this->validate($value)) {
-            $fail('validation.cnpj')->translate();
-        }
-    }
-
-    private function validate($input): bool
+    public function validate($input): bool
     {
         if (! is_scalar($input)) {
             return false;
@@ -45,7 +27,7 @@ class Cnpj implements InvokableRule
             $n += $digits[$i] * $bases[$i + 1];
         }
 
-        if ($digits[12] !== (($n %= 11) < 2 ? 0 : 11 - $n)) {
+        if ($digits[12] != (($n %= 11) < 2 ? 0 : 11 - $n)) {
             return false;
         }
 
@@ -56,7 +38,7 @@ class Cnpj implements InvokableRule
 
         $check = ($n %= 11) < 2 ? 0 : 11 - $n;
 
-        return $digits[13] === $check;
+        return $digits[13] == $check;
     }
 
     /**

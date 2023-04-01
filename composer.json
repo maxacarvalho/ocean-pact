@@ -9,6 +9,7 @@
         "aws/aws-sdk-php": "^3.257",
         "bezhansalleh/filament-shield": "^2.3",
         "blade-ui-kit/blade-heroicons": "^1.4",
+        "doctrine/dbal": "^3.6",
         "filament/filament": "^2.0",
         "guzzlehttp/guzzle": "^7.2",
         "jeffgreco13/filament-breezy": "^1.5",
@@ -26,7 +27,6 @@
         "stechstudio/filament-impersonate": "^2.11"
     },
     "require-dev": {
-        "doctrine/dbal": "^3.5",
         "fakerphp/faker": "^1.9.1",
         "laravel/pint": "^1.4",
         "laravel/sail": "^1.0.1",
