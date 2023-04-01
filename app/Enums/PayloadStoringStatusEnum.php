@@ -2,6 +2,7 @@
 
 namespace App\Enums;
 
+use App\Utils\Str;
 use Spatie\Enum\Laravel\Enum;
 
 /**
@@ -13,8 +14,8 @@ class PayloadStoringStatusEnum extends Enum
     protected static function labels(): array
     {
         return [
-            'STORED' => __('payload.STORED'),
-            'FAILED' => __('payload.FAILED'),
+            'STORED' => Str::formatTitle(__('payload.stored')),
+            'FAILED' => Str::formatTitle(__('payload.failed')),
         ];
     }
 }

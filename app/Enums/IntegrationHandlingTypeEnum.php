@@ -2,6 +2,7 @@
 
 namespace App\Enums;
 
+use App\Utils\Str;
 use Spatie\Enum\Laravel\Enum;
 
 /**
@@ -14,9 +15,9 @@ final class IntegrationHandlingTypeEnum extends Enum
     protected static function labels(): array
     {
         return [
-            'SEND' => __('integration_type.SEND'),
-            'STORE' => __('integration_type.STORE'),
-            'STORE_AND_SEND' => __('integration_type.STORE_AND_SEND'),
+            'SEND' => Str::formatTitle(__('integration_type.send')),
+            'STORE' => Str::formatTitle(__('integration_type.store')),
+            'STORE_AND_SEND' => Str::formatTitle(__('integration_type.store_and_send')),
         ];
     }
 }

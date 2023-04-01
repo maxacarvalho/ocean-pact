@@ -2,6 +2,7 @@
 
 namespace App\Enums;
 
+use App\Utils\Str;
 use Spatie\Enum\Laravel\Enum;
 
 /**
@@ -16,11 +17,11 @@ class PayloadProcessingStatusEnum extends Enum
     protected static function labels(): array
     {
         return [
-            'READY' => __('payload.READY'),
-            'COLLECTED' => __('payload.COLLECTED'),
-            'SENT_TO_CLIENT' => __('payload.SEND_TO_CLIENT'),
-            'VALIDATION_ERROR' => __('payload.VALIDATION_ERROR'),
-            'FAILED' => __('payload.FAILED'),
+            'READY' => Str::formatTitle(__('payload.ready')),
+            'COLLECTED' => Str::formatTitle(__('payload.collected')),
+            'SENT_TO_CLIENT' => Str::formatTitle(__('payload.send_to_client')),
+            'VALIDATION_ERROR' => Str::formatTitle(__('payload.validation_error')),
+            'FAILED' => Str::formatTitle(__('payload.failed')),
         ];
     }
 }

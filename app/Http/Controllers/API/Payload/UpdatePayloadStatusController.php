@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\UpdatePayloadStatusRequest;
 use App\Models\Payload;
 use App\Models\PayloadProcessingAttempt;
+use App\Utils\Str;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 
@@ -19,8 +20,8 @@ class UpdatePayloadStatusController extends Controller
             return response()->json([
                 'errors' => [
                     'status' => Response::HTTP_UNPROCESSABLE_ENTITY,
-                    'title' => __('payload.PayloadAlreadyCollected'),
-                    'detail' => __('payload.PayloadAlreadyCollectedDetail', ['payload_id' => $payload->id]),
+                    'title' => Str::formatTitle(__('payload.payload_already_collected')),
+                    'detail' => Str::formatTitle(__('payload.payload_already_collected_detail', ['payload_id' => $payload->id])),
                 ],
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
