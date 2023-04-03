@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\QuoteResource\Pages;
+use App\Filament\Resources\QuoteResource\RelationManagers\QuoteItemsRelationManager;
 use App\Models\Budget;
 use App\Models\Company;
 use App\Models\PaymentCondition;
@@ -137,7 +138,7 @@ class QuoteResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            QuoteItemsRelationManager::class,
         ];
     }
 

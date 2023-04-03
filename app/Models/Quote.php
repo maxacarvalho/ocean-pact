@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 
 /**
@@ -41,6 +42,7 @@ class Quote extends Model
     public const RELATION_SUPPLIER = 'supplier';
     public const RELATION_PAYMENT_CONDITION = 'paymentCondition';
     public const RELATION_BUYER = 'buyer';
+    public const RELATION_ITEMS = 'items';
 
     protected $table = self::TABLE_NAME;
     protected $guarded = [
@@ -73,5 +75,10 @@ class Quote extends Model
             ->whereHas(User::RELATION_ROLES, function ($query) {
                 $query->where(Role::NAME, Role::ROLE_BUYER);
             });
+    }
+
+    public function items(): HasMany
+    {
+        return $this->hasMany(QuoteItem::class);
     }
 }
