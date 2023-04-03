@@ -12,7 +12,7 @@ return new class extends Migration
     {
         Schema::create(Supplier::TABLE_NAME, function (Blueprint $table) {
             $table->id();
-            $table->string(Supplier::COMPANY_CODE_BRANCH, 10)->nullable()->index();
+            $table->unsignedBigInteger(Supplier::COMPANY_ID)->nullable()->index();
             $table->string(Supplier::STORE, 2)->index();
             $table->string(Supplier::CODE, 6)->index();
             $table->string(Supplier::NAME, 40);
@@ -28,8 +28,8 @@ return new class extends Migration
             $table->string(Supplier::EMAIL); // permitir N emails, separados por ponto-e-vírgula
             $table->timestamps();
 
-            $table->foreign(Supplier::COMPANY_CODE_BRANCH)
-                ->references(Company::CODE_BRANCH)
+            $table->foreign(Supplier::COMPANY_ID)
+                ->references(Company::ID)
                 ->on(Company::TABLE_NAME)
                 ->nullOnDelete();
         });

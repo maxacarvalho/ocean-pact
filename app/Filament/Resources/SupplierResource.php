@@ -44,8 +44,9 @@ class SupplierResource extends Resource
             ->schema([
                 Grid::make()
                     ->schema([
-                        Select::make(Supplier::COMPANY_CODE_BRANCH)
-                            ->label(Str::formatTitle(__('supplier.branch')))
+                        Select::make(Supplier::COMPANY_ID)
+                            ->label(Str::formatTitle(__('supplier.company_id')))
+                            ->required()
                             ->relationship(Supplier::RELATION_COMPANY, Company::CODE_BRANCH)
                             ->getOptionLabelFromRecordUsing(function (Model|Company $record) {
                                 return "$record->code_branch - $record->branch";

@@ -33,7 +33,7 @@ class Supplier extends Model
 {
     public const TABLE_NAME = 'suppliers';
     public const ID = 'id';
-    public const COMPANY_CODE_BRANCH = 'company_code_branch';
+    public const COMPANY_ID = 'company_id';
     public const CODE = 'code';
     public const STORE = 'store';
     public const NAME = 'name';
@@ -64,8 +64,8 @@ class Supplier extends Model
     {
         return $this->belongsTo(
             Company::class,
-            self::COMPANY_CODE_BRANCH,
-            Company::CODE_BRANCH
+            self::COMPANY_ID,
+            Company::ID
         );
     }
 
