@@ -9,14 +9,14 @@ use Illuminate\Support\Carbon;
 /**
  * @property int                   $id
  * @property int                   $company_id
- * @property string                $company_code
- * @property string|null           $company_code_branch
+ * @property int                   $budget_id
  * @property string                $budget_number
  * @property string                $quote_number
  * @property string|null           $comments
  * @property Carbon|null           $created_at
  * @property Carbon|null           $updated_at
  * @property-read Company          $company
+ * @property-read Budget           $budget
  * @property-read Supplier         $supplier
  * @property-read PaymentCondition $paymentCondition
  * @property-read User|null        $buyer
@@ -26,12 +26,10 @@ class Quote extends Model
     public const TABLE_NAME = 'quotes';
     public const ID = 'id';
     public const COMPANY_ID = 'company_id';
+    public const BUDGET_ID = 'budget_id';
     public const SUPPLIER_ID = 'supplier_id';
     public const PAYMENT_CONDITION_ID = 'payment_condition_id';
     public const BUYER_ID = 'buyer_id';
-    public const COMPANY_CODE = 'company_code';
-    public const COMPANY_CODE_BRANCH = 'company_code_branch';
-    public const BUDGET_NUMBER = 'budget_number';
     public const QUOTE_NUMBER = 'quote_number';
     public const COMMENTS = 'comments';
     public const CREATED_AT = 'created_at';
@@ -39,6 +37,7 @@ class Quote extends Model
 
     // Relations
     public const RELATION_COMPANY = 'company';
+    public const RELATION_BUDGET = 'budget';
     public const RELATION_SUPPLIER = 'supplier';
     public const RELATION_PAYMENT_CONDITION = 'paymentCondition';
     public const RELATION_BUYER = 'buyer';
@@ -47,6 +46,11 @@ class Quote extends Model
     protected $guarded = [
         self::ID,
     ];
+
+    public function budget(): BelongsTo
+    {
+        return $this->belongsTo(Budget::class);
+    }
 
     public function company(): BelongsTo
     {

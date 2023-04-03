@@ -154,7 +154,7 @@ return [
         'attribute-name' => [
             'rule-name' => 'custom-message',
         ],
-        'data.'.\App\Models\Company::CNPJ => [
+        'data.'.\App\Models\Company::CNPJ_CPF => [
             'unique' => 'CNPJ já cadastrado.',
         ],
     ],

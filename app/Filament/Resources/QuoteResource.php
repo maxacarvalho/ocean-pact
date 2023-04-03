@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\QuoteResource\Pages;
+use App\Models\Budget;
 use App\Models\Company;
 use App\Models\PaymentCondition;
 use App\Models\Quote;
@@ -10,12 +11,14 @@ use App\Models\Role;
 use App\Models\Supplier;
 use App\Models\User;
 use App\Utils\Str;
-use Filament\Forms;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Resources\Form;
 use Filament\Resources\Resource;
 use Filament\Resources\Table;
 use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
@@ -78,15 +81,19 @@ class QuoteResource extends Resource
                         }
                     ),
 
-                Forms\Components\TextInput::make(Quote::BUDGET_NUMBER)
-                    ->label(Str::formatTitle(__('quote.budget_number')))
-                    ->required(),
+                Select::make(Quote::BUDGET_ID)
+                    ->label(Str::formatTitle(__('quote.budget_id')))
+                    ->required()
+                    ->relationship(
+                        Quote::RELATION_BUDGET,
+                        Budget::BUDGET_NUMBER
+                    ),
 
-                Forms\Components\TextInput::make(Quote::QUOTE_NUMBER)
+                TextInput::make(Quote::QUOTE_NUMBER)
                     ->label(Str::formatTitle(__('quote.quote_number')))
                     ->required(),
 
-                Forms\Components\Textarea::make(Quote::COMMENTS)
+                Textarea::make(Quote::COMMENTS)
                     ->label(Str::formatTitle(__('quote.comments')))
                     ->columnSpanFull(),
             ]);
@@ -96,18 +103,23 @@ class QuoteResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make(Quote::COMPANY_CODE)
-                    ->label(Str::formatTitle(__('quote.company_code'))),
-                Tables\Columns\TextColumn::make(Quote::COMPANY_CODE_BRANCH)
-                    ->label(Str::formatTitle(__('quote.company_code_branch'))),
-                Tables\Columns\TextColumn::make(Quote::BUDGET_NUMBER)
+                TextColumn::make(Quote::RELATION_COMPANY.'.'.Company::CODE_BRANCH)
+                    ->label(Str::formatTitle(__('company.code_branch'))),
+
+                TextColumn::make(Quote::RELATION_COMPANY.'.'.Company::BRANCH)
+                    ->label(Str::formatTitle(__('company.branch'))),
+
+                TextColumn::make(Quote::RELATION_BUDGET.'.'.Budget::BUDGET_NUMBER)
                     ->label(Str::formatTitle(__('quote.budget_number'))),
-                Tables\Columns\TextColumn::make(Quote::QUOTE_NUMBER)
+
+                TextColumn::make(Quote::QUOTE_NUMBER)
                     ->label(Str::formatTitle(__('quote.quote_number'))),
-                Tables\Columns\TextColumn::make(Quote::CREATED_AT)
+
+                TextColumn::make(Quote::CREATED_AT)
                     ->label(Str::formatTitle(__('quote.created_at')))
                     ->dateTime(),
-                Tables\Columns\TextColumn::make(Quote::UPDATED_AT)
+
+                TextColumn::make(Quote::UPDATED_AT)
                     ->label(Str::formatTitle(__('quote.updated_at')))
                     ->dateTime(),
             ])

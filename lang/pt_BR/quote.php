@@ -5,6 +5,8 @@ return [
     'quotes' => 'cotações',
     'id' => 'ID',
     'company_id' => 'empresa',
+    'budget_id' => 'orçamento',
+    'budget' => 'orçamento',
     'supplier_id' => 'fornecedor',
     'supplier' => 'fornecedor',
     'payment_condition_id' => 'condição de pagamento',

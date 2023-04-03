@@ -69,7 +69,7 @@ class Supplier extends Model
         );
     }
 
-    protected function cnpj_cpf(): Attribute
+    protected function cnpjCpf(): Attribute
     {
         return Attribute::make(
             get: static fn ($value) => match (strlen($value)) {

@@ -56,6 +56,7 @@ class SupplierResource extends Resource
                             ->required()
                             ->minLength(1)
                             ->maxLength(2),
+
                         TextInput::make(Supplier::CODE)
                             ->label(Str::formatTitle(__('supplier.code')))
                             ->required()
@@ -65,6 +66,7 @@ class SupplierResource extends Resource
                         TextInput::make(Supplier::NAME)
                             ->label(Str::formatTitle(__('supplier.name')))
                             ->required(),
+
                         TextInput::make(Supplier::BUSINESS_NAME)
                             ->label(Str::formatTitle(__('supplier.business_name')))
                             ->required(),
@@ -77,44 +79,12 @@ class SupplierResource extends Resource
                             ->mask(fn (TextInput\Mask $mask) => $mask->pattern('00.000.000/0000-00')),
                     ]),
 
-                Grid::make(4)
-                    ->schema([
-                        TextInput::make(Supplier::ADDRESS)
-                            ->label(Str::formatTitle(__('supplier.address')))
-                            ->required()
-                            ->columnSpan(3),
-                        TextInput::make(Supplier::NUMBER)
-                            ->label(Str::formatTitle(__('supplier.number'))),
-                    ]),
-
-                Grid::make(3)
-                    ->schema([
-                        TextInput::make(Supplier::STATE_CODE)
-                            ->label(Str::formatTitle(__('supplier.state_code')))
-                            ->required(),
-                        TextInput::make(Supplier::STATE_NAME)
-                            ->label(Str::formatTitle(__('supplier.state_name'))),
-                        TextInput::make(Supplier::POSTAL_CODE)
-                            ->label(Str::formatTitle(__('supplier.postal_code')))
-                            ->required()
-                            ->mask(fn (TextInput\Mask $mask) => $mask->pattern('00000-000')),
-                    ]),
-
-                Grid::make(4)
-                    ->schema([
-                        TextInput::make(Supplier::PHONE_CODE)
-                            ->label(Str::formatTitle(__('supplier.phone_code')))
-                            ->required(),
-                        TextInput::make(Supplier::PHONE_NUMBER)
-                            ->label(Str::formatTitle(__('supplier.phone_number')))
-                            ->required(),
-                    ]),
-
                 Grid::make()
                     ->schema([
                         TextInput::make(Supplier::CONTACT)
                             ->label(Str::formatTitle(__('supplier.contact')))
                             ->required(),
+
                         TextInput::make(Supplier::EMAIL)
                             ->label(Str::formatTitle(__('supplier.email')))
                             ->required()
