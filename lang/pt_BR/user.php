@@ -5,6 +5,7 @@ return [
     'user' => 'usuário',
     'id' => 'ID',
     'name' => 'nome',
+    'buyer_code' => 'código do comprador',
     'email' => 'e-mail',
     'email_verified_at' => 'verificado em',
     'password' => 'senha',
@@ -15,4 +16,5 @@ return [
     'created_at' => 'criado em',
     'updated_at' => 'atualizado em',
     'roles' => 'funções',
+    'companies' => 'empresas',
 ];

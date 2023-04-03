@@ -20,6 +20,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property int                       $id
  * @property string                    $name
  * @property string                    $email
+ * @property string|null               $buyer_code
  * @property Carbon|null               $email_verified_at
  * @property string                    $password
  * @property string|null               $two_factor_secret
@@ -37,6 +38,7 @@ class User extends Authenticatable implements FilamentUser
     public const ID = 'id';
     public const NAME = 'name';
     public const EMAIL = 'email';
+    public const BUYER_CODE = 'buyer_code';
     public const EMAIL_VERIFIED_AT = 'email_verified_at';
     public const PASSWORD = 'password';
     public const TWO_FACTOR_SECRET = 'two_factor_secret';
@@ -47,8 +49,8 @@ class User extends Authenticatable implements FilamentUser
     public const UPDATED_AT = 'updated_at';
 
     // Relations
-    public const COMPANIES = 'companies';
-    public const ROLES = 'roles';
+    public const RELATION_COMPANIES = 'companies';
+    public const RELATION_ROLES = 'roles';
 
     use HasApiTokens, HasFactory, HasRoles, Notifiable, TwoFactorAuthenticatable;
 
@@ -64,17 +66,6 @@ class User extends Authenticatable implements FilamentUser
 
     protected $casts = [
         self::EMAIL_VERIFIED_AT => 'datetime',
-    ];
-
-    public static array $columns = [
-        self::ID,
-        self::NAME,
-        self::EMAIL,
-        self::EMAIL_VERIFIED_AT,
-        self::TWO_FACTOR_RECOVERY_CODES,
-        self::TWO_FACTOR_CONFIRMED_AT,
-        self::CREATED_AT,
-        self::UPDATED_AT,
     ];
 
     public function isSuperAdmin(): bool

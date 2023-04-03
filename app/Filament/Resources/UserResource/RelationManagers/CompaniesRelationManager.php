@@ -44,8 +44,8 @@ class CompaniesRelationManager extends RelationManager
                     ->label(Str::formatTitle(__('company.code'))),
                 Tables\Columns\TextColumn::make(Company::BRANCH)
                     ->label(Str::formatTitle(__('company.branch'))),
-                Tables\Columns\TextColumn::make(Company::BRANCH)
-                    ->label(Str::formatTitle(__('company.description'))),
+                Tables\Columns\TextColumn::make(Company::NAME)
+                    ->label(Str::formatTitle(__('company.name'))),
             ])
             ->filters([
                 //

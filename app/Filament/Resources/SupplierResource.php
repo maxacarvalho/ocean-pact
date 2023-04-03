@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\SupplierResource\Pages;
+use App\Models\Company;
 use App\Models\Supplier;
 use App\Rules\CnpjRule;
 use App\Utils\Str;
@@ -45,8 +46,8 @@ class SupplierResource extends Resource
                     ->schema([
                         Select::make(Supplier::COMPANY_CODE_BRANCH)
                             ->label(Str::formatTitle(__('supplier.branch')))
-                            ->relationship('company', 'code_branch')
-                            ->getOptionLabelFromRecordUsing(function (Model $record) {
+                            ->relationship(Supplier::RELATION_COMPANY, Company::CODE_BRANCH)
+                            ->getOptionLabelFromRecordUsing(function (Model|Company $record) {
                                 return "$record->code_branch - $record->branch";
                             }),
 
@@ -162,5 +163,10 @@ class SupplierResource extends Resource
             'create' => Pages\CreateSupplier::route('/create'),
             'edit' => Pages\EditSupplier::route('/{record}/edit'),
         ];
+    }
+
+    protected static function getNavigationGroup(): ?string
+    {
+        return Str::formatTitle(__('navigation.quotes'));
     }
 }

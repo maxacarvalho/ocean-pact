@@ -52,6 +52,9 @@ class Supplier extends Model
     public const CREATED_AT = 'created_at';
     public const UPDATED_AT = 'updated_at';
 
+    // Relations
+    public const RELATION_COMPANY = 'company';
+
     protected $table = self::TABLE_NAME;
     protected $guarded = [
         self::ID,
