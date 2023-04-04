@@ -102,7 +102,8 @@ class QuoteResource extends Resource
 
                 DatePicker::make(Quote::VALID_UNTIL)
                     ->label(Str::formatTitle(__('quote.valid_until')))
-                    ->required(),
+                    ->required()
+                    ->hiddenOn('create'),
 
                 Textarea::make(Quote::COMMENTS)
                     ->label(Str::formatTitle(__('quote.comments')))
