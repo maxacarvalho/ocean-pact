@@ -71,6 +71,7 @@ class QuoteItemsRelationManager extends RelationManager
                     ->label(Str::formatTitle(__('quote_item.unit_price')))
                     ->numeric()
                     ->required()
+                    ->default(0)
                     ->mask(fn (TextInput\Mask $mask) => $mask
                         ->patternBlocks([
                             'money' => fn (Mask $mask) => $mask
@@ -141,7 +142,9 @@ class QuoteItemsRelationManager extends RelationManager
                         return $data;
                     })
                     ->mutateFormDataUsing(function (array $data) {
-                        $data[QuoteItem::UNIT_PRICE] = self::makeMoney($data[QuoteItem::UNIT_PRICE])->getAmount();
+                        $amount = number_format((float) $data[QuoteItem::UNIT_PRICE], 2, '.', ',');
+
+                        $data[QuoteItem::UNIT_PRICE] = self::makeMoney($amount)->getAmount();
 
                         return $data;
                     }),
