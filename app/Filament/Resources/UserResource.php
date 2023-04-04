@@ -6,6 +6,7 @@ use App\Filament\Resources\UserResource\Pages;
 use App\Filament\Resources\UserResource\RelationManagers\CompaniesRelationManager;
 use App\Models\Company;
 use App\Models\Role;
+use App\Models\Supplier;
 use App\Models\User;
 use App\Utils\Str;
 use Closure;
@@ -54,17 +55,6 @@ class UserResource extends Resource
                     ->required()
                     ->maxLength(255),
 
-                Select::make(User::RELATION_COMPANIES)
-                    ->label(Str::formatTitle(__('user.companies')))
-                    ->multiple()
-                    ->relationship(User::RELATION_COMPANIES, Company::BRANCH)
-                    ->getOptionLabelFromRecordUsing(function (Model|Company $record): ?string {
-                        return "$record->code_branch - $record->branch";
-                    })
-                    ->required()
-                    ->preload()
-                    ->visibleOn('create'),
-
                 Select::make(User::RELATION_ROLES)
                     ->label(Str::formatTitle(__('user.roles')))
                     ->multiple()
@@ -75,6 +65,40 @@ class UserResource extends Resource
                     ->required()
                     ->preload()
                     ->reactive(),
+
+                Select::make(User::RELATION_COMPANIES)
+                    ->label(Str::formatTitle(__('user.companies')))
+                    ->multiple()
+                    ->relationship(User::RELATION_COMPANIES, Company::BRANCH)
+                    ->getOptionLabelFromRecordUsing(function (Model|Company $record): ?string {
+                        return "$record->code_branch - $record->branch";
+                    })
+                    ->preload()
+                    ->visible(function (string $context, Closure $get) {
+                        if ('create' !== $context) {
+                            return false;
+                        }
+
+                        return Role::query()
+                            ->whereIn(Role::ID, $get(User::RELATION_ROLES))
+                            ->whereIn(Role::NAME, [
+                                Role::ROLE_SUPER_ADMIN,
+                                Role::ROLE_ADMIN,
+                                Role::ROLE_USER,
+                                Role::ROLE_BUYER,
+                            ])
+                            ->exists();
+                    }),
+
+                Select::make(User::SUPPLIER_ID)
+                    ->label(Str::formatTitle(__('user.supplier_id')))
+                    ->relationship(User::RELATION_SUPPLIER, Supplier::NAME)
+                    ->visible(function (Closure $get) {
+                        return Role::query()
+                            ->whereIn(Role::ID, $get(User::RELATION_ROLES))
+                            ->where(Role::NAME, Role::ROLE_SELLER)
+                            ->exists();
+                    }),
 
                 TextInput::make(User::BUYER_CODE)
                     ->label(Str::formatTitle(__('user.buyer_code')))

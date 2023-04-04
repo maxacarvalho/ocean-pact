@@ -15,6 +15,7 @@ use Illuminate\Support\Carbon;
  * @property string       $item
  * @property int          $quantity
  * @property int          $unit_price
+ * @property bool         $should_be_quoted
  * @property string|null  $comments
  * @property Carbon|null  $created_at
  * @property Carbon|null  $updated_at
@@ -32,6 +33,7 @@ class QuoteItem extends Model
     public const ITEM = 'item';
     public const QUANTITY = 'quantity';
     public const UNIT_PRICE = 'unit_price';
+    public const SHOULD_BE_QUOTED = 'should_be_quoted';
     public const COMMENTS = 'comments';
     public const CREATED_AT = 'created_at';
     public const UPDATED_AT = 'updated_at';
@@ -43,6 +45,9 @@ class QuoteItem extends Model
     protected $table = self::TABLE_NAME;
     protected $guarded = [
         self::ID,
+    ];
+    protected $casts = [
+        self::SHOULD_BE_QUOTED => 'boolean',
     ];
 
     public function quote(): BelongsTo

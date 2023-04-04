@@ -15,7 +15,7 @@ class ProductPolicy
         return $user->can('view_any_product');
     }
 
-    public function view(User $user, Product $paymentCondition): bool
+    public function view(User $user, Product $product): bool
     {
         return $user->can('view_product');
     }
@@ -25,17 +25,17 @@ class ProductPolicy
         return $user->can('create_product');
     }
 
-    public function update(User $user, Product $paymentCondition): bool
+    public function update(User $user, Product $product): bool
     {
         return $user->can('update_product');
     }
 
-    public function delete(User $user, Product $paymentCondition): bool
+    public function delete(User $user, Product $product): bool
     {
         return $user->can('delete_product');
     }
 
-    public function deleteAny(User $user, Product $paymentCondition): bool
+    public function deleteAny(User $user): bool
     {
         return $user->can('delete_any_product');
     }

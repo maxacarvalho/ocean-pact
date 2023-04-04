@@ -7,13 +7,12 @@ use Carbon\Carbon;
 use Filament\Models\Contracts\FilamentUser;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Str;
 use JeffGreco13\FilamentBreezy\Traits\TwoFactorAuthenticatable;
 use Laravel\Sanctum\HasApiTokens;
-use Spatie\Permission\Models\Role;
 use Spatie\Permission\Traits\HasRoles;
 
 /**
@@ -21,6 +20,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property string                    $name
  * @property string                    $email
  * @property string|null               $buyer_code
+ * @property int|null                  $supplier_id
  * @property Carbon|null               $email_verified_at
  * @property string                    $password
  * @property string|null               $two_factor_secret
@@ -31,6 +31,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property Carbon|null               $updated_at
  * @property-read Company[]|Collection $companies
  * @property-read Role[]|Collection    $roles
+ * @property-read Supplier|null        $supplier
  */
 class User extends Authenticatable implements FilamentUser
 {
@@ -39,6 +40,7 @@ class User extends Authenticatable implements FilamentUser
     public const NAME = 'name';
     public const EMAIL = 'email';
     public const BUYER_CODE = 'buyer_code';
+    public const SUPPLIER_ID = 'supplier_id';
     public const EMAIL_VERIFIED_AT = 'email_verified_at';
     public const PASSWORD = 'password';
     public const TWO_FACTOR_SECRET = 'two_factor_secret';
@@ -51,6 +53,7 @@ class User extends Authenticatable implements FilamentUser
     // Relations
     public const RELATION_COMPANIES = 'companies';
     public const RELATION_ROLES = 'roles';
+    public const RELATION_SUPPLIER = 'supplier';
 
     use HasApiTokens, HasFactory, HasRoles, Notifiable, TwoFactorAuthenticatable;
 
@@ -81,7 +84,7 @@ class User extends Authenticatable implements FilamentUser
     public function isAdmin(): bool
     {
         return $this->hasRole(
-            Str::lower('admin')
+            Role::ROLE_ADMIN
         );
     }
 
@@ -109,5 +112,10 @@ class User extends Authenticatable implements FilamentUser
                 CompanyUser::USER_ID,
                 CompanyUser::COMPANY_ID
             );
+    }
+
+    public function supplier(): BelongsTo
+    {
+        return $this->belongsTo(Supplier::class);
     }
 }

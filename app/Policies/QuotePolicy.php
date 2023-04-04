@@ -15,7 +15,7 @@ class QuotePolicy
         return $user->can('view_any_quote');
     }
 
-    public function view(User $user, Quote $paymentCondition): bool
+    public function view(User $user, Quote $quote): bool
     {
         return $user->can('view_quote');
     }
@@ -25,17 +25,17 @@ class QuotePolicy
         return $user->can('create_quote');
     }
 
-    public function update(User $user, Quote $paymentCondition): bool
+    public function update(User $user, Quote $quote): bool
     {
         return $user->can('update_quote');
     }
 
-    public function delete(User $user, Quote $paymentCondition): bool
+    public function delete(User $user, Quote $quote): bool
     {
         return $user->can('delete_quote');
     }
 
-    public function deleteAny(User $user, Quote $paymentCondition): bool
+    public function deleteAny(User $user): bool
     {
         return $user->can('delete_any_quote');
     }

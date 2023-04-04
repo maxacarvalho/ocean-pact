@@ -22,6 +22,7 @@ return new class extends Migration
             $table->unsignedBigInteger(Quote::BUYER_ID)->nullable();
             $table->unsignedBigInteger(Quote::BUDGET_ID);
             $table->string(Quote::QUOTE_NUMBER);
+            $table->date(Quote::VALID_UNTIL)->nullable();
             $table->text(Quote::COMMENTS)->nullable();
             $table->timestamps();
 

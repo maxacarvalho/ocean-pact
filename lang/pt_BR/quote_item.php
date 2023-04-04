@@ -13,6 +13,7 @@ return [
     'item' => 'item',
     'quantity' => 'quantidade',
     'unit_price' => 'preço unitário',
+    'should_be_quoted' => 'cotar',
     'price' => 'preço',
     'comments' => 'observações',
     'created_at' => 'criado em',

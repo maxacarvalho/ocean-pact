@@ -15,7 +15,7 @@ class BudgetPolicy
         return $user->can('view_any_budget');
     }
 
-    public function view(User $user, Budget $paymentCondition): bool
+    public function view(User $user, Budget $budget): bool
     {
         return $user->can('view_budget');
     }
@@ -25,17 +25,17 @@ class BudgetPolicy
         return $user->can('create_budget');
     }
 
-    public function update(User $user, Budget $paymentCondition): bool
+    public function update(User $user, Budget $budget): bool
     {
         return $user->can('update_budget');
     }
 
-    public function delete(User $user, Budget $paymentCondition): bool
+    public function delete(User $user, Budget $budget): bool
     {
         return $user->can('delete_budget');
     }
 
-    public function deleteAny(User $user, Budget $paymentCondition): bool
+    public function deleteAny(User $user): bool
     {
         return $user->can('delete_any_budget');
     }

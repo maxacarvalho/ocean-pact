@@ -35,7 +35,7 @@ class PaymentConditionPolicy
         return $user->can('delete_payment_condition') || $user->can('delete_payment::condition');
     }
 
-    public function deleteAny(User $user, PaymentCondition $paymentCondition): bool
+    public function deleteAny(User $user): bool
     {
         return $user->can('delete_any_payment_condition') || $user->can('delete_any_payment::condition');
     }

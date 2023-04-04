@@ -30,7 +30,7 @@ class PayloadPolicy
         return $user->can('update_payload');
     }
 
-    public function delete(User $user, Payload $payload): bool
+    public function delete(User $user): bool
     {
         return $user->can('delete_payload');
     }

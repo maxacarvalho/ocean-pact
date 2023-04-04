@@ -13,6 +13,7 @@ use Illuminate\Support\Carbon;
  * @property int                   $budget_id
  * @property string                $budget_number
  * @property string                $quote_number
+ * @property Carbon|null           $valid_until
  * @property string|null           $comments
  * @property Carbon|null           $created_at
  * @property Carbon|null           $updated_at
@@ -32,6 +33,7 @@ class Quote extends Model
     public const PAYMENT_CONDITION_ID = 'payment_condition_id';
     public const BUYER_ID = 'buyer_id';
     public const QUOTE_NUMBER = 'quote_number';
+    public const VALID_UNTIL = 'valid_until';
     public const COMMENTS = 'comments';
     public const CREATED_AT = 'created_at';
     public const UPDATED_AT = 'updated_at';
@@ -47,6 +49,9 @@ class Quote extends Model
     protected $table = self::TABLE_NAME;
     protected $guarded = [
         self::ID,
+    ];
+    protected $casts = [
+        self::VALID_UNTIL => 'date',
     ];
 
     public function budget(): BelongsTo

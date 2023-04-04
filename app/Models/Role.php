@@ -21,7 +21,7 @@ class Role extends SpatieRoleModel
     public const CREATED_AT = 'created_at';
     public const UPDATED_AT = 'updated_at';
     public const ROLE_SUPER_ADMIN = 'super_admin';
-    public const ROLE_ADMIN = 'Admin';
+    public const ROLE_ADMIN = 'admin';
     public const ROLE_USER = 'user';
     public const ROLE_BUYER = 'buyer';
     public const ROLE_SELLER = 'seller';

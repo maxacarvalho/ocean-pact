@@ -12,31 +12,31 @@ class QuoteItemPolicy
 
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_quote::item') || $user->can('view_any_quote_item');
+        return $user->can('view_any_quote::item') || $user->can('view_any_quote_item') || $user->can('view_any_quote');
     }
 
-    public function view(User $user, QuoteItem $paymentCondition): bool
+    public function view(User $user, QuoteItem $quoteItem): bool
     {
-        return $user->can('view_quote::item') || $user->can('view_quote_item');
+        return $user->can('view_quote::item') || $user->can('view_quote_item') || $user->can('view_quote');
     }
 
     public function create(User $user): bool
     {
-        return $user->can('create_quote::item') || $user->can('create_quote_item');
+        return $user->can('create_quote::item') || $user->can('create_quote_item') || $user->can('create_quote');
     }
 
-    public function update(User $user, QuoteItem $paymentCondition): bool
+    public function update(User $user, QuoteItem $quoteItem): bool
     {
-        return $user->can('update_quote::item') || $user->can('update_quote_item');
+        return $user->can('update_quote::item') || $user->can('update_quote_item') || $user->can('update_quote');
     }
 
-    public function delete(User $user, QuoteItem $paymentCondition): bool
+    public function delete(User $user, QuoteItem $quoteItem): bool
     {
-        return $user->can('delete_quote::item') || $user->can('delete_quote_item');
+        return $user->can('delete_quote::item') || $user->can('delete_quote_item') || $user->can('delete_quote');
     }
 
-    public function deleteAny(User $user, QuoteItem $paymentCondition): bool
+    public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_quote::item') || $user->can('delete_any_quote_item');
+        return $user->can('delete_any_quote::item') || $user->can('delete_any_quote_item') || $user->can('delete_any_quote');
     }
 }

@@ -2,17 +2,22 @@
 
 namespace App\Filament\Resources\QuoteResource\RelationManagers;
 
+use Akaunting\Money\Currency;
+use Akaunting\Money\Money;
 use App\Models\Product;
 use App\Models\Quote;
 use App\Models\QuoteItem;
 use App\Utils\Str;
+use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\TextInput\Mask;
 use Filament\Resources\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Resources\Table;
 use Filament\Tables;
+use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 
 class QuoteItemsRelationManager extends RelationManager
@@ -65,7 +70,25 @@ class QuoteItemsRelationManager extends RelationManager
                 TextInput::make(QuoteItem::UNIT_PRICE)
                     ->label(Str::formatTitle(__('quote_item.unit_price')))
                     ->numeric()
-                    ->required(),
+                    ->required()
+                    ->mask(fn (TextInput\Mask $mask) => $mask
+                        ->patternBlocks([
+                            'money' => fn (Mask $mask) => $mask
+                                ->numeric()
+                                ->thousandsSeparator('.')
+                                ->decimalSeparator(',')
+                                ->decimalPlaces(2)
+                                ->signed(true)
+                                ->padFractionalZeros()
+                                ->normalizeZeros(false),
+                        ])
+                        ->pattern('R$money')
+                        ->lazyPlaceholder(false)
+                    ),
+
+                Checkbox::make(QuoteItem::SHOULD_BE_QUOTED)
+                    ->label(Str::formatTitle(__('quote_item.should_be_quoted')))
+                    ->default(true),
 
                 Textarea::make(QuoteItem::COMMENTS)
                     ->label(Str::formatTitle(__('quote_item.comments')))
@@ -90,20 +113,47 @@ class QuoteItemsRelationManager extends RelationManager
                     ->label(Str::formatTitle(__('quote_item.quantity'))),
 
                 TextColumn::make(QuoteItem::UNIT_PRICE)
-                    ->label(Str::formatTitle(__('quote_item.unit_price'))),
+                    ->label(Str::formatTitle(__('quote_item.unit_price')))
+                    ->formatStateUsing(function (?string $state): ?string {
+                        $money = new Money($state, new Currency('BRL'));
+
+                        return $money->format();
+                    }),
+
+                IconColumn::make(QuoteItem::SHOULD_BE_QUOTED)->boolean(),
             ])
             ->filters([
                 //
             ])
             ->headerActions([
-                Tables\Actions\CreateAction::make(),
+                Tables\Actions\CreateAction::make()
+                    ->mutateFormDataUsing(function (array $data) {
+                        $data[QuoteItem::UNIT_PRICE] = self::makeMoney($data[QuoteItem::UNIT_PRICE])->getAmount();
+
+                        return $data;
+                    }),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()
+                    ->mutateRecordDataUsing(function (array $data) {
+                        $data[QuoteItem::UNIT_PRICE] = self::makeMoney($data[QuoteItem::UNIT_PRICE])->formatSimple();
+
+                        return $data;
+                    })
+                    ->mutateFormDataUsing(function (array $data) {
+                        $data[QuoteItem::UNIT_PRICE] = self::makeMoney($data[QuoteItem::UNIT_PRICE])->getAmount();
+
+                        return $data;
+                    }),
                 Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),
             ]);
+    }
+
+    private static function makeMoney(mixed $amount): Money
+    {
+        return new Money($amount, new Currency('BRL'));
     }
 }

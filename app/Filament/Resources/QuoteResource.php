@@ -12,6 +12,7 @@ use App\Models\Role;
 use App\Models\Supplier;
 use App\Models\User;
 use App\Utils\Str;
+use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -22,6 +23,7 @@ use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class QuoteResource extends Resource
 {
@@ -54,7 +56,8 @@ class QuoteResource extends Resource
                     ->relationship(Quote::RELATION_COMPANY, Company::CODE_BRANCH)
                     ->getOptionLabelFromRecordUsing(function (Model|Company $record) {
                         return "$record->code_branch - $record->branch";
-                    }),
+                    })
+                    ->visible(fn () => Auth::user()->hasAnyRole(Role::ROLE_ADMIN, Role::ROLE_SUPER_ADMIN)),
 
                 Select::make(Quote::SUPPLIER_ID)
                     ->label(Str::formatTitle(__('quote.supplier_id')))
@@ -80,7 +83,8 @@ class QuoteResource extends Resource
                                 $query->where(Role::NAME, Role::ROLE_BUYER);
                             });
                         }
-                    ),
+                    )
+                    ->visible(fn () => Auth::user()->hasAnyRole(Role::ROLE_ADMIN, Role::ROLE_SUPER_ADMIN)),
 
                 Select::make(Quote::BUDGET_ID)
                     ->label(Str::formatTitle(__('quote.budget_id')))
@@ -88,10 +92,16 @@ class QuoteResource extends Resource
                     ->relationship(
                         Quote::RELATION_BUDGET,
                         Budget::BUDGET_NUMBER
-                    ),
+                    )
+                    ->visible(fn () => Auth::user()->hasAnyRole(Role::ROLE_ADMIN, Role::ROLE_SUPER_ADMIN)),
 
                 TextInput::make(Quote::QUOTE_NUMBER)
                     ->label(Str::formatTitle(__('quote.quote_number')))
+                    ->required()
+                    ->visible(fn () => Auth::user()->hasAnyRole(Role::ROLE_ADMIN, Role::ROLE_SUPER_ADMIN)),
+
+                DatePicker::make(Quote::VALID_UNTIL)
+                    ->label(Str::formatTitle(__('quote.valid_until')))
                     ->required(),
 
                 Textarea::make(Quote::COMMENTS)

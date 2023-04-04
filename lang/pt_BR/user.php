@@ -6,6 +6,8 @@ return [
     'id' => 'ID',
     'name' => 'nome',
     'buyer_code' => 'código do comprador',
+    'supplier_id' => 'fornecedor',
+    'supplier' => 'fornecedor',
     'email' => 'e-mail',
     'email_verified_at' => 'verificado em',
     'password' => 'senha',
@@ -17,4 +19,5 @@ return [
     'updated_at' => 'atualizado em',
     'roles' => 'funções',
     'companies' => 'empresas',
+    'user_type' => 'tipo de usuário',
 ];
