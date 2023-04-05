@@ -7,5 +7,5 @@ return [
     Role::ROLE_ADMIN => 'Admin',
     Role::ROLE_USER => 'Usuário',
     Role::ROLE_BUYER => 'Comprador',
-    Role::ROLE_SELLER => 'Vendedor',
+    Role::ROLE_SELLER => 'Fornecedor',
 ];
