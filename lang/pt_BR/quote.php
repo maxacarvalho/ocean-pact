@@ -15,7 +15,7 @@ return [
     'buyer' => 'comprador',
     'budget_number' => 'pedido de compra',
     'quote_number' => 'cotação',
-    'valid_until' => 'válido até',
+    'valid_until' => 'cotação válida até',
     'comments' => 'observações',
     'created_at' => 'criado em',
     'updated_at' => 'atualizado em',
