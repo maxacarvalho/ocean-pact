@@ -2,9 +2,11 @@
 
 namespace App\Filament\Resources;
 
+use App\Enums\QuoteStatusEnum;
 use App\Filament\Resources\QuoteResource\Pages\CreateQuote;
 use App\Filament\Resources\QuoteResource\Pages\EditQuote;
 use App\Filament\Resources\QuoteResource\Pages\ListQuotes;
+use App\Filament\Resources\QuoteResource\Pages\ViewQuote;
 use App\Filament\Resources\QuoteResource\RelationManagers\QuoteItemsRelationManager;
 use App\Models\Budget;
 use App\Models\Company;
@@ -21,9 +23,11 @@ use Filament\Forms\Components\TextInput;
 use Filament\Resources\Form;
 use Filament\Resources\Resource;
 use Filament\Resources\Table;
-use Filament\Tables;
+use Filament\Tables\Actions\EditAction as TableEditAction;
+use Filament\Tables\Actions\ViewAction as TableViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter as TableFilter;
+use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
@@ -104,6 +108,12 @@ class QuoteResource extends Resource
                     ->required()
                     ->visible(fn () => Auth::user()->hasAnyRole(Role::ROLE_ADMIN, Role::ROLE_SUPER_ADMIN)),
 
+                Select::make(Quote::STATUS)
+                    ->label(Str::formatTitle(__('quote.status')))
+                    ->required()
+                    ->options(QuoteStatusEnum::toArray())
+                    ->visible(fn () => Auth::user()->hasAnyRole(Role::ROLE_ADMIN, Role::ROLE_SUPER_ADMIN)),
+
                 DatePicker::make(Quote::VALID_UNTIL)
                     ->label(Str::formatTitle(__('quote.valid_until')))
                     ->required()
@@ -136,6 +146,11 @@ class QuoteResource extends Resource
                     ->sortable()
                     ->searchable(),
 
+                TextColumn::make(Quote::STATUS)
+                    ->label(Str::formatTitle(__('quote.status')))
+                    ->sortable()
+                    ->formatStateUsing(fn (?string $state) => QuoteStatusEnum::from($state)->label),
+
                 TextColumn::make(Quote::CREATED_AT)
                     ->label(Str::formatTitle(__('quote.created_at')))
                     ->dateTime()
@@ -148,10 +163,10 @@ class QuoteResource extends Resource
             ])
             ->filters([
                 TableFilter::make(Quote::COMPANY_ID)
-                    ->label(Str::formatTitle(__('budget.company_id')))
+                    ->label(Str::formatTitle(__('quote.company_id')))
                     ->form([
                         Select::make(Quote::COMPANY_ID)
-                            ->label(Str::formatTitle(__('budget.company_id')))
+                            ->label(Str::formatTitle(__('quote.company_id')))
                             ->options(Company::all()->pluck(Company::CODE_BRANCH_AND_BRANCH, Company::ID)),
                     ])
                     ->query(function (Builder $query, array $data): Builder {
@@ -160,12 +175,17 @@ class QuoteResource extends Resource
                             fn (Builder $query, int $companyId): Builder => $query->where(Quote::COMPANY_ID, '=', $companyId)
                         );
                     }),
+
+                SelectFilter::make(Quote::STATUS)
+                    ->label(Str::formatTitle(__('quote.status')))
+                    ->options(QuoteStatusEnum::toArray()),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                TableEditAction::make(),
+                TableViewAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\DeleteBulkAction::make(),
+                //
             ]);
     }
 
@@ -180,6 +200,7 @@ class QuoteResource extends Resource
     {
         return [
             'index' => ListQuotes::route('/'),
+            'view' => ViewQuote::route('/{record}'),
             'create' => CreateQuote::route('/create'),
             'edit' => EditQuote::route('/{record}/edit'),
         ];

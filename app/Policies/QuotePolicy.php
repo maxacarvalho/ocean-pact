@@ -17,7 +17,7 @@ class QuotePolicy
 
     public function view(User $user, Quote $quote): bool
     {
-        return $user->can('view_quote');
+        return $user->can('view_quote') && $quote->isResponded();
     }
 
     public function create(User $user): bool
@@ -27,7 +27,7 @@ class QuotePolicy
 
     public function update(User $user, Quote $quote): bool
     {
-        return $user->can('update_quote');
+        return $user->can('update_quote') && $quote->canBeResponded();
     }
 
     public function delete(User $user, Quote $quote): bool

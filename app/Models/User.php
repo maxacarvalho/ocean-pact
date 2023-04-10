@@ -88,6 +88,20 @@ class User extends Authenticatable implements FilamentUser
         );
     }
 
+    public function isSeller(): bool
+    {
+        return $this->hasRole(
+            Role::ROLE_SELLER
+        );
+    }
+
+    public function isBuyer(): bool
+    {
+        return $this->hasRole(
+            Role::ROLE_BUYER
+        );
+    }
+
     public function canAccessFilament(): bool
     {
         return true;

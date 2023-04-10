@@ -18,13 +18,12 @@ use Filament\Forms\Components\TextInput\Mask;
 use Filament\Resources\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Resources\Table;
-use Filament\Tables\Actions\CreateAction as TableCreateAction;
-use Filament\Tables\Actions\DeleteAction as TableDeleteAction;
-use Filament\Tables\Actions\DeleteBulkAction as TableDeleteBulkAction;
 use Filament\Tables\Actions\EditAction as TableEditAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\Relation;
 
 class QuoteItemsRelationManager extends RelationManager
 {
@@ -146,12 +145,7 @@ class QuoteItemsRelationManager extends RelationManager
                 //
             ])
             ->headerActions([
-                TableCreateAction::make()
-                    ->mutateFormDataUsing(function (array $data) {
-                        $data[QuoteItem::UNIT_PRICE] = self::makeMoney($data[QuoteItem::UNIT_PRICE])->getAmount();
-
-                        return $data;
-                    }),
+                //
             ])
             ->actions([
                 TableEditAction::make()
@@ -167,15 +161,19 @@ class QuoteItemsRelationManager extends RelationManager
 
                         return $data;
                     }),
-                TableDeleteAction::make(),
             ])
             ->bulkActions([
-                TableDeleteBulkAction::make(),
+                //
             ]);
     }
 
     private static function makeMoney(mixed $amount): Money
     {
         return new Money($amount, new Currency('BRL'));
+    }
+
+    protected function getTableQuery(): Builder|Relation
+    {
+        return parent::getTableQuery()->with(QuoteItem::RELATION_QUOTE);
     }
 }
