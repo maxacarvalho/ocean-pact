@@ -17,7 +17,8 @@ class QuoteItemPolicy
 
     public function view(User $user, QuoteItem $quoteItem): bool
     {
-        return $user->can('view_quote::item') || $user->can('view_quote_item') || $user->can('view_quote');
+        return ($user->can('view_quote::item') || $user->can('view_quote_item') || $user->can('view_quote'))
+            && $quoteItem->quote->isResponded();
     }
 
     public function create(User $user): bool
@@ -27,7 +28,9 @@ class QuoteItemPolicy
 
     public function update(User $user, QuoteItem $quoteItem): bool
     {
-        return $user->can('update_quote::item') || $user->can('update_quote_item') || $user->can('update_quote');
+        return
+            ($user->can('update_quote::item') || $user->can('update_quote_item') || $user->can('update_quote'))
+            && $quoteItem->quote->canBeResponded();
     }
 
     public function delete(User $user, QuoteItem $quoteItem): bool

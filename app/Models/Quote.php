@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\QuoteStatusEnum;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -14,6 +15,7 @@ use Illuminate\Support\Carbon;
  * @property string                $budget_number
  * @property string                $quote_number
  * @property Carbon|null           $valid_until
+ * @property QuoteStatusEnum       $status
  * @property string|null           $comments
  * @property Carbon|null           $created_at
  * @property Carbon|null           $updated_at
@@ -34,6 +36,7 @@ class Quote extends Model
     public const BUYER_ID = 'buyer_id';
     public const QUOTE_NUMBER = 'quote_number';
     public const VALID_UNTIL = 'valid_until';
+    public const STATUS = 'status';
     public const COMMENTS = 'comments';
     public const CREATED_AT = 'created_at';
     public const UPDATED_AT = 'updated_at';
@@ -51,6 +54,7 @@ class Quote extends Model
         self::ID,
     ];
     protected $casts = [
+        self::STATUS => QuoteStatusEnum::class,
         self::VALID_UNTIL => 'date',
     ];
 
@@ -85,5 +89,15 @@ class Quote extends Model
     public function items(): HasMany
     {
         return $this->hasMany(QuoteItem::class);
+    }
+
+    public function isResponded(): bool
+    {
+        return $this->status->equals(QuoteStatusEnum::RESPONDED());
+    }
+
+    public function canBeResponded(): bool
+    {
+        return ! $this->status->equals(QuoteStatusEnum::RESPONDED());
     }
 }
