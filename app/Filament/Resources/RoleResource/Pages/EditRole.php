@@ -5,7 +5,7 @@ namespace App\Filament\Resources\RoleResource\Pages;
 use App\Filament\Resources\RoleResource;
 use App\Utils\Str;
 use BezhanSalleh\FilamentShield\Support\Utils;
-use Filament\Pages\Actions;
+use Filament\Pages\Actions\DeleteAction as PageDeleteAction;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
@@ -19,7 +19,7 @@ class EditRole extends EditRecord
     protected function getActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
+            PageDeleteAction::make(),
         ];
     }
 

@@ -19,4 +19,6 @@ return [
     'comments' => 'observações',
     'created_at' => 'criado em',
     'updated_at' => 'atualizado em',
+    'form_save_action_label' => 'enviar cotação',
+    'form_save_action_confirmation' => 'Você tem certeza que gostaria de fazer isso? Não será possível editar a cotação após o envio.',
 ];

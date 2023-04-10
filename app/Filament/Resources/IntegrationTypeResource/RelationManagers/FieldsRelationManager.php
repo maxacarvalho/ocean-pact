@@ -6,11 +6,19 @@ use App\Enums\IntegrationTypeFieldTypeEnum;
 use App\Models\IntegrationTypeField;
 use App\Utils\Str;
 use Closure;
-use Filament\Forms;
+use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Resources\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Resources\Table;
-use Filament\Tables;
+use Filament\Tables\Actions\CreateAction as TableCreateAction;
+use Filament\Tables\Actions\DeleteAction as TableDeleteAction;
+use Filament\Tables\Actions\DeleteBulkAction as TableDeleteBulkAction;
+use Filament\Tables\Actions\EditAction as TableEditAction;
+use Filament\Tables\Columns\TextColumn;
 use Illuminate\Support\HtmlString;
 
 class FieldsRelationManager extends RelationManager
@@ -38,20 +46,20 @@ class FieldsRelationManager extends RelationManager
     {
         return $form
             ->schema([
-                Forms\Components\Section::make(Str::formatTitle(__('integration_type_field.general')))
+                Section::make(Str::formatTitle(__('integration_type_field.general')))
                     ->collapsible()
                     ->schema([
-                        Forms\Components\TextInput::make(IntegrationTypeField::FIELD_NAME)
+                        TextInput::make(IntegrationTypeField::FIELD_NAME)
                             ->label(Str::formatTitle(__('integration_type_field.field_name')))
                             ->required(),
-                        Forms\Components\Select::make(IntegrationTypeField::FIELD_TYPE)
+                        Select::make(IntegrationTypeField::FIELD_TYPE)
                             ->label(Str::formatTitle(__('integration_type_field.field_type')))
                             ->required()
                             ->reactive()
                             ->options(IntegrationTypeFieldTypeEnum::toArray()),
                     ]),
 
-                Forms\Components\Section::make(Str::formatTitle(__('integration_type_field.rules')))
+                Section::make(Str::formatTitle(__('integration_type_field.rules')))
                     ->collapsible()
                     ->collapsed(function (Closure $get) {
                         return is_null($get(IntegrationTypeField::FIELD_TYPE));
@@ -60,43 +68,43 @@ class FieldsRelationManager extends RelationManager
                         return is_null($get(IntegrationTypeField::FIELD_TYPE));
                     })
                     ->schema([
-                        Forms\Components\Grid::make(3)
+                        Grid::make(3)
                             ->schema([
-                                Forms\Components\Toggle::make(IntegrationTypeField::FIELD_RULES.'.required')
+                                Toggle::make(IntegrationTypeField::FIELD_RULES.'.required')
                                     ->label(Str::formatTitle(__('integration_type_field.required')))
                                     ->default(true),
 
-                                Forms\Components\Toggle::make(IntegrationTypeField::FIELD_RULES.'.array')
+                                Toggle::make(IntegrationTypeField::FIELD_RULES.'.array')
                                     ->label(Str::formatTitle(__('integration_type_field.array'))),
 
-                                Forms\Components\Toggle::make(IntegrationTypeField::FIELD_RULES.'.email')
+                                Toggle::make(IntegrationTypeField::FIELD_RULES.'.email')
                                     ->label(Str::formatTitle(__('integration_type_field.email'))),
 
-                                Forms\Components\Toggle::make(IntegrationTypeField::FIELD_RULES.'.alpha')
+                                Toggle::make(IntegrationTypeField::FIELD_RULES.'.alpha')
                                     ->label(Str::formatTitle(__('integration_type_field.alpha'))),
 
-                                Forms\Components\Toggle::make(IntegrationTypeField::FIELD_RULES.'.alpha_num')
+                                Toggle::make(IntegrationTypeField::FIELD_RULES.'.alpha_num')
                                     ->label(Str::formatTitle(__('integration_type_field.alpha_num'))),
 
-                                Forms\Components\Toggle::make(IntegrationTypeField::FIELD_RULES.'.alpha_dash')
+                                Toggle::make(IntegrationTypeField::FIELD_RULES.'.alpha_dash')
                                     ->label(Str::formatTitle(__('integration_type_field.alpha_dash'))),
 
-                                Forms\Components\Toggle::make(IntegrationTypeField::FIELD_RULES.'.nullable')
+                                Toggle::make(IntegrationTypeField::FIELD_RULES.'.nullable')
                                     ->label(Str::formatTitle(__('integration_type_field.nullable'))),
 
-                                Forms\Components\Toggle::make(IntegrationTypeField::FIELD_RULES.'.present')
+                                Toggle::make(IntegrationTypeField::FIELD_RULES.'.present')
                                     ->label(Str::formatTitle(__('integration_type_field.present'))),
 
-                                Forms\Components\Toggle::make(IntegrationTypeField::FIELD_RULES.'.lowercase')
+                                Toggle::make(IntegrationTypeField::FIELD_RULES.'.lowercase')
                                     ->label(Str::formatTitle(__('integration_type_field.lowercase'))),
 
-                                Forms\Components\Toggle::make(IntegrationTypeField::FIELD_RULES.'.uppercase')
+                                Toggle::make(IntegrationTypeField::FIELD_RULES.'.uppercase')
                                     ->label(Str::formatTitle(__('integration_type_field.uppercase'))),
                             ]),
 
-                        Forms\Components\Grid::make(2)
+                        Grid::make(2)
                             ->schema([
-                                Forms\Components\TextInput::make(IntegrationTypeField::FIELD_RULES.'.date_format')
+                                TextInput::make(IntegrationTypeField::FIELD_RULES.'.date_format')
                                     ->label(Str::formatTitle(__('integration_type_field.date_format')))
                                     ->helperText(function () {
                                         return new HtmlString('<a href="https://www.php.net/manual/pt_BR/datetime.formats.php" target="_blank">'.Str::lcfirst(__('integration_type_field.date_format_helper_text')).'</a>');
@@ -118,15 +126,15 @@ class FieldsRelationManager extends RelationManager
                                         return false;
                                     }),
 
-                                Forms\Components\TextInput::make(IntegrationTypeField::FIELD_RULES.'.starts_with')
+                                TextInput::make(IntegrationTypeField::FIELD_RULES.'.starts_with')
                                     ->label(Str::formatTitle(__('integration_type_field.starts_with')))
                                     ->helperText(Str::lcfirst(__('integration_type_field.starts_with_helper_text'))),
 
-                                Forms\Components\TextInput::make(IntegrationTypeField::FIELD_RULES.'.digits')
+                                TextInput::make(IntegrationTypeField::FIELD_RULES.'.digits')
                                     ->label(Str::formatTitle(__('integration_type_field.digits')))
                                     ->numeric(),
 
-                                Forms\Components\TextInput::make(IntegrationTypeField::FIELD_RULES.'.digits_between')
+                                TextInput::make(IntegrationTypeField::FIELD_RULES.'.digits_between')
                                     ->label(Str::formatTitle(__('integration_type_field.digits_between')))
                                     ->helperText(Str::lcfirst(__('integration_type_field.digits_between_helper_text')))
                                     ->regex('/^([0-9]+),([0-9]+)$/'),
@@ -140,23 +148,23 @@ class FieldsRelationManager extends RelationManager
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make(IntegrationTypeField::FIELD_NAME)
+                TextColumn::make(IntegrationTypeField::FIELD_NAME)
                     ->label(__('integration_type_field.FieldName')),
-                Tables\Columns\TextColumn::make(IntegrationTypeField::FIELD_TYPE)
+                TextColumn::make(IntegrationTypeField::FIELD_TYPE)
                     ->label(__('integration_type_field.FieldType')),
             ])
             ->filters([
                 //
             ])
             ->headerActions([
-                Tables\Actions\CreateAction::make()->mutateFormDataUsing(fn (array $data) => self::prepareData($data)),
+                TableCreateAction::make()->mutateFormDataUsing(fn (array $data) => self::prepareData($data)),
             ])
             ->actions([
-                Tables\Actions\EditAction::make()->mutateFormDataUsing(fn (array $data) => self::prepareData($data)),
-                Tables\Actions\DeleteAction::make(),
+                TableEditAction::make()->mutateFormDataUsing(fn (array $data) => self::prepareData($data)),
+                TableDeleteAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\DeleteBulkAction::make(),
+                TableDeleteBulkAction::make(),
             ]);
     }
 

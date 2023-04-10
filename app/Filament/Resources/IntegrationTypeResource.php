@@ -4,7 +4,9 @@ namespace App\Filament\Resources;
 
 use App\Enums\IntegrationHandlingTypeEnum;
 use App\Enums\IntegrationTypeEnum;
-use App\Filament\Resources\IntegrationTypeResource\Pages;
+use App\Filament\Resources\IntegrationTypeResource\Pages\CreateIntegrationType;
+use App\Filament\Resources\IntegrationTypeResource\Pages\EditIntegrationType;
+use App\Filament\Resources\IntegrationTypeResource\Pages\ListIntegrationTypes;
 use App\Filament\Resources\IntegrationTypeResource\RelationManagers\FieldsRelationManager;
 use App\Models\Company;
 use App\Models\IntegrationType;
@@ -14,7 +16,10 @@ use Filament\Forms\Components\TextInput;
 use Filament\Resources\Form;
 use Filament\Resources\Resource;
 use Filament\Resources\Table;
-use Filament\Tables;
+use Filament\Tables\Actions\DeleteBulkAction as TableDeleteBulkAction;
+use Filament\Tables\Actions\EditAction as TableEditAction;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Support\Collection;
 
 class IntegrationTypeResource extends Resource
@@ -46,23 +51,28 @@ class IntegrationTypeResource extends Resource
                     ->rules(['nullable', 'string', 'alpha_dash'])
                     ->label(Str::formatTitle(__('integration_type.code')))
                     ->helperText(Str::formatTitle(__('integration_type.code_helper_text'))),
+
                 Select::make(IntegrationType::COMPANY_ID)
                     ->required()
                     ->options(self::getCompanyOptions())
                     ->default(0)
                     ->label(Str::formatTitle(__('integration_type.company')))
                     ->preload(),
+
                 TextInput::make(IntegrationType::DESCRIPTION)
                     ->required()
                     ->label(Str::formatTitle(__('integration_type.description'))),
+
                 Select::make(IntegrationType::TYPE)
                     ->required()
                     ->options(IntegrationTypeEnum::toArray())
                     ->label(Str::formatTitle(__('integration_type.type'))),
+
                 Select::make(IntegrationType::HANDLING_TYPE)
                     ->required()
                     ->options(IntegrationHandlingTypeEnum::toArray())
                     ->label(Str::formatTitle(__('integration_type.handling_type'))),
+
                 TextInput::make(IntegrationType::TARGET_URL)
                     ->required()
                     ->url()
@@ -74,25 +84,46 @@ class IntegrationTypeResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make(IntegrationType::CODE)
-                    ->label(Str::formatTitle(__('integration_type.code'))),
-                Tables\Columns\TextColumn::make(IntegrationType::DESCRIPTION)
-                    ->label(Str::formatTitle(__('integration_type.description'))),
-                Tables\Columns\TextColumn::make(IntegrationType::TYPE)
-                    ->label(Str::formatTitle(__('integration_type.type'))),
-                Tables\Columns\TextColumn::make(IntegrationType::HANDLING_TYPE)
-                    ->label(Str::formatTitle(__('integration_type.handling_type'))),
-                Tables\Columns\TextColumn::make(IntegrationType::TARGET_URL)
-                    ->label(Str::formatTitle(__('integration_type.target_url'))),
+                TextColumn::make(IntegrationType::CODE)
+                    ->label(Str::formatTitle(__('integration_type.code')))
+                    ->sortable()
+                    ->searchable(),
+
+                TextColumn::make(IntegrationType::DESCRIPTION)
+                    ->label(Str::formatTitle(__('integration_type.description')))
+                    ->sortable()
+                    ->searchable(),
+
+                TextColumn::make(IntegrationType::TYPE)
+                    ->label(Str::formatTitle(__('integration_type.type')))
+                    ->sortable()
+                    ->searchable(),
+
+                TextColumn::make(IntegrationType::HANDLING_TYPE)
+                    ->label(Str::formatTitle(__('integration_type.handling_type')))
+                    ->formatStateUsing(fn ($state) => IntegrationHandlingTypeEnum::from($state)->label)
+                    ->sortable()
+                    ->searchable(),
+
+                TextColumn::make(IntegrationType::TARGET_URL)
+                    ->label(Str::formatTitle(__('integration_type.target_url')))
+                    ->sortable()
+                    ->searchable(),
             ])
             ->filters([
-                //
+                SelectFilter::make(IntegrationType::CODE)
+                    ->label(Str::formatTitle(__('integration_type.handling_type')))
+                    ->options(fn () => IntegrationType::query()->pluck(IntegrationType::CODE, IntegrationType::CODE)),
+
+                SelectFilter::make(IntegrationType::HANDLING_TYPE)
+                    ->label(Str::formatTitle(__('integration_type.handling_type')))
+                    ->options(IntegrationHandlingTypeEnum::toArray()),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                TableEditAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\DeleteBulkAction::make(),
+                TableDeleteBulkAction::make(),
             ]);
     }
 
@@ -106,9 +137,9 @@ class IntegrationTypeResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListIntegrationTypes::route('/'),
-            'create' => Pages\CreateIntegrationType::route('/create'),
-            'edit' => Pages\EditIntegrationType::route('/{record}/edit'),
+            'index' => ListIntegrationTypes::route('/'),
+            'create' => CreateIntegrationType::route('/create'),
+            'edit' => EditIntegrationType::route('/{record}/edit'),
         ];
     }
 

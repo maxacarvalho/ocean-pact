@@ -2,7 +2,9 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\ProductResource\Pages;
+use App\Filament\Resources\ProductResource\Pages\CreateProduct;
+use App\Filament\Resources\ProductResource\Pages\EditProduct;
+use App\Filament\Resources\ProductResource\Pages\ListProducts;
 use App\Models\Company;
 use App\Models\Product;
 use App\Utils\Str;
@@ -11,8 +13,12 @@ use Filament\Forms\Components\Select;
 use Filament\Resources\Form;
 use Filament\Resources\Resource;
 use Filament\Resources\Table;
-use Filament\Tables;
+use Filament\Tables\Actions\DeleteBulkAction as TableDeleteBulkAction;
+use Filament\Tables\Actions\EditAction as TableEditAction;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter as TableFilter;
+use Filament\Tables\Filters\SelectFilter;
+use Illuminate\Contracts\Database\Query\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 class ProductResource extends Resource
@@ -66,11 +72,12 @@ class ProductResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make(Product::RELATION_COMPANY.'.'.Company::CODE_BRANCH)
-                    ->label(Str::formatTitle(__('company.code_branch'))),
-
-                TextColumn::make(Product::RELATION_COMPANY.'.'.Company::BRANCH)
-                    ->label(Str::formatTitle(__('company.branch'))),
+                TextColumn::make('company_info')
+                    ->label(Str::formatTitle(__('product.company')))
+                    ->sortable([Company::CODE_BRANCH, Company::BRANCH])
+                    ->formatStateUsing(function (?string $state, Model|Product|Company $record): ?string {
+                        return "{$record->code_branch} {$record->branch}";
+                    }),
 
                 TextColumn::make(Product::CODE)
                     ->label(Str::formatTitle(__('product.code')))
@@ -88,13 +95,29 @@ class ProductResource extends Resource
                     ->sortable(),
             ])
             ->filters([
-                //
+                TableFilter::make(Product::COMPANY_ID)
+                    ->label(Str::formatTitle(__('budget.company_id')))
+                    ->form([
+                        Select::make(Product::COMPANY_ID)
+                            ->label(Str::formatTitle(__('budget.company_id')))
+                            ->options(Company::all()->pluck(Company::CODE_BRANCH_AND_BRANCH, Company::ID)),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query->when(
+                            $data[Product::COMPANY_ID],
+                            fn (Builder $query, int $companyId): Builder => $query->where(Product::COMPANY_ID, '=', $companyId)
+                        );
+                    }),
+
+                SelectFilter::make(Product::MEASUREMENT_UNIT)
+                    ->label(Str::formatTitle(__('product.measurement_unit')))
+                    ->options(Product::all()->pluck(Product::MEASUREMENT_UNIT, Product::MEASUREMENT_UNIT)->unique()),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                TableEditAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\DeleteBulkAction::make(),
+                TableDeleteBulkAction::make(),
             ]);
     }
 
@@ -108,9 +131,9 @@ class ProductResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListProducts::route('/'),
-            'create' => Pages\CreateProduct::route('/create'),
-            'edit' => Pages\EditProduct::route('/{record}/edit'),
+            'index' => ListProducts::route('/'),
+            'create' => CreateProduct::route('/create'),
+            'edit' => EditProduct::route('/{record}/edit'),
         ];
     }
 

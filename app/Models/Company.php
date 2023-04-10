@@ -31,6 +31,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @property string|null            $cnae
  * @property Carbon|null            $created_at
  * @property Carbon|null            $updated_at
+ * // Virtual
+ * @property-read string            $codeBranchAndBranch
+ * // Relations
  * @property-read User[]|Collection $users
  */
 class Company extends Model
@@ -60,11 +63,24 @@ class Company extends Model
     public const CREATED_AT = 'created_at';
     public const UPDATED_AT = 'updated_at';
 
+    // Virtual
+    public const CODE_BRANCH_AND_BRANCH = 'codeBranchAndBranch';
+
+    // Relations
+    public const RELATION_USERS = 'users';
+
     protected $table = self::TABLE_NAME;
 
     protected $guarded = [
         self::ID,
     ];
+
+    protected function codeBranchAndBranch(): Attribute
+    {
+        return Attribute::make(
+            get: fn (mixed $value, array $attributes) => "{$attributes[self::CODE_BRANCH]} {$attributes[self::BRANCH]}"
+        );
+    }
 
     protected function cnpjCpf(): Attribute
     {

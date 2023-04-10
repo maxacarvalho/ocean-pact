@@ -5,15 +5,25 @@ namespace App\Filament\Resources;
 use App\Enums\PayloadProcessingStatusEnum;
 use App\Enums\PayloadStoringStatusEnum;
 use App\Filament\Plugins\FilamentSimpleHighlightField\HighlightField;
-use App\Filament\Resources\PayloadResource\Pages;
+use App\Filament\Resources\PayloadResource\Pages\ListPayloads;
+use App\Filament\Resources\PayloadResource\Pages\ViewPayload;
 use App\Filament\Resources\PayloadResource\RelationManagers\ProcessingAttemptsRelationManager;
+use App\Models\IntegrationType;
 use App\Models\Payload;
 use App\Utils\Str;
-use Filament\Forms;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
 use Filament\Resources\Form;
 use Filament\Resources\Resource;
 use Filament\Resources\Table;
-use Filament\Tables;
+use Filament\Tables\Actions\DeleteBulkAction as TableDeleteBulkAction;
+use Filament\Tables\Actions\ViewAction as TableViewAction;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter as TableFilter;
+use Filament\Tables\Filters\SelectFilter;
+use Illuminate\Contracts\Database\Query\Builder;
+use Illuminate\Support\Carbon;
 
 class PayloadResource extends Resource
 {
@@ -40,21 +50,23 @@ class PayloadResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Select::make(Payload::INTEGRATION_TYPE_ID)
+                Select::make(Payload::INTEGRATION_TYPE_ID)
+                    ->label(Str::formatTitle(__('integration_type.integration_type')))
                     ->required()
                     ->relationship('integrationType', 'code')
-                    ->label(Str::formatTitle(__('integration_type.integration_type')))
                     ->preload(),
-                Forms\Components\Textarea::make(Payload::PAYLOAD)
+
+                Textarea::make(Payload::PAYLOAD)
+                    ->label(Str::formatTitle(__('payload.payload')))
                     ->required()
                     ->json()
-                    ->label(Str::formatTitle(__('payload.payload')))
                     ->columnSpanFull()
                     ->hiddenOn('view'),
+
                 HighlightField::make(Payload::PAYLOAD)
+                    ->label(Str::formatTitle(__('payload.payload')))
                     ->required()
                     ->json()
-                    ->label(Str::formatTitle(__('payload.payload')))
                     ->columnSpanFull()
                     ->hiddenOn('create'),
             ]);
@@ -64,32 +76,94 @@ class PayloadResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('integrationType.code')
+                TextColumn::make(Payload::RELATION_INTEGRATION_TYPE.'.'.IntegrationType::CODE)
                     ->label(Str::formatTitle(__('integration_type.integration_type'))),
-                Tables\Columns\TextColumn::make(Payload::STORED_AT)
-                    ->dateTime()
-                    ->label(Str::formatTitle(__('payload.stored_at'))),
-                Tables\Columns\TextColumn::make(Payload::STORING_STATUS)
-                    ->formatStateUsing(fn (string $state): string => PayloadStoringStatusEnum::from($state)->label)
-                    ->label(Str::formatTitle(__('payload.stored_status'))),
-                Tables\Columns\TextColumn::make(Payload::PROCESSED_AT)
-                    ->dateTime()
-                    ->label(Str::formatTitle(__('payload.processed_at'))),
-                Tables\Columns\TextColumn::make(Payload::PROCESSING_STATUS)
-                    ->formatStateUsing(fn (?string $state): ?string => $state !== null ? PayloadProcessingStatusEnum::from($state)->label : null)
-                    ->label(Str::formatTitle(__('payload.processed_status'))),
-                Tables\Columns\TextColumn::make('processing_attempts_count')
-                    ->counts('processingAttempts')
-                    ->label(Str::formatTitle(__('payload.attempts_count'))),
+
+                TextColumn::make(Payload::STORED_AT)
+                    ->label(Str::formatTitle(__('payload.stored_at')))
+                    ->dateTime(),
+
+                TextColumn::make(Payload::STORING_STATUS)
+                    ->label(Str::formatTitle(__('payload.stored_status')))
+                    ->formatStateUsing(fn (string $state): string => PayloadStoringStatusEnum::from($state)->label),
+
+                TextColumn::make(Payload::PROCESSED_AT)
+                    ->label(Str::formatTitle(__('payload.processed_at')))
+                    ->dateTime(),
+
+                TextColumn::make(Payload::PROCESSING_STATUS)
+                    ->label(Str::formatTitle(__('payload.processed_status')))
+                    ->formatStateUsing(fn (?string $state): ?string => $state !== null ? PayloadProcessingStatusEnum::from($state)->label : null),
+
+                TextColumn::make('processing_attempts_count')
+                    ->label(Str::formatTitle(__('payload.attempts_count')))
+                    ->counts('processingAttempts'),
             ])
             ->filters([
-                //
+                SelectFilter::make(Payload::RELATION_INTEGRATION_TYPE)
+                    ->label(Str::formatTitle(__('integration_type.integration_type')))
+                    ->relationship('integrationType', 'code'),
+
+                TableFilter::make(Payload::STORED_AT)
+                    ->label(Str::formatTitle(__('payload.stored_at')))
+                    ->indicateUsing(function (array $data) {
+                        $stored_at_from = $data['stored_at_from'];
+                        $stored_at_until = $data['stored_at_until'];
+
+                        if ($stored_at_from !== null && $stored_at_until !== null) {
+                            return Str::ucfirst(__('payload.received_between', [
+                                'from' => Carbon::parse($stored_at_from)->toFormattedDateString(),
+                                'until' => Carbon::parse($stored_at_until)->toFormattedDateString(),
+                            ]));
+                        }
+
+                        if (null !== $stored_at_from) {
+                            return Str::ucfirst(__('payload.received_from', [
+                                'date' => Carbon::parse($stored_at_from)->toFormattedDateString(),
+                            ]));
+                        }
+
+                        if (null !== $stored_at_until) {
+                            return Str::ucfirst(__('payload.received_until', [
+                                'date' => Carbon::parse($stored_at_until)->toFormattedDateString(),
+                            ]));
+                        }
+
+                        return null;
+                    })
+                    ->form([
+                        DatePicker::make('stored_at_from')
+                            ->label(Str::formatTitle(__('payload.stored_at_from'))),
+                        DatePicker::make('stored_at_until')
+                            ->label(Str::formatTitle(__('payload.stored_at_until'))),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['stored_at_from'],
+                                fn (Builder $query, $from): Builder => $query
+                                    ->whereDate(Payload::STORED_AT, '>=', $from)
+                            )
+                            ->when(
+                                $data['stored_at_until'],
+                                fn (Builder $query, $until): Builder => $query
+                                    ->whereDate(Payload::STORED_AT, '<=', $until)
+                            );
+                    }),
+
+                SelectFilter::make(Payload::STORING_STATUS)
+                    ->label(Str::formatTitle(__('payload.stored_status')))
+                    ->options(PayloadStoringStatusEnum::toArray()),
+
+                SelectFilter::make(Payload::PROCESSING_STATUS)
+                    ->label(Str::formatTitle(__('payload.processed_status')))
+                    ->options(PayloadProcessingStatusEnum::toArray()),
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
+                TableViewAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\DeleteBulkAction::make(),
+                TableDeleteBulkAction::make(),
             ]);
     }
 
@@ -103,8 +177,8 @@ class PayloadResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListPayloads::route('/'),
-            'view' => Pages\ViewPayload::route('/{record}'),
+            'index' => ListPayloads::route('/'),
+            'view' => ViewPayload::route('/{record}'),
         ];
     }
 }

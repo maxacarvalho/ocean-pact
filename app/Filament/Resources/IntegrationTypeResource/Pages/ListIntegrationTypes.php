@@ -3,7 +3,7 @@
 namespace App\Filament\Resources\IntegrationTypeResource\Pages;
 
 use App\Filament\Resources\IntegrationTypeResource;
-use Filament\Pages\Actions;
+use Filament\Pages\Actions\CreateAction as PageCreateAction;
 use Filament\Resources\Pages\ListRecords;
 
 class ListIntegrationTypes extends ListRecords
@@ -13,7 +13,17 @@ class ListIntegrationTypes extends ListRecords
     protected function getActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            PageCreateAction::make(),
         ];
+    }
+
+    protected function shouldPersistTableFiltersInSession(): bool
+    {
+        return true;
+    }
+
+    protected function shouldPersistTableSortInSession(): bool
+    {
+        return true;
     }
 }

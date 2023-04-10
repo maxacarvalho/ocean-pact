@@ -2,7 +2,9 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\PaymentConditionResource\Pages;
+use App\Filament\Resources\PaymentConditionResource\Pages\CreatePaymentCondition;
+use App\Filament\Resources\PaymentConditionResource\Pages\EditPaymentCondition;
+use App\Filament\Resources\PaymentConditionResource\Pages\ListPaymentConditions;
 use App\Models\Company;
 use App\Models\PaymentCondition;
 use App\Utils\Str;
@@ -11,7 +13,11 @@ use Filament\Forms\Components\TextInput;
 use Filament\Resources\Form;
 use Filament\Resources\Resource;
 use Filament\Resources\Table;
-use Filament\Tables;
+use Filament\Tables\Actions\DeleteBulkAction as TableDeleteBulkAction;
+use Filament\Tables\Actions\EditAction as TableEditAction;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter as TableFilter;
+use Illuminate\Contracts\Database\Query\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 class PaymentConditionResource extends Resource
@@ -39,8 +45,8 @@ class PaymentConditionResource extends Resource
     {
         return $form
             ->schema([
-                Select::make(PaymentCondition::COMPANY_CODE_BRANCH)
-                    ->label(Str::formatTitle(__('payment_condition.branch')))
+                Select::make(PaymentCondition::COMPANY_ID)
+                    ->label(Str::formatTitle(__('payment_condition.company_id')))
                     ->relationship(PaymentCondition::RELATION_COMPANY, Company::CODE_BRANCH)
                     ->getOptionLabelFromRecordUsing(function (Model|Company $record) {
                         return "$record->code_branch - $record->branch";
@@ -70,28 +76,48 @@ class PaymentConditionResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('company')
-                    ->label(Str::formatTitle(__('payment_condition.branch')))
-                    ->getStateUsing(function (Model|PaymentCondition $record) {
-                        return null !== $record->company
-                            ? "{$record->company->code_branch} - {$record->company->branch}"
-                            : '';
+                TextColumn::make('company_info')
+                    ->label(Str::formatTitle(__('payment_condition.company')))
+                    ->sortable([Company::CODE_BRANCH, Company::BRANCH])
+                    ->formatStateUsing(function (?string $state, Model|PaymentCondition|Company $record): ?string {
+                        return "{$record->code_branch} {$record->branch}";
                     }),
-                Tables\Columns\TextColumn::make(PaymentCondition::CODE)
-                    ->label(Str::formatTitle(__('payment_condition.code'))),
-                Tables\Columns\TextColumn::make(PaymentCondition::CONDITION)
-                    ->label(Str::formatTitle(__('payment_condition.condition'))),
-                Tables\Columns\TextColumn::make(PaymentCondition::DESCRIPTION)
-                    ->label(Str::formatTitle(__('payment_condition.description'))),
+
+                TextColumn::make(PaymentCondition::CODE)
+                    ->label(Str::formatTitle(__('payment_condition.code')))
+                    ->sortable()
+                    ->searchable(),
+
+                TextColumn::make(PaymentCondition::CONDITION)
+                    ->label(Str::formatTitle(__('payment_condition.condition')))
+                    ->sortable()
+                    ->searchable(),
+
+                TextColumn::make(PaymentCondition::DESCRIPTION)
+                    ->label(Str::formatTitle(__('payment_condition.description')))
+                    ->sortable()
+                    ->searchable(),
             ])
             ->filters([
-                //
+                TableFilter::make(PaymentCondition::COMPANY_ID)
+                    ->label(Str::formatTitle(__('budget.company_id')))
+                    ->form([
+                        Select::make(PaymentCondition::COMPANY_ID)
+                            ->label(Str::formatTitle(__('budget.company_id')))
+                            ->options(Company::all()->pluck(Company::CODE_BRANCH_AND_BRANCH, Company::ID)),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query->when(
+                            $data[PaymentCondition::COMPANY_ID],
+                            fn (Builder $query, int $companyId): Builder => $query->where(PaymentCondition::COMPANY_ID, '=', $companyId)
+                        );
+                    }),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                TableEditAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\DeleteBulkAction::make(),
+                TableDeleteBulkAction::make(),
             ]);
     }
 
@@ -105,9 +131,9 @@ class PaymentConditionResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListPaymentConditions::route('/'),
-            'create' => Pages\CreatePaymentCondition::route('/create'),
-            'edit' => Pages\EditPaymentCondition::route('/{record}/edit'),
+            'index' => ListPaymentConditions::route('/'),
+            'create' => CreatePaymentCondition::route('/create'),
+            'edit' => EditPaymentCondition::route('/{record}/edit'),
         ];
     }
 

@@ -2,7 +2,9 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\QuoteResource\Pages;
+use App\Filament\Resources\QuoteResource\Pages\CreateQuote;
+use App\Filament\Resources\QuoteResource\Pages\EditQuote;
+use App\Filament\Resources\QuoteResource\Pages\ListQuotes;
 use App\Filament\Resources\QuoteResource\RelationManagers\QuoteItemsRelationManager;
 use App\Models\Budget;
 use App\Models\Company;
@@ -21,6 +23,7 @@ use Filament\Resources\Resource;
 use Filament\Resources\Table;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter as TableFilter;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
@@ -62,7 +65,8 @@ class QuoteResource extends Resource
                 Select::make(Quote::SUPPLIER_ID)
                     ->label(Str::formatTitle(__('quote.supplier_id')))
                     ->required()
-                    ->relationship(Quote::RELATION_SUPPLIER, Supplier::NAME),
+                    ->relationship(Quote::RELATION_SUPPLIER, Supplier::NAME)
+                    ->visible(fn () => Auth::user()->hasAnyRole(Role::ROLE_ADMIN, Role::ROLE_SUPER_ADMIN)),
 
                 Select::make(Quote::PAYMENT_CONDITION_ID)
                     ->label(Str::formatTitle(__('quote.payment_condition_id')))
@@ -115,28 +119,47 @@ class QuoteResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make(Quote::RELATION_COMPANY.'.'.Company::CODE_BRANCH)
-                    ->label(Str::formatTitle(__('company.code_branch'))),
-
-                TextColumn::make(Quote::RELATION_COMPANY.'.'.Company::BRANCH)
-                    ->label(Str::formatTitle(__('company.branch'))),
+                TextColumn::make('company_info')
+                    ->label(Str::formatTitle(__('quote.company_id')))
+                    ->sortable([Company::CODE_BRANCH, Company::BRANCH])
+                    ->formatStateUsing(function (?string $state, Model|Quote|Company $record): ?string {
+                        return "{$record->code_branch} {$record->branch}";
+                    }),
 
                 TextColumn::make(Quote::RELATION_BUDGET.'.'.Budget::BUDGET_NUMBER)
-                    ->label(Str::formatTitle(__('quote.budget_number'))),
+                    ->label(Str::formatTitle(__('quote.budget_number')))
+                    ->sortable()
+                    ->searchable(),
 
                 TextColumn::make(Quote::QUOTE_NUMBER)
-                    ->label(Str::formatTitle(__('quote.quote_number'))),
+                    ->label(Str::formatTitle(__('quote.quote_number')))
+                    ->sortable()
+                    ->searchable(),
 
                 TextColumn::make(Quote::CREATED_AT)
                     ->label(Str::formatTitle(__('quote.created_at')))
-                    ->dateTime(),
+                    ->dateTime()
+                    ->sortable(),
 
                 TextColumn::make(Quote::UPDATED_AT)
                     ->label(Str::formatTitle(__('quote.updated_at')))
-                    ->dateTime(),
+                    ->dateTime()
+                    ->sortable(),
             ])
             ->filters([
-                //
+                TableFilter::make(Quote::COMPANY_ID)
+                    ->label(Str::formatTitle(__('budget.company_id')))
+                    ->form([
+                        Select::make(Quote::COMPANY_ID)
+                            ->label(Str::formatTitle(__('budget.company_id')))
+                            ->options(Company::all()->pluck(Company::CODE_BRANCH_AND_BRANCH, Company::ID)),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query->when(
+                            $data[Quote::COMPANY_ID],
+                            fn (Builder $query, int $companyId): Builder => $query->where(Quote::COMPANY_ID, '=', $companyId)
+                        );
+                    }),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
@@ -156,9 +179,9 @@ class QuoteResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListQuotes::route('/'),
-            'create' => Pages\CreateQuote::route('/create'),
-            'edit' => Pages\EditQuote::route('/{record}/edit'),
+            'index' => ListQuotes::route('/'),
+            'create' => CreateQuote::route('/create'),
+            'edit' => EditQuote::route('/{record}/edit'),
         ];
     }
 

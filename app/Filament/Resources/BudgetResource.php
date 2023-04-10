@@ -3,7 +3,9 @@
 namespace App\Filament\Resources;
 
 use App\Enums\BudgetStatusEnum;
-use App\Filament\Resources\BudgetResource\Pages;
+use App\Filament\Resources\BudgetResource\Pages\CreateBudget;
+use App\Filament\Resources\BudgetResource\Pages\EditBudget;
+use App\Filament\Resources\BudgetResource\Pages\ListBudgets;
 use App\Models\Budget;
 use App\Models\Company;
 use App\Utils\Str;
@@ -12,7 +14,12 @@ use Filament\Forms\Components\TextInput;
 use Filament\Resources\Form;
 use Filament\Resources\Resource;
 use Filament\Resources\Table;
-use Filament\Tables;
+use Filament\Tables\Actions\DeleteBulkAction as TableDeleteBulkAction;
+use Filament\Tables\Actions\EditAction as TableEditAction;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter as TableFilter;
+use Filament\Tables\Filters\SelectFilter;
+use Illuminate\Contracts\Database\Query\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 class BudgetResource extends Resource
@@ -63,35 +70,47 @@ class BudgetResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make(Budget::RELATION_COMPANY.'.'.Company::CODE_BRANCH)
-                    ->label(Str::formatTitle(__('company.code_branch')))
-                    ->sortable()
-                    ->searchable(),
+                TextColumn::make('company_info')
+                    ->label(Str::formatTitle(__('budget.company_id')))
+                    ->sortable([Company::CODE_BRANCH, Company::BRANCH])
+                    ->formatStateUsing(function (?string $state, Model|Budget|Company $record): ?string {
+                        return "{$record->code_branch} {$record->branch}";
+                    }),
 
-                Tables\Columns\TextColumn::make(Budget::RELATION_COMPANY.'.'.Company::BRANCH)
-                    ->label(Str::formatTitle(__('company.branch')))
-                    ->sortable()
-                    ->searchable(),
-
-                Tables\Columns\TextColumn::make(Budget::BUDGET_NUMBER)
+                TextColumn::make(Budget::BUDGET_NUMBER)
                     ->label(Str::formatTitle(__('budget.budget_number')))
                     ->sortable()
                     ->searchable(),
 
-                Tables\Columns\TextColumn::make(Budget::STATUS)
+                TextColumn::make(Budget::STATUS)
                     ->label(Str::formatTitle(__('budget.status')))
                     ->sortable()
-                    ->searchable()
                     ->formatStateUsing(fn (?string $state): ?string => $state !== null ? BudgetStatusEnum::from($state)->label : null),
             ])
             ->filters([
-                //
+                TableFilter::make(Budget::COMPANY_ID)
+                    ->label(Str::formatTitle(__('budget.company_id')))
+                    ->form([
+                        Select::make(Budget::COMPANY_ID)
+                            ->label(Str::formatTitle(__('budget.company_id')))
+                            ->options(Company::all()->pluck(Company::CODE_BRANCH_AND_BRANCH, Company::ID)),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query->when(
+                            $data[Budget::COMPANY_ID],
+                            fn (Builder $query, int $companyId): Builder => $query->where(Budget::COMPANY_ID, '=', $companyId)
+                        );
+                    }),
+
+                SelectFilter::make(Budget::STATUS)
+                    ->label(Str::formatTitle(__('budget.status')))
+                    ->options(BudgetStatusEnum::toArray()),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                TableEditAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\DeleteBulkAction::make(),
+                TableDeleteBulkAction::make(),
             ]);
     }
 
@@ -105,9 +124,9 @@ class BudgetResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListBudgets::route('/'),
-            'create' => Pages\CreateBudget::route('/create'),
-            'edit' => Pages\EditBudget::route('/{record}/edit'),
+            'index' => ListBudgets::route('/'),
+            'create' => CreateBudget::route('/create'),
+            'edit' => EditBudget::route('/{record}/edit'),
         ];
     }
 

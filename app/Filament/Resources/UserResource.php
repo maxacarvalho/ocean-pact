@@ -2,7 +2,9 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\UserResource\Pages;
+use App\Filament\Resources\UserResource\Pages\CreateUser;
+use App\Filament\Resources\UserResource\Pages\EditUser;
+use App\Filament\Resources\UserResource\Pages\ListUsers;
 use App\Filament\Resources\UserResource\RelationManagers\CompaniesRelationManager;
 use App\Models\Company;
 use App\Models\Role;
@@ -15,7 +17,9 @@ use Filament\Forms\Components\TextInput;
 use Filament\Resources\Form;
 use Filament\Resources\Resource;
 use Filament\Resources\Table;
-use Filament\Tables;
+use Filament\Tables\Actions\DeleteBulkAction as TableDeleteBulkAction;
+use Filament\Tables\Actions\EditAction as TableEditAction;
+use Filament\Tables\Columns\TextColumn;
 use Illuminate\Database\Eloquent\Model;
 use STS\FilamentImpersonate\Impersonate;
 
@@ -116,14 +120,17 @@ class UserResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make(User::NAME)
+                TextColumn::make(User::NAME)
                     ->label(Str::formatTitle(__('user.name'))),
-                Tables\Columns\TextColumn::make(User::EMAIL)
+
+                TextColumn::make(User::EMAIL)
                     ->label(Str::formatTitle(__('user.email'))),
-                Tables\Columns\TextColumn::make(User::CREATED_AT)
+
+                TextColumn::make(User::CREATED_AT)
                     ->label(Str::formatTitle(__('user.created_at')))
                     ->dateTime(),
-                Tables\Columns\TextColumn::make(User::UPDATED_AT)
+
+                TextColumn::make(User::UPDATED_AT)
                     ->label(Str::formatTitle(__('user.updated_at')))
                     ->dateTime(),
             ])
@@ -132,10 +139,10 @@ class UserResource extends Resource
             ])
             ->actions([
                 Impersonate::make('impersonate')->label(Str::formatTitle(__('impersonate'))),
-                Tables\Actions\EditAction::make(),
+                TableEditAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\DeleteBulkAction::make(),
+                TableDeleteBulkAction::make(),
             ]);
     }
 
@@ -149,9 +156,9 @@ class UserResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListUsers::route('/'),
-            'create' => Pages\CreateUser::route('/create'),
-            'edit' => Pages\EditUser::route('/{record}/edit'),
+            'index' => ListUsers::route('/'),
+            'create' => CreateUser::route('/create'),
+            'edit' => EditUser::route('/{record}/edit'),
         ];
     }
 }

@@ -12,13 +12,13 @@ return new class extends Migration
     {
         Schema::create(PaymentCondition::TABLE_NAME, function (Blueprint $table) {
             $table->id();
-            $table->string(PaymentCondition::COMPANY_CODE_BRANCH, 10)->nullable()->index();
+            $table->string('company_branch_code', 10)->nullable()->index();
             $table->string(PaymentCondition::CODE, 3)->index();
             $table->string(PaymentCondition::CONDITION, 40);
             $table->string(PaymentCondition::DESCRIPTION, 15);
             $table->timestamps();
 
-            $table->foreign(PaymentCondition::COMPANY_CODE_BRANCH)
+            $table->foreign('company_branch_code')
                 ->references(Company::CODE_BRANCH)
                 ->on(Company::TABLE_NAME)
                 ->nullOnDelete();

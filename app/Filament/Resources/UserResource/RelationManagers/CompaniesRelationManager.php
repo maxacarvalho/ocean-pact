@@ -4,11 +4,14 @@ namespace App\Filament\Resources\UserResource\RelationManagers;
 
 use App\Models\Company;
 use App\Utils\Str;
-use Filament\Forms;
+use Filament\Forms\Components\TextInput;
 use Filament\Resources\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Resources\Table;
-use Filament\Tables;
+use Filament\Tables\Actions\AttachAction as TableAttachAction;
+use Filament\Tables\Actions\DetachAction as TableDetachAction;
+use Filament\Tables\Actions\DetachBulkAction as TableDetachBulkAction;
+use Filament\Tables\Columns\TextColumn;
 
 class CompaniesRelationManager extends RelationManager
 {
@@ -30,7 +33,7 @@ class CompaniesRelationManager extends RelationManager
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make(Company::BRANCH)
+                TextInput::make(Company::BRANCH)
                     ->required()
                     ->maxLength(255),
             ]);
@@ -40,24 +43,26 @@ class CompaniesRelationManager extends RelationManager
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make(Company::CODE)
+                TextColumn::make(Company::CODE)
                     ->label(Str::formatTitle(__('company.code'))),
-                Tables\Columns\TextColumn::make(Company::BRANCH)
+
+                TextColumn::make(Company::BRANCH)
                     ->label(Str::formatTitle(__('company.branch'))),
-                Tables\Columns\TextColumn::make(Company::NAME)
+
+                TextColumn::make(Company::NAME)
                     ->label(Str::formatTitle(__('company.name'))),
             ])
             ->filters([
                 //
             ])
             ->headerActions([
-                Tables\Actions\AttachAction::make(),
+                TableAttachAction::make(),
             ])
             ->actions([
-                Tables\Actions\DetachAction::make(),
+                TableDetachAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\DetachBulkAction::make(),
+                TableDetachBulkAction::make(),
             ]);
     }
 }
