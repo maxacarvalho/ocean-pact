@@ -2,7 +2,9 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\SupplierResource\Pages;
+use App\Filament\Resources\SupplierResource\Pages\CreateSupplier;
+use App\Filament\Resources\SupplierResource\Pages\EditSupplier;
+use App\Filament\Resources\SupplierResource\Pages\ListSuppliers;
 use App\Models\Company;
 use App\Models\Supplier;
 use App\Rules\CnpjRule;
@@ -13,7 +15,10 @@ use Filament\Forms\Components\TextInput;
 use Filament\Resources\Form;
 use Filament\Resources\Resource;
 use Filament\Resources\Table;
-use Filament\Tables;
+use Filament\Tables\Actions\EditAction as TableEditAction;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter as TableFilter;
+use Illuminate\Contracts\Database\Query\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 class SupplierResource extends Resource
@@ -98,22 +103,50 @@ class SupplierResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('company.branch')
-                    ->label(Str::formatTitle(__('supplier.branch'))),
-                Tables\Columns\TextColumn::make(Supplier::CODE)
-                    ->label(Str::formatTitle(__('supplier.code'))),
-                Tables\Columns\TextColumn::make(Supplier::STORE)
-                    ->label(Str::formatTitle(__('supplier.store'))),
-                Tables\Columns\TextColumn::make(Supplier::CNPJ_CPF)
-                    ->label(Str::formatTitle(__('supplier.cnpj_cpf'))),
-                Tables\Columns\TextColumn::make(Supplier::NAME)
-                    ->label(Str::formatTitle(__('supplier.name'))),
+                TextColumn::make('company_info')
+                    ->label(Str::formatTitle(__('supplier.company_id')))
+                    ->sortable([Company::CODE_BRANCH, Company::BRANCH])
+                    ->formatStateUsing(function (?string $state, Model|Supplier|Company $record): ?string {
+                        return "{$record->code_branch} {$record->branch}";
+                    }),
+
+                TextColumn::make(Supplier::CODE)
+                    ->label(Str::formatTitle(__('supplier.code')))
+                    ->sortable()
+                    ->searchable(),
+
+                TextColumn::make(Supplier::STORE)
+                    ->label(Str::formatTitle(__('supplier.store')))
+                    ->sortable()
+                    ->searchable(),
+
+                TextColumn::make(Supplier::CNPJ_CPF)
+                    ->label(Str::formatTitle(__('supplier.cnpj_cpf')))
+                    ->sortable()
+                    ->searchable(),
+
+                TextColumn::make(Supplier::NAME)
+                    ->label(Str::formatTitle(__('supplier.name')))
+                    ->sortable()
+                    ->searchable(),
             ])
             ->filters([
-                //
+                TableFilter::make(Supplier::COMPANY_ID)
+                    ->label(Str::formatTitle(__('budget.company_id')))
+                    ->form([
+                        Select::make(Supplier::COMPANY_ID)
+                            ->label(Str::formatTitle(__('budget.company_id')))
+                            ->options(Company::all()->pluck(Company::CODE_BRANCH_AND_BRANCH, Company::ID)),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query->when(
+                            $data[Supplier::COMPANY_ID],
+                            fn (Builder $query, int $companyId): Builder => $query->where(Supplier::COMPANY_ID, '=', $companyId)
+                        );
+                    }),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                TableEditAction::make(),
             ])
             ->bulkActions([
                 //
@@ -130,9 +163,9 @@ class SupplierResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListSuppliers::route('/'),
-            'create' => Pages\CreateSupplier::route('/create'),
-            'edit' => Pages\EditSupplier::route('/{record}/edit'),
+            'index' => ListSuppliers::route('/'),
+            'create' => CreateSupplier::route('/create'),
+            'edit' => EditSupplier::route('/{record}/edit'),
         ];
     }
 

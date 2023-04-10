@@ -15,6 +15,7 @@ use Illuminate\Support\Carbon;
  * @property string       $item
  * @property int          $quantity
  * @property int          $unit_price
+ * @property Carbon|null  $delivery_date
  * @property bool         $should_be_quoted
  * @property string|null  $comments
  * @property Carbon|null  $created_at
@@ -33,6 +34,7 @@ class QuoteItem extends Model
     public const ITEM = 'item';
     public const QUANTITY = 'quantity';
     public const UNIT_PRICE = 'unit_price';
+    public const DELIVERY_DATE = 'delivery_date';
     public const SHOULD_BE_QUOTED = 'should_be_quoted';
     public const COMMENTS = 'comments';
     public const CREATED_AT = 'created_at';
@@ -47,6 +49,7 @@ class QuoteItem extends Model
         self::ID,
     ];
     protected $casts = [
+        self::DELIVERY_DATE => 'date',
         self::SHOULD_BE_QUOTED => 'boolean',
     ];
 

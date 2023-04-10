@@ -5,11 +5,11 @@ namespace App\Filament\Resources\PayloadResource\RelationManagers;
 use App\Enums\PayloadProcessingAttemptsStatusEnum;
 use App\Models\PayloadProcessingAttempt;
 use App\Utils\Str;
-use Filament\Forms;
+use Filament\Forms\Components\TextInput;
 use Filament\Resources\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Resources\Table;
-use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
 
 class ProcessingAttemptsRelationManager extends RelationManager
 {
@@ -37,7 +37,7 @@ class ProcessingAttemptsRelationManager extends RelationManager
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('status')
+                TextInput::make('status')
                     ->required()
                     ->maxLength(255),
             ]);
@@ -47,12 +47,12 @@ class ProcessingAttemptsRelationManager extends RelationManager
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make(PayloadProcessingAttempt::STATUS)
+                TextColumn::make(PayloadProcessingAttempt::STATUS)
                     ->formatStateUsing(fn (?string $state): ?string => $state !== null ? PayloadProcessingAttemptsStatusEnum::from($state)->label : null)
                     ->label(Str::formatTitle(__('payload_processing_attempt.status'))),
-                Tables\Columns\TextColumn::make(PayloadProcessingAttempt::MESSAGE)
+                TextColumn::make(PayloadProcessingAttempt::MESSAGE)
                     ->label(Str::formatTitle(__('payload_processing_attempt.message'))),
-                Tables\Columns\TextColumn::make(PayloadProcessingAttempt::CREATED_AT)
+                TextColumn::make(PayloadProcessingAttempt::CREATED_AT)
                     ->dateTime()
                     ->label(Str::formatTitle(__('payload_processing_attempt.created_at'))),
             ])

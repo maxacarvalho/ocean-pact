@@ -8,7 +8,7 @@ use Illuminate\Support\Carbon;
 
 /**
  * @property int               $id
- * @property string|null       $company_branch_code
+ * @property int|null          $company_id
  * @property string            $code
  * @property string            $condition
  * @property string            $description
@@ -20,7 +20,7 @@ class PaymentCondition extends Model
 {
     public const TABLE_NAME = 'payment_conditions';
     public const ID = 'id';
-    public const COMPANY_CODE_BRANCH = 'company_branch_code';
+    public const COMPANY_ID = 'company_id';
     public const CODE = 'code';
     public const CONDITION = 'condition';
     public const DESCRIPTION = 'description';
@@ -39,7 +39,7 @@ class PaymentCondition extends Model
     {
         return $this->belongsTo(
             Company::class,
-            self::COMPANY_CODE_BRANCH,
+            self::COMPANY_ID,
             Company::CODE_BRANCH
         );
     }

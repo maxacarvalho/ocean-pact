@@ -3,7 +3,9 @@
 namespace App\Filament\Resources\QuoteResource\Pages;
 
 use App\Filament\Resources\QuoteResource;
-use Filament\Pages\Actions;
+use App\Utils\Str;
+use Filament\Pages\Actions\Action;
+use Filament\Pages\Actions\DeleteAction as PageDeleteAction;
 use Filament\Resources\Pages\EditRecord;
 
 class EditQuote extends EditRecord
@@ -13,7 +15,17 @@ class EditQuote extends EditRecord
     protected function getActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
+            PageDeleteAction::make(),
         ];
+    }
+
+    protected function getSaveFormAction(): Action
+    {
+        return
+            Action::make('send_quote')
+                ->label(Str::formatTitle(__('quote.form_save_action_label')))
+                ->action(fn () => $this->save())
+                ->requiresConfirmation()
+                ->modalSubheading(Str::ucfirst(__('quote.form_save_action_confirmation')));
     }
 }

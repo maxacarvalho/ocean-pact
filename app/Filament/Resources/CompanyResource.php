@@ -2,7 +2,9 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\CompanyResource\Pages;
+use App\Filament\Resources\CompanyResource\Pages\CreateCompany;
+use App\Filament\Resources\CompanyResource\Pages\EditCompany;
+use App\Filament\Resources\CompanyResource\Pages\ListCompanies;
 use App\Forms\Components\CnpjCpf;
 use App\Models\Company;
 use App\Utils\Str;
@@ -10,7 +12,8 @@ use Filament\Forms\Components\TextInput;
 use Filament\Resources\Form;
 use Filament\Resources\Resource;
 use Filament\Resources\Table;
-use Filament\Tables;
+use Filament\Tables\Actions\EditAction as TableEditAction;
+use Filament\Tables\Columns\TextColumn;
 
 class CompanyResource extends Resource
 {
@@ -42,26 +45,33 @@ class CompanyResource extends Resource
                     ->required()
                     ->minLength(1)
                     ->maxLength(6),
+
                 TextInput::make(Company::CODE_BRANCH)
                     ->label(Str::formatTitle(__('company.code_branch')))
                     ->required()
                     ->minLength(1)
                     ->maxLength(6),
+
                 TextInput::make(Company::BRANCH)
                     ->label(Str::formatTitle(__('company.branch')))
                     ->required()
                     ->minLength(1)
                     ->maxLength(2),
+
                 TextInput::make(Company::NAME)
                     ->label(Str::formatTitle(__('company.name')))
                     ->required(),
+
                 TextInput::make(Company::BUSINESS_NAME)
                     ->label(Str::formatTitle(__('company.business_name')))
                     ->required(),
+
                 TextInput::make(Company::PHONE_NUMBER)
                     ->label(Str::formatTitle(__('company.phone_number'))),
+
                 TextInput::make(Company::FAX_NUMBER)
                     ->label(Str::formatTitle(__('company.fax_number'))),
+
                 CnpjCpf::make(Company::CNPJ_CPF)
                     ->label(Str::formatTitle(__('company.cnpj_cpf')))
                     ->rule('min:14')
@@ -70,26 +80,36 @@ class CompanyResource extends Resource
                     ->dehydrateStateUsing(function (string $state): string {
                         return preg_replace('/\D/', '', $state);
                     }),
+
                 TextInput::make(Company::STATE_INSCRIPTION)
                     ->label(Str::formatTitle(__('company.state_inscription'))),
+
                 TextInput::make(Company::INSCM)
                     ->label(Str::formatTitle(__('company.inscm'))),
+
                 TextInput::make(Company::ADDRESS)
                     ->label(Str::formatTitle(__('company.address')))
                     ->required(),
+
                 TextInput::make(Company::COMPLEMENT)
                     ->label(Str::formatTitle(__('company.complement'))),
+
                 TextInput::make(Company::NEIGHBORHOOD)
                     ->label(Str::formatTitle(__('company.neighborhood'))),
+
                 TextInput::make(Company::CITY)
                     ->label(Str::formatTitle(__('company.city'))),
+
                 TextInput::make(Company::STATE)
                     ->label(Str::formatTitle(__('company.state'))),
+
                 TextInput::make(Company::POSTAL_CODE)
                     ->label(Str::formatTitle(__('company.postal_code')))
                     ->mask(fn (TextInput\Mask $mask) => $mask->pattern('00000-000')),
+
                 TextInput::make(Company::CITY_CODE)
                     ->label(Str::formatTitle(__('company.city_code'))),
+
                 TextInput::make(Company::CNAE)
                     ->label(Str::formatTitle(__('company.cnae'))),
             ]);
@@ -99,22 +119,36 @@ class CompanyResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make(Company::CODE)
-                    ->label(Str::formatTitle(__('company.code'))),
-                Tables\Columns\TextColumn::make(Company::CODE_BRANCH)
-                    ->label(Str::formatTitle(__('company.code_branch'))),
-                Tables\Columns\TextColumn::make(Company::BRANCH)
-                    ->label(Str::formatTitle(__('company.branch'))),
-                Tables\Columns\TextColumn::make(Company::CNPJ_CPF)
-                    ->label(Str::formatTitle(__('company.cnpj_cpf'))),
-                Tables\Columns\TextColumn::make(Company::NAME)
-                    ->label(Str::formatTitle(__('company.name'))),
+                TextColumn::make(Company::CODE)
+                    ->label(Str::formatTitle(__('company.code')))
+                    ->sortable()
+                    ->searchable(),
+
+                TextColumn::make(Company::CODE_BRANCH)
+                    ->label(Str::formatTitle(__('company.code_branch')))
+                    ->sortable()
+                    ->searchable(),
+
+                TextColumn::make(Company::BRANCH)
+                    ->label(Str::formatTitle(__('company.branch')))
+                    ->sortable()
+                    ->searchable(),
+
+                TextColumn::make(Company::CNPJ_CPF)
+                    ->label(Str::formatTitle(__('company.cnpj_cpf')))
+                    ->sortable()
+                    ->searchable(),
+
+                TextColumn::make(Company::NAME)
+                    ->label(Str::formatTitle(__('company.name')))
+                    ->sortable()
+                    ->searchable(),
             ])
             ->filters([
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                TableEditAction::make(),
             ])
             ->bulkActions([
                 //
@@ -131,9 +165,9 @@ class CompanyResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListCompanies::route('/'),
-            'create' => Pages\CreateCompany::route('/create'),
-            'edit' => Pages\EditCompany::route('/{record}/edit'),
+            'index' => ListCompanies::route('/'),
+            'create' => CreateCompany::route('/create'),
+            'edit' => EditCompany::route('/{record}/edit'),
         ];
     }
 }

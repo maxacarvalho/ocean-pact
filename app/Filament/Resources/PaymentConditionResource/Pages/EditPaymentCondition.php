@@ -3,7 +3,7 @@
 namespace App\Filament\Resources\PaymentConditionResource\Pages;
 
 use App\Filament\Resources\PaymentConditionResource;
-use Filament\Pages\Actions;
+use Filament\Pages\Actions\DeleteAction as PageDeleteAction;
 use Filament\Resources\Pages\EditRecord;
 
 class EditPaymentCondition extends EditRecord
@@ -13,7 +13,7 @@ class EditPaymentCondition extends EditRecord
     protected function getActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
+            PageDeleteAction::make(),
         ];
     }
 }

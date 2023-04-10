@@ -16,4 +16,10 @@ return [
     'payload_already_collected' => 'envelope já coletado',
     'payload_already_collected_detail' => 'envelope com id `:payload_id` já coletado anteriormente.',
     'attempts_count' => 'n de tentativas',
+    'stored_at_from' => 'recebido de',
+    'stored_at_until' => 'recebido até',
+    'received' => 'recebido ',
+    'received_between' => 'recebido entre :from e :until',
+    'received_from' => 'recebido a partir de :date',
+    'received_until' => 'recebido até :date',
 ];

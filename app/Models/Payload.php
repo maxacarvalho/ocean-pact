@@ -34,6 +34,10 @@ class Payload extends Model
     public const CREATED_AT = 'created_at';
     public const UPDATED_AT = 'updated_at';
 
+    // Relations
+    public const RELATION_INTEGRATION_TYPE = 'integrationType';
+    public const RELATION_PROCESSING_ATTEMPTS = 'processingAttempts';
+
     protected $table = self::TABLE_NAME;
 
     protected $guarded = [

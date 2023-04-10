@@ -4,21 +4,27 @@ namespace App\Filament\Resources\QuoteResource\RelationManagers;
 
 use Akaunting\Money\Currency;
 use Akaunting\Money\Money;
-use App\Models\Product;
 use App\Models\Quote;
 use App\Models\QuoteItem;
 use App\Utils\Str;
+use Closure;
 use Filament\Forms\Components\Checkbox;
-use Filament\Forms\Components\Select;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\TextInput\Mask;
 use Filament\Resources\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Resources\Table;
-use Filament\Tables;
+use Filament\Tables\Actions\CreateAction as TableCreateAction;
+use Filament\Tables\Actions\DeleteAction as TableDeleteAction;
+use Filament\Tables\Actions\DeleteBulkAction as TableDeleteBulkAction;
+use Filament\Tables\Actions\EditAction as TableEditAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
+use Illuminate\Database\Eloquent\Model;
 
 class QuoteItemsRelationManager extends RelationManager
 {
@@ -45,51 +51,59 @@ class QuoteItemsRelationManager extends RelationManager
     {
         return $form
             ->schema([
-                Select::make(QuoteItem::PRODUCT_ID)
-                    ->label(Str::formatTitle(__('quote_item.product_id')))
-                    ->relationship(QuoteItem::RELATION_PRODUCT, Product::DESCRIPTION)
-                    ->required(),
-
-                TextInput::make(QuoteItem::DESCRIPTION)
-                    ->label(Str::formatTitle(__('quote_item.description')))
-                    ->required(),
-
-                TextInput::make(QuoteItem::MEASUREMENT_UNIT)
-                    ->label(Str::formatTitle(__('quote_item.measurement_unit')))
-                    ->required(),
-
-                TextInput::make(QuoteItem::ITEM)
+                Placeholder::make(QuoteItem::ITEM)
                     ->label(Str::formatTitle(__('quote_item.item')))
-                    ->required(),
+                    ->content(fn (Model|QuoteItem $record) => $record->item),
 
-                TextInput::make(QuoteItem::QUANTITY)
-                    ->label(Str::formatTitle(__('quote_item.quantity')))
-                    ->numeric()
-                    ->required(),
+                Placeholder::make(QuoteItem::PRODUCT_ID)
+                    ->label(Str::formatTitle(__('quote_item.product_id')))
+                    ->content(fn (Model|QuoteItem $record) => $record->product->description),
 
-                TextInput::make(QuoteItem::UNIT_PRICE)
-                    ->label(Str::formatTitle(__('quote_item.unit_price')))
-                    ->numeric()
-                    ->required()
-                    ->default(0)
-                    ->mask(fn (TextInput\Mask $mask) => $mask
-                        ->patternBlocks([
-                            'money' => fn (Mask $mask) => $mask
-                                ->numeric()
-                                ->thousandsSeparator('.')
-                                ->decimalSeparator(',')
-                                ->decimalPlaces(2)
-                                ->signed(true)
-                                ->padFractionalZeros()
-                                ->normalizeZeros(false),
-                        ])
-                        ->pattern('R$money')
-                        ->lazyPlaceholder(false)
-                    ),
+                Placeholder::make(QuoteItem::DESCRIPTION)
+                    ->label(Str::formatTitle(__('quote_item.description')))
+                    ->content(fn (Model|QuoteItem $record) => $record->description),
+
+                Placeholder::make(QuoteItem::MEASUREMENT_UNIT)
+                    ->label(Str::formatTitle(__('quote_item.measurement_unit')))
+                    ->content(fn (Model|QuoteItem $record) => $record->measurement_unit),
+
+                Grid::make(3)
+                    ->schema([
+                        TextInput::make(QuoteItem::QUANTITY)
+                            ->label(Str::formatTitle(__('quote_item.quantity')))
+                            ->numeric()
+                            ->required(fn (Closure $get) => $get(QuoteItem::SHOULD_BE_QUOTED)),
+
+                        TextInput::make(QuoteItem::UNIT_PRICE)
+                            ->label(Str::formatTitle(__('quote_item.unit_price')))
+                            ->required(fn (Closure $get) => $get(QuoteItem::SHOULD_BE_QUOTED))
+                            ->default(0)
+                            ->mask(fn (TextInput\Mask $mask) => $mask
+                                ->patternBlocks([
+                                    'money' => fn (Mask $mask) => $mask
+                                        ->numeric()
+                                        ->decimalPlaces(2)
+                                        ->decimalSeparator(',')
+                                        ->mapToDecimalSeparator([','])
+                                        ->signed(true)
+                                        ->normalizeZeros()
+                                        ->padFractionalZeros()
+                                        ->thousandsSeparator('.'),
+                                ])
+                                ->pattern('R$money')
+                                ->lazyPlaceholder(false)
+                            ),
+
+                        DatePicker::make(QuoteItem::DELIVERY_DATE)
+                            ->label(Str::formatTitle(__('quote_item.delivery_date')))
+                            ->required(fn (Closure $get) => $get(QuoteItem::SHOULD_BE_QUOTED)),
+                    ])
+                    ->columnSpanFull(),
 
                 Checkbox::make(QuoteItem::SHOULD_BE_QUOTED)
                     ->label(Str::formatTitle(__('quote_item.should_be_quoted')))
-                    ->default(true),
+                    ->default(true)
+                    ->reactive(),
 
                 Textarea::make(QuoteItem::COMMENTS)
                     ->label(Str::formatTitle(__('quote_item.comments')))
@@ -101,17 +115,17 @@ class QuoteItemsRelationManager extends RelationManager
     {
         return $table
             ->columns([
-                TextColumn::make(QuoteItem::DESCRIPTION)
-                    ->label(Str::formatTitle(__('quote_item.description'))),
+                TextColumn::make(QuoteItem::ITEM)
+                    ->label(Str::formatTitle(__('quote_item.item'))),
 
                 TextColumn::make(QuoteItem::MEASUREMENT_UNIT)
                     ->label(Str::formatTitle(__('quote_item.measurement_unit'))),
 
-                TextColumn::make(QuoteItem::ITEM)
-                    ->label(Str::formatTitle(__('quote_item.item'))),
-
                 TextColumn::make(QuoteItem::QUANTITY)
                     ->label(Str::formatTitle(__('quote_item.quantity'))),
+
+                TextColumn::make(QuoteItem::DESCRIPTION)
+                    ->label(Str::formatTitle(__('quote_item.description'))),
 
                 TextColumn::make(QuoteItem::UNIT_PRICE)
                     ->label(Str::formatTitle(__('quote_item.unit_price')))
@@ -121,13 +135,18 @@ class QuoteItemsRelationManager extends RelationManager
                         return $money->format();
                     }),
 
-                IconColumn::make(QuoteItem::SHOULD_BE_QUOTED)->boolean(),
+                TextColumn::make(QuoteItem::DELIVERY_DATE)
+                    ->label(Str::formatTitle(__('quote_item.delivery_date')))
+                    ->date(),
+
+                IconColumn::make(QuoteItem::SHOULD_BE_QUOTED)->boolean()
+                    ->label(Str::formatTitle(__('quote_item.should_be_quoted'))),
             ])
             ->filters([
                 //
             ])
             ->headerActions([
-                Tables\Actions\CreateAction::make()
+                TableCreateAction::make()
                     ->mutateFormDataUsing(function (array $data) {
                         $data[QuoteItem::UNIT_PRICE] = self::makeMoney($data[QuoteItem::UNIT_PRICE])->getAmount();
 
@@ -135,7 +154,7 @@ class QuoteItemsRelationManager extends RelationManager
                     }),
             ])
             ->actions([
-                Tables\Actions\EditAction::make()
+                TableEditAction::make()
                     ->mutateRecordDataUsing(function (array $data) {
                         $data[QuoteItem::UNIT_PRICE] = self::makeMoney($data[QuoteItem::UNIT_PRICE])->formatSimple();
 
@@ -148,10 +167,10 @@ class QuoteItemsRelationManager extends RelationManager
 
                         return $data;
                     }),
-                Tables\Actions\DeleteAction::make(),
+                TableDeleteAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\DeleteBulkAction::make(),
+                TableDeleteBulkAction::make(),
             ]);
     }
 

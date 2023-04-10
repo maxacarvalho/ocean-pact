@@ -5,6 +5,8 @@ return [
     'payment_condition' => 'condição de pagamento',
     'branch' => 'filial',
     'ID' => 'ID',
+    'company_id' => 'empresa',
+    'company' => 'empresa',
     'code' => 'código',
     'condition' => 'condição',
     'description' => 'descrição',

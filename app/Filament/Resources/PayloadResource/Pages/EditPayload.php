@@ -3,7 +3,7 @@
 namespace App\Filament\Resources\PayloadResource\Pages;
 
 use App\Filament\Resources\PayloadResource;
-use Filament\Pages\Actions;
+use Filament\Pages\Actions\DeleteAction as PageDeleteAction;
 use Filament\Resources\Pages\EditRecord;
 
 class EditPayload extends EditRecord
@@ -13,7 +13,7 @@ class EditPayload extends EditRecord
     protected function getActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
+            PageDeleteAction::make(),
         ];
     }
 }
