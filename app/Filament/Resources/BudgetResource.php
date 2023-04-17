@@ -93,7 +93,7 @@ class BudgetResource extends Resource
                     ->form([
                         Select::make(Budget::COMPANY_ID)
                             ->label(Str::formatTitle(__('budget.company_id')))
-                            ->options(Company::all()->pluck(Company::CODE_BRANCH_AND_BRANCH, Company::ID)),
+                            ->options(fn () => Company::all()->pluck(Company::CODE_BRANCH_AND_BRANCH, Company::ID)),
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query->when(
@@ -104,7 +104,7 @@ class BudgetResource extends Resource
 
                 SelectFilter::make(Budget::STATUS)
                     ->label(Str::formatTitle(__('budget.status')))
-                    ->options(BudgetStatusEnum::toArray()),
+                    ->options(fn () => BudgetStatusEnum::toArray()),
             ])
             ->actions([
                 TableEditAction::make(),

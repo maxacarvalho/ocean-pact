@@ -153,11 +153,11 @@ class PayloadResource extends Resource
 
                 SelectFilter::make(Payload::STORING_STATUS)
                     ->label(Str::formatTitle(__('payload.stored_status')))
-                    ->options(PayloadStoringStatusEnum::toArray()),
+                    ->options(fn () => PayloadStoringStatusEnum::toArray()),
 
                 SelectFilter::make(Payload::PROCESSING_STATUS)
                     ->label(Str::formatTitle(__('payload.processed_status')))
-                    ->options(PayloadProcessingStatusEnum::toArray()),
+                    ->options(fn () => PayloadProcessingStatusEnum::toArray()),
             ])
             ->actions([
                 TableViewAction::make(),

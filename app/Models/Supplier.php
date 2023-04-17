@@ -3,31 +3,34 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 
 /**
- * @property int               $id
- * @property string|null       $company_code_branch
- * @property string            $code
- * @property string            $store
- * @property string            $name
- * @property string            $business_name
- * @property string            $address
- * @property string|null       $number
- * @property string            $neighborhood
- * @property string            $state_code
- * @property string|null       $state_name
- * @property string            $postal_code
- * @property string            $cnpj_cpf
- * @property string            $phone_code
- * @property string            $phone_number
- * @property string            $contact
- * @property string            $email
- * @property Carbon|null       $created_at
- * @property Carbon|null       $updated_at
- * @property-read Company|null $company
+ * @property int                    $id
+ * @property string|null            $company_id
+ * @property string                 $code
+ * @property string                 $store
+ * @property string                 $name
+ * @property string                 $business_name
+ * @property string                 $address
+ * @property string|null            $number
+ * @property string                 $neighborhood
+ * @property string                 $state_code
+ * @property string|null            $state_name
+ * @property string                 $postal_code
+ * @property string                 $cnpj_cpf
+ * @property string                 $phone_code
+ * @property string                 $phone_number
+ * @property string                 $contact
+ * @property string                 $email
+ * @property Carbon|null            $created_at
+ * @property Carbon|null            $updated_at
+ * @property-read Company|null      $company
+ * @property-read User[]|Collection $users
  */
 class Supplier extends Model
 {
@@ -67,6 +70,11 @@ class Supplier extends Model
             self::COMPANY_ID,
             Company::ID
         );
+    }
+
+    public function users(): HasMany
+    {
+        return $this->hasMany(User::class);
     }
 
     protected function cnpjCpf(): Attribute

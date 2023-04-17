@@ -4,10 +4,12 @@ namespace App\Filament\Resources\QuoteResource\RelationManagers;
 
 use Akaunting\Money\Currency;
 use Akaunting\Money\Money;
+use App\Models\Product;
 use App\Models\Quote;
 use App\Models\QuoteItem;
 use App\Utils\Str;
 use Closure;
+use Exception;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Grid;
@@ -56,7 +58,7 @@ class QuoteItemsRelationManager extends RelationManager
 
                 Placeholder::make(QuoteItem::PRODUCT_ID)
                     ->label(Str::formatTitle(__('quote_item.product_id')))
-                    ->content(fn (Model|QuoteItem $record) => $record->product->description),
+                    ->content(fn (Model|QuoteItem $record) => $record->product->code),
 
                 Placeholder::make(QuoteItem::DESCRIPTION)
                     ->label(Str::formatTitle(__('quote_item.description')))
@@ -117,14 +119,17 @@ class QuoteItemsRelationManager extends RelationManager
                 TextColumn::make(QuoteItem::ITEM)
                     ->label(Str::formatTitle(__('quote_item.item'))),
 
+                TextColumn::make(QuoteItem::RELATION_PRODUCT.'.'.Product::CODE)
+                    ->label(Str::formatTitle(__('quote_item.product'))),
+
+                TextColumn::make(QuoteItem::DESCRIPTION)
+                    ->label(Str::formatTitle(__('quote_item.description'))),
+
                 TextColumn::make(QuoteItem::MEASUREMENT_UNIT)
                     ->label(Str::formatTitle(__('quote_item.measurement_unit'))),
 
                 TextColumn::make(QuoteItem::QUANTITY)
                     ->label(Str::formatTitle(__('quote_item.quantity'))),
-
-                TextColumn::make(QuoteItem::DESCRIPTION)
-                    ->label(Str::formatTitle(__('quote_item.description'))),
 
                 TextColumn::make(QuoteItem::UNIT_PRICE)
                     ->label(Str::formatTitle(__('quote_item.unit_price')))
@@ -132,6 +137,19 @@ class QuoteItemsRelationManager extends RelationManager
                         $money = new Money($state, new Currency('BRL'));
 
                         return $money->format();
+                    }),
+
+                TextColumn::make('total_price')
+                    ->label(Str::formatTitle(__('quote_item.total_price')))
+                    ->getStateUsing(function (Model|QuoteItem $record): string {
+                        try {
+                            $totalPrice = $record->quantity * $record->unit_price;
+                            $money = new Money($totalPrice, new Currency('BRL'));
+
+                            return $money->format();
+                        } catch (Exception $exception) {
+                            return $exception->getMessage();
+                        }
                     }),
 
                 TextColumn::make(QuoteItem::DELIVERY_DATE)

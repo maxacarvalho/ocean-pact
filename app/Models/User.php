@@ -27,6 +27,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property string|null               $two_factor_recovery_codes
  * @property Carbon|null               $two_factor_confirmed_at
  * @property string|null               $remember_token
+ * @property bool                      $is_draft
  * @property Carbon|null               $created_at
  * @property Carbon|null               $updated_at
  * @property-read Company[]|Collection $companies
@@ -47,6 +48,7 @@ class User extends Authenticatable implements FilamentUser
     public const TWO_FACTOR_RECOVERY_CODES = 'two_factor_recovery_codes';
     public const TWO_FACTOR_CONFIRMED_AT = 'two_factor_confirmed_at';
     public const REMEMBER_TOKEN = 'remember_token';
+    public const IS_DRAFT = 'is_draft';
     public const CREATED_AT = 'created_at';
     public const UPDATED_AT = 'updated_at';
 
@@ -69,6 +71,7 @@ class User extends Authenticatable implements FilamentUser
 
     protected $casts = [
         self::EMAIL_VERIFIED_AT => 'datetime',
+        self::IS_DRAFT => 'boolean',
     ];
 
     public function isSuperAdmin(): bool

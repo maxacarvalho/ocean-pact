@@ -38,7 +38,7 @@ class ListSuppliers extends ListRecords
                 Company::TABLE_NAME.'.'.Company::CODE_BRANCH,
                 Company::TABLE_NAME.'.'.Company::BRANCH,
             ])
-            ->join(
+            ->leftJoin(
                 Company::TABLE_NAME,
                 Company::TABLE_NAME.'.'.Company::ID,
                 '=',

@@ -51,7 +51,6 @@ class SupplierResource extends Resource
                     ->schema([
                         Select::make(Supplier::COMPANY_ID)
                             ->label(Str::formatTitle(__('supplier.company_id')))
-                            ->required()
                             ->relationship(Supplier::RELATION_COMPANY, Company::CODE_BRANCH)
                             ->getOptionLabelFromRecordUsing(function (Model|Company $record) {
                                 return "$record->code_branch - $record->branch";
@@ -136,7 +135,7 @@ class SupplierResource extends Resource
                     ->form([
                         Select::make(Supplier::COMPANY_ID)
                             ->label(Str::formatTitle(__('budget.company_id')))
-                            ->options(Company::all()->pluck(Company::CODE_BRANCH_AND_BRANCH, Company::ID)),
+                            ->options(fn () => Company::all()->pluck(Company::CODE_BRANCH_AND_BRANCH, Company::ID)),
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query->when(

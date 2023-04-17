@@ -19,6 +19,7 @@ use Illuminate\Support\Carbon;
  * @property string|null           $comments
  * @property Carbon|null           $created_at
  * @property Carbon|null           $updated_at
+ * // Relations
  * @property-read Company          $company
  * @property-read Budget           $budget
  * @property-read Supplier         $supplier

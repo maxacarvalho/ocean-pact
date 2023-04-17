@@ -14,7 +14,7 @@ return new class extends Migration
             $table->id();
             $table->string('company_branch_code', 10)->nullable()->index();
             $table->string(PaymentCondition::CODE, 3)->index();
-            $table->string(PaymentCondition::CONDITION, 40);
+            $table->string('condition', 40);
             $table->string(PaymentCondition::DESCRIPTION, 15);
             $table->timestamps();
 

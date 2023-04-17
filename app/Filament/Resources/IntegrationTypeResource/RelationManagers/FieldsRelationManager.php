@@ -56,23 +56,26 @@ class FieldsRelationManager extends RelationManager
                             ->label(Str::formatTitle(__('integration_type_field.field_type')))
                             ->required()
                             ->reactive()
-                            ->options(IntegrationTypeFieldTypeEnum::toArray()),
+                            ->options(IntegrationTypeFieldTypeEnum::toArray())
+                            ->afterStateUpdated(function (Closure $set, $state) {
+                                if (IntegrationTypeFieldTypeEnum::array()->value === $state) {
+                                    $set(IntegrationTypeField::FIELD_RULES.'.array', true);
+                                }
+                            }),
                     ]),
 
                 Section::make(Str::formatTitle(__('integration_type_field.rules')))
                     ->collapsible()
-                    ->collapsed(function (Closure $get) {
-                        return is_null($get(IntegrationTypeField::FIELD_TYPE));
-                    })
-                    ->disabled(function (Closure $get) {
-                        return is_null($get(IntegrationTypeField::FIELD_TYPE));
-                    })
                     ->schema([
                         Grid::make(3)
                             ->schema([
                                 Toggle::make(IntegrationTypeField::FIELD_RULES.'.required')
                                     ->label(Str::formatTitle(__('integration_type_field.required')))
-                                    ->default(true),
+                                    ->default(true)
+                                    ->reactive()
+                                    ->afterStateUpdated(function (Closure $set, $state) {
+                                        $set(IntegrationTypeField::FIELD_RULES.'.nullable', ! $state);
+                                    }),
 
                                 Toggle::make(IntegrationTypeField::FIELD_RULES.'.array')
                                     ->label(Str::formatTitle(__('integration_type_field.array'))),
@@ -138,6 +141,9 @@ class FieldsRelationManager extends RelationManager
                                     ->label(Str::formatTitle(__('integration_type_field.digits_between')))
                                     ->helperText(Str::lcfirst(__('integration_type_field.digits_between_helper_text')))
                                     ->regex('/^([0-9]+),([0-9]+)$/'),
+
+                                TextInput::make(IntegrationTypeField::FIELD_RULES.'.max')
+                                    ->label(Str::formatTitle(__('integration_type_field.max'))),
                             ]),
                     ]),
             ])
@@ -149,9 +155,9 @@ class FieldsRelationManager extends RelationManager
         return $table
             ->columns([
                 TextColumn::make(IntegrationTypeField::FIELD_NAME)
-                    ->label(__('integration_type_field.FieldName')),
+                    ->label(Str::formatTitle(__('integration_type_field.field_name'))),
                 TextColumn::make(IntegrationTypeField::FIELD_TYPE)
-                    ->label(__('integration_type_field.FieldType')),
+                    ->label(Str::formatTitle(__('integration_type_field.field_type'))),
             ])
             ->filters([
                 //

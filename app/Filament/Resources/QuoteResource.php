@@ -111,7 +111,7 @@ class QuoteResource extends Resource
                 Select::make(Quote::STATUS)
                     ->label(Str::formatTitle(__('quote.status')))
                     ->required()
-                    ->options(QuoteStatusEnum::toArray())
+                    ->options(fn () => QuoteStatusEnum::toArray())
                     ->visible(fn () => Auth::user()->hasAnyRole(Role::ROLE_ADMIN, Role::ROLE_SUPER_ADMIN)),
 
                 DatePicker::make(Quote::VALID_UNTIL)
@@ -167,7 +167,7 @@ class QuoteResource extends Resource
                     ->form([
                         Select::make(Quote::COMPANY_ID)
                             ->label(Str::formatTitle(__('quote.company_id')))
-                            ->options(Company::all()->pluck(Company::CODE_BRANCH_AND_BRANCH, Company::ID)),
+                            ->options(fn () => Company::all()->pluck(Company::CODE_BRANCH_AND_BRANCH, Company::ID)),
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query->when(
@@ -178,7 +178,7 @@ class QuoteResource extends Resource
 
                 SelectFilter::make(Quote::STATUS)
                     ->label(Str::formatTitle(__('quote.status')))
-                    ->options(QuoteStatusEnum::toArray()),
+                    ->options(fn () => QuoteStatusEnum::toArray()),
             ])
             ->actions([
                 TableEditAction::make(),
