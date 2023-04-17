@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\QuoteResource\Pages;
 
 use App\Enums\QuoteStatusEnum;
+use App\Events\QuoteRespondedEvent;
 use App\Filament\Resources\QuoteResource;
 use App\Models\Quote;
 use App\Models\User;
@@ -55,5 +56,18 @@ class EditQuote extends EditRecord
         }
 
         return $data;
+    }
+
+    protected function afterSave(): void
+    {
+        /** @var User $user */
+        $user = Auth::user();
+
+        /** @var Quote $quote */
+        $quote = $this->record;
+
+        if ($user->isSeller() && $quote->isResponded()) {
+            QuoteRespondedEvent::dispatch($quote->id);
+        }
     }
 }

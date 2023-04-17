@@ -11,8 +11,10 @@ use App\Filament\Resources\IntegrationTypeResource\RelationManagers\FieldsRelati
 use App\Models\Company;
 use App\Models\IntegrationType;
 use App\Utils\Str;
+use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Resources\Form;
 use Filament\Resources\Resource;
 use Filament\Resources\Table;
@@ -21,6 +23,7 @@ use Filament\Tables\Actions\EditAction as TableEditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
 
 class IntegrationTypeResource extends Resource
 {
@@ -48,35 +51,74 @@ class IntegrationTypeResource extends Resource
         return $form
             ->schema([
                 TextInput::make(IntegrationType::CODE)
-                    ->rules(['nullable', 'string', 'alpha_dash'])
                     ->label(Str::formatTitle(__('integration_type.code')))
+                    ->rules(['nullable', 'string', 'alpha_dash'])
                     ->helperText(Str::formatTitle(__('integration_type.code_helper_text'))),
 
                 Select::make(IntegrationType::COMPANY_ID)
-                    ->required()
-                    ->options(self::getCompanyOptions())
-                    ->default(0)
                     ->label(Str::formatTitle(__('integration_type.company')))
+                    ->options(fn () => self::getCompanyOptions())
+                    ->default(0)
                     ->preload(),
 
                 TextInput::make(IntegrationType::DESCRIPTION)
-                    ->required()
-                    ->label(Str::formatTitle(__('integration_type.description'))),
+                    ->label(Str::formatTitle(__('integration_type.description')))
+                    ->required(),
 
                 Select::make(IntegrationType::TYPE)
+                    ->label(Str::formatTitle(__('integration_type.type')))
                     ->required()
-                    ->options(IntegrationTypeEnum::toArray())
-                    ->label(Str::formatTitle(__('integration_type.type'))),
+                    ->options(fn () => IntegrationTypeEnum::toArray()),
 
                 Select::make(IntegrationType::HANDLING_TYPE)
-                    ->required()
-                    ->options(IntegrationHandlingTypeEnum::toArray())
-                    ->label(Str::formatTitle(__('integration_type.handling_type'))),
+                    ->label(Str::formatTitle(__('integration_type.handling_type')))
+                    ->options(fn () => IntegrationHandlingTypeEnum::toArray()),
 
                 TextInput::make(IntegrationType::TARGET_URL)
-                    ->required()
-                    ->url()
-                    ->label(Str::formatTitle(__('integration_type.target_url'))),
+                    ->label(Str::formatTitle(__('integration_type.target_url')))
+                    ->url(),
+
+                Fieldset::make(Str::formatTitle(__('integration_type.system_settings')))
+                    ->visible(fn () => Auth::user()->isSuperAdmin())
+                    ->columns(5)
+                    ->schema([
+                        Toggle::make(IntegrationType::IS_VISIBLE)
+                            ->label(Str::formatTitle(__('integration_type.is_visible')))
+                            ->default(fn () => true),
+
+                        Toggle::make(IntegrationType::IS_ENABLED)
+                            ->label(Str::formatTitle(__('integration_type.is_enabled')))
+                            ->default(fn () => true),
+
+                        Toggle::make(IntegrationType::IS_PROTECTED)
+                            ->label(Str::formatTitle(__('integration_type.is_protected')))
+                            ->default(fn () => false),
+
+                        Toggle::make(IntegrationType::IS_SYNCHRONOUS)
+                            ->label(Str::formatTitle(__('integration_type.is_synchronous')))
+                            ->default(fn () => false),
+
+                        Toggle::make(IntegrationType::ALLOWS_DUPLICATES)
+                            ->label(Str::formatTitle(__('integration_type.allows_duplicates')))
+                            ->default(fn () => false),
+
+                        Select::make(IntegrationType::PROCESSOR)
+                            ->label(Str::formatTitle(__('integration_type.processor')))
+                            ->columnSpan(3)
+                            ->options(function () {
+                                return collect(scandir(app_path('Jobs/PayloadProcessors')))
+                                    ->filter(fn ($file) => ! in_array($file, ['.', '..']))
+                                    ->map(fn ($file) => 'App\Jobs\PayloadProcessors\\'.preg_replace('/\\.[^.\\s]{3,4}$/', '', $file))
+                                    ->filter(fn ($class) => class_exists($class))
+                                    ->filter(fn ($class) => is_subclass_of($class, 'App\Jobs\PayloadProcessors\PayloadProcessor'))
+                                    ->map(fn ($class) => [
+                                        'label' => $class,
+                                        'value' => $class,
+                                    ])
+                                    ->mapWithKeys(fn (array $item, int $key) => [$item['label'] => $item['value']])
+                                    ->toArray();
+                            }),
+                    ]),
             ]);
     }
 

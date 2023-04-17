@@ -3,8 +3,11 @@
 namespace App\Filament\Resources\IntegrationTypeResource\Pages;
 
 use App\Filament\Resources\IntegrationTypeResource;
+use App\Models\IntegrationType;
 use Filament\Pages\Actions\CreateAction as PageCreateAction;
 use Filament\Resources\Pages\ListRecords;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Auth;
 
 class ListIntegrationTypes extends ListRecords
 {
@@ -25,5 +28,14 @@ class ListIntegrationTypes extends ListRecords
     protected function shouldPersistTableSortInSession(): bool
     {
         return true;
+    }
+
+    protected function getTableQuery(): Builder
+    {
+        if (Auth::user()->isSuperAdmin()) {
+            return parent::getTableQuery();
+        }
+
+        return parent::getTableQuery()->where(IntegrationType::IS_VISIBLE, '=', true);
     }
 }

@@ -58,12 +58,6 @@ class PaymentConditionResource extends Resource
                     ->minLength(1)
                     ->maxLength(3),
 
-                TextInput::make(PaymentCondition::CONDITION)
-                    ->label(Str::formatTitle(__('payment_condition.condition')))
-                    ->required()
-                    ->minLength(1)
-                    ->maxLength(40),
-
                 TextInput::make(PaymentCondition::DESCRIPTION)
                     ->label(Str::formatTitle(__('payment_condition.description')))
                     ->required()
@@ -88,11 +82,6 @@ class PaymentConditionResource extends Resource
                     ->sortable()
                     ->searchable(),
 
-                TextColumn::make(PaymentCondition::CONDITION)
-                    ->label(Str::formatTitle(__('payment_condition.condition')))
-                    ->sortable()
-                    ->searchable(),
-
                 TextColumn::make(PaymentCondition::DESCRIPTION)
                     ->label(Str::formatTitle(__('payment_condition.description')))
                     ->sortable()
@@ -104,7 +93,7 @@ class PaymentConditionResource extends Resource
                     ->form([
                         Select::make(PaymentCondition::COMPANY_ID)
                             ->label(Str::formatTitle(__('budget.company_id')))
-                            ->options(Company::all()->pluck(Company::CODE_BRANCH_AND_BRANCH, Company::ID)),
+                            ->options(fn () => Company::all()->pluck(Company::CODE_BRANCH_AND_BRANCH, Company::ID)),
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query->when(

@@ -10,6 +10,7 @@ use App\Utils\Str;
  * @method static self integer()
  * @method static self boolean()
  * @method static self string()
+ * @method static self array()
  */
 class IntegrationTypeFieldTypeEnum extends \Spatie\Enum\Laravel\Enum
 {
@@ -21,6 +22,7 @@ class IntegrationTypeFieldTypeEnum extends \Spatie\Enum\Laravel\Enum
             'float' => Str::formatTitle(__('integration_type_field.float')),
             'boolean' => Str::formatTitle(__('integration_type_field.boolean')),
             'date' => Str::formatTitle(__('integration_type_field.date')),
+            'array' => Str::formatTitle(__('integration_type_field.array')),
         ];
     }
 }

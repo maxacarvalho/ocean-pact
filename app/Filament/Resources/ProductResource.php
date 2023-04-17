@@ -48,7 +48,6 @@ class ProductResource extends Resource
             ->schema([
                 Select::make(Product::COMPANY_ID)
                     ->label(Str::formatTitle(__('product.company_id')))
-                    ->required()
                     ->relationship(Product::RELATION_COMPANY, Company::CODE_BRANCH)
                     ->getOptionLabelFromRecordUsing(function (Model|Company $record) {
                         return "$record->code_branch - $record->branch";
@@ -100,7 +99,7 @@ class ProductResource extends Resource
                     ->form([
                         Select::make(Product::COMPANY_ID)
                             ->label(Str::formatTitle(__('budget.company_id')))
-                            ->options(Company::all()->pluck(Company::CODE_BRANCH_AND_BRANCH, Company::ID)),
+                            ->options(fn () => Company::all()->pluck(Company::CODE_BRANCH_AND_BRANCH, Company::ID)),
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query->when(
@@ -111,7 +110,7 @@ class ProductResource extends Resource
 
                 SelectFilter::make(Product::MEASUREMENT_UNIT)
                     ->label(Str::formatTitle(__('product.measurement_unit')))
-                    ->options(Product::all()->pluck(Product::MEASUREMENT_UNIT, Product::MEASUREMENT_UNIT)->unique()),
+                    ->options(fn () => Product::all()->pluck(Product::MEASUREMENT_UNIT, Product::MEASUREMENT_UNIT)->unique()),
             ])
             ->actions([
                 TableEditAction::make(),

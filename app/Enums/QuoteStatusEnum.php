@@ -7,7 +7,7 @@ use Spatie\Enum\Laravel\Enum;
 
 /**
  * @method static self DRAFT()
- * @method static self SENT()
+ * @method static self PENDING()
  * @method static self RESPONDED()
  * @method static self ACCEPTED()
  * @method static self REJECTED()
@@ -18,7 +18,7 @@ class QuoteStatusEnum extends Enum
     {
         return [
             'DRAFT' => Str::formatTitle(__('quote.draft')),
-            'SENT' => Str::formatTitle(__('quote.sent')),
+            'PENDING' => Str::formatTitle(__('quote.pending')),
             'RESPONDED' => Str::formatTitle(__('quote.responded')),
             'ACCEPTED' => Str::formatTitle(__('quote.accepted')),
             'REJECTED' => Str::formatTitle(__('quote.rejected')),

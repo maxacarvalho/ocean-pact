@@ -1,8 +1,8 @@
 <?php
 
 return [
-    'budget' => 'pedido de compra',
-    'budgets' => 'pedidos de compra',
+    'budget' => 'solicitação de compra',
+    'budgets' => 'solicitações de compra',
     'id' => 'ID',
     'company_id' => 'empresa',
     'company' => 'empresa',

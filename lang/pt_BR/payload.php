@@ -9,8 +9,8 @@ return [
     'processed_status' => 'status do processamento',
     'ready' => 'pronto',
     'collected' => 'coletado',
-    'send_to_client' => 'enviado ao cliente',
-    'validation_error' => 'erro de validação',
+    'done' => 'concluído',
+    'processing' => 'processando',
     'stored' => 'armazenado',
     'failed' => 'falha',
     'payload_already_collected' => 'envelope já coletado',
@@ -22,4 +22,5 @@ return [
     'received_between' => 'recebido entre :from e :until',
     'received_from' => 'recebido a partir de :date',
     'received_until' => 'recebido até :date',
+    'payload_is_duplicated' => 'envelope duplicado',
 ];

@@ -10,7 +10,6 @@ use Illuminate\Support\Carbon;
  * @property int               $id
  * @property int|null          $company_id
  * @property string            $code
- * @property string            $condition
  * @property string            $description
  * @property Carbon|null       $created_at
  * @property Carbon|null       $updated_at
@@ -22,7 +21,6 @@ class PaymentCondition extends Model
     public const ID = 'id';
     public const COMPANY_ID = 'company_id';
     public const CODE = 'code';
-    public const CONDITION = 'condition';
     public const DESCRIPTION = 'description';
     public const CREATED_AT = 'created_at';
     public const UPDATED_AT = 'updated_at';

@@ -33,16 +33,6 @@ class IntegrationTypeField extends Model
         self::ID,
     ];
 
-    public static array $columns = [
-        self::ID,
-        self::INTEGRATION_TYPE_ID,
-        self::FIELD_NAME,
-        self::FIELD_TYPE,
-        self::FIELD_RULES,
-        self::CREATED_AT,
-        self::UPDATED_AT,
-    ];
-
     protected $casts = [
         self::FIELD_TYPE => IntegrationTypeFieldTypeEnum::class,
         self::FIELD_RULES => 'array',
