@@ -3,28 +3,30 @@
 namespace App\Models;
 
 use App\Enums\QuoteStatusEnum;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 
 /**
- * @property int                   $id
- * @property int                   $company_id
- * @property int                   $budget_id
- * @property string                $budget_number
- * @property string                $quote_number
- * @property Carbon|null           $valid_until
- * @property QuoteStatusEnum       $status
- * @property string|null           $comments
- * @property Carbon|null           $created_at
- * @property Carbon|null           $updated_at
+ * @property int                         $id
+ * @property int                         $company_id
+ * @property int                         $budget_id
+ * @property string                      $budget_number
+ * @property string                      $quote_number
+ * @property Carbon|null                 $valid_until
+ * @property QuoteStatusEnum             $status
+ * @property string|null                 $comments
+ * @property Carbon|null                 $created_at
+ * @property Carbon|null                 $updated_at
  * // Relations
- * @property-read Company          $company
- * @property-read Budget           $budget
- * @property-read Supplier         $supplier
- * @property-read PaymentCondition $paymentCondition
- * @property-read User|null        $buyer
+ * @property-read Budget                 $budget
+ * @property-read Company                $company
+ * @property-read Supplier               $supplier
+ * @property-read PaymentCondition       $paymentCondition
+ * @property-read User|null              $buyer
+ * @property-read QuoteItem[]|Collection $items
  */
 class Quote extends Model
 {
@@ -43,8 +45,8 @@ class Quote extends Model
     public const UPDATED_AT = 'updated_at';
 
     // Relations
-    public const RELATION_COMPANY = 'company';
     public const RELATION_BUDGET = 'budget';
+    public const RELATION_COMPANY = 'company';
     public const RELATION_SUPPLIER = 'supplier';
     public const RELATION_PAYMENT_CONDITION = 'paymentCondition';
     public const RELATION_BUYER = 'buyer';

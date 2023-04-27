@@ -56,6 +56,9 @@ class IntegrationType extends Model
     public const RELATION_FIELDS = 'fields';
     public const RELATION_PAYLOADS = 'payloads';
 
+    // Protected integration types
+    public const INTEGRATION_ANSWERED_QUOTES = 'cotacoes-respondidas';
+
     protected $table = self::TABLE_NAME;
 
     protected $guarded = [

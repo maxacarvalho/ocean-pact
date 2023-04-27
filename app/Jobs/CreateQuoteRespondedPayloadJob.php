@@ -2,6 +2,10 @@
 
 namespace App\Jobs;
 
+use App\Data\Protheus\Quote\Out\ProtheusQuotePayloadData;
+use App\Enums\PayloadProcessingStatusEnum;
+use App\Models\IntegrationType;
+use App\Models\Payload;
 use App\Models\Quote;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -20,10 +24,27 @@ class CreateQuoteRespondedPayloadJob implements ShouldQueue
 
     public function handle(): void
     {
-        $quote = Quote::query()->findOrFail($this->quoteId);
+        /** @var Quote $quote */
+        $quote = Quote::query()
+            ->with('items', 'items.product', 'items.product.company')
+            ->findOrFail($this->quoteId);
 
         if (! $quote->isResponded()) {
             $this->delete();
         }
+
+        $protheusPayloadData = ProtheusQuotePayloadData::fromQuote($quote);
+
+        /** @var IntegrationType $integrationType */
+        $integrationType = IntegrationType::query()
+            ->where(IntegrationType::CODE, '=', IntegrationType::INTEGRATION_ANSWERED_QUOTES)
+            ->firstOrFail();
+
+        $integrationType->payloads()->create([
+            Payload::PAYLOAD => $protheusPayloadData->toArray(),
+            Payload::PAYLOAD_HASH => $protheusPayloadData->getHash(),
+            Payload::STORED_AT => now(),
+            Payload::PROCESSING_STATUS => PayloadProcessingStatusEnum::READY(),
+        ]);
     }
 }

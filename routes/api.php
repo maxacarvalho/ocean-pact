@@ -24,7 +24,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::middleware('auth:sanctum')->group(static function (Router $router) {
-    $router->name('cotacoes.')->prefix('quote')->group(static function (Router $router) {
+    $router->name('cotacoes.')->prefix('cotacoes')->group(static function (Router $router) {
         $router->get('respondidas', ListAnsweredQuotesController::class)->name('respondidas');
     });
 

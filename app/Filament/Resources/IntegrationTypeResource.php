@@ -143,7 +143,7 @@ class IntegrationTypeResource extends Resource
 
                 TextColumn::make(IntegrationType::HANDLING_TYPE)
                     ->label(Str::formatTitle(__('integration_type.handling_type')))
-                    ->formatStateUsing(fn ($state) => IntegrationHandlingTypeEnum::from($state)->label)
+                    ->formatStateUsing(fn ($state) => null !== $state ? IntegrationHandlingTypeEnum::from($state)->label : '')
                     ->sortable()
                     ->searchable(),
 
