@@ -13,12 +13,12 @@ return new class extends Migration
     {
         Schema::create(Budget::TABLE_NAME, function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger(Budget::COMPANY_ID)->index();
+            $table->unsignedBigInteger('company_id')->index();
             $table->string(Budget::BUDGET_NUMBER);
             $table->string(Budget::STATUS)->default(BudgetStatusEnum::OPEN())->index();
             $table->timestamps();
 
-            $table->foreign(Budget::COMPANY_ID)
+            $table->foreign('company_id')
                 ->references(Company::ID)
                 ->on(Company::TABLE_NAME);
         });

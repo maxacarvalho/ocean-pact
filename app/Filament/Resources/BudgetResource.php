@@ -9,6 +9,7 @@ use App\Filament\Resources\BudgetResource\Pages\ListBudgets;
 use App\Models\Budget;
 use App\Models\Company;
 use App\Utils\Str;
+use Closure;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Form;
@@ -20,7 +21,6 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter as TableFilter;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Contracts\Database\Query\Builder;
-use Illuminate\Database\Eloquent\Model;
 
 class BudgetResource extends Resource
 {
@@ -47,12 +47,24 @@ class BudgetResource extends Resource
     {
         return $form
             ->schema([
-                Select::make(Budget::COMPANY_ID)
-                    ->label(Str::formatTitle(__('budget.company_id')))
-                    ->required()
-                    ->relationship(Budget::RELATION_COMPANY, Company::CODE_BRANCH)
-                    ->getOptionLabelFromRecordUsing(function (Model|Company $record) {
-                        return "$record->code_branch - $record->branch";
+                Select::make(Budget::COMPANY_CODE)
+                    ->label(Str::formatTitle(__('budget.company_code')))
+                    ->relationship(Budget::RELATION_COMPANY, Company::NAME)
+                    ->reactive(),
+
+                Select::make(Budget::COMPANY_CODE_BRANCH)
+                    ->label(Str::formatTitle(__('budget.company_code_branch')))
+                    ->options(function (Closure $get) {
+                        $companyCode = $get(Budget::COMPANY_CODE);
+
+                        if (null === $companyCode) {
+                            return [];
+                        }
+
+                        return Company::query()
+                            ->where(Company::CODE, '=', $companyCode)
+                            ->pluck(Company::BRANCH, Company::CODE_BRANCH)
+                            ->toArray();
                     }),
 
                 TextInput::make(Budget::BUDGET_NUMBER)
@@ -70,11 +82,41 @@ class BudgetResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('company_info')
-                    ->label(Str::formatTitle(__('budget.company_id')))
-                    ->sortable([Company::CODE_BRANCH, Company::BRANCH])
-                    ->formatStateUsing(function (?string $state, Model|Budget|Company $record): ?string {
-                        return "{$record->code_branch} {$record->branch}";
+                TextColumn::make('company_name')
+                    ->label(Str::formatTitle(__('budget.company_code')))
+                    ->sortable(query: function (Builder $query, string $direction): Builder {
+                        return $query->orderBy(
+                            Company::query()
+                                ->select(Company::TABLE_NAME.'.'.Company::BUSINESS_NAME)
+                                ->whereColumn(
+                                    Company::TABLE_NAME.'.'.Company::CODE,
+                                    '=',
+                                    Budget::TABLE_NAME.'.'.Budget::COMPANY_CODE
+                                )
+                                ->limit(1),
+                            $direction
+                        );
+                    }),
+
+                TextColumn::make('company_branch')
+                    ->label(Str::formatTitle(__('budget.company_code_branch')))
+                    ->sortable(query: function (Builder $query, string $direction): Builder {
+                        return $query->orderBy(
+                            Company::query()
+                                ->select(Company::TABLE_NAME.'.'.Company::BRANCH)
+                                ->whereColumn(
+                                    Company::TABLE_NAME.'.'.Company::CODE,
+                                    '=',
+                                    Budget::TABLE_NAME.'.'.Budget::COMPANY_CODE
+                                )
+                                ->whereColumn(
+                                    Company::TABLE_NAME.'.'.Company::CODE_BRANCH,
+                                    '=',
+                                    Budget::TABLE_NAME.'.'.Budget::COMPANY_CODE_BRANCH
+                                )
+                                ->limit(1),
+                            $direction
+                        );
                     }),
 
                 TextColumn::make(Budget::BUDGET_NUMBER)
@@ -88,17 +130,17 @@ class BudgetResource extends Resource
                     ->formatStateUsing(fn (?string $state): ?string => $state !== null ? BudgetStatusEnum::from($state)->label : null),
             ])
             ->filters([
-                TableFilter::make(Budget::COMPANY_ID)
-                    ->label(Str::formatTitle(__('budget.company_id')))
+                TableFilter::make(Budget::COMPANY_CODE)
+                    ->label(Str::formatTitle(__('budget.company_code')))
                     ->form([
-                        Select::make(Budget::COMPANY_ID)
+                        Select::make(Budget::COMPANY_CODE)
                             ->label(Str::formatTitle(__('budget.company_id')))
-                            ->options(fn () => Company::all()->pluck(Company::CODE_BRANCH_AND_BRANCH, Company::ID)),
+                            ->options(fn () => Company::all()->pluck(Company::CODE_BRANCH_AND_BRANCH, Company::CODE)),
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query->when(
-                            $data[Budget::COMPANY_ID],
-                            fn (Builder $query, int $companyId): Builder => $query->where(Budget::COMPANY_ID, '=', $companyId)
+                            $data[Budget::COMPANY_CODE],
+                            fn (Builder $query, string $companyCode): Builder => $query->where(Budget::COMPANY_CODE, '=', $companyCode)
                         );
                     }),
 

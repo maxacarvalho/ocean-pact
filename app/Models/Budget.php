@@ -11,7 +11,8 @@ use Illuminate\Support\Carbon;
 
 /**
  * @property int                     $id
- * @property int                     $company_id
+ * @property string                  $company_code
+ * @property string|null             $company_code_branch
  * @property string                  $budget_number
  * @property BudgetStatusEnum        $status
  * @property Carbon|null             $created_at
@@ -24,7 +25,8 @@ class Budget extends Model
 {
     public const TABLE_NAME = 'budgets';
     public const ID = 'id';
-    public const COMPANY_ID = 'company_id';
+    public const COMPANY_CODE = 'company_code';
+    public const COMPANY_CODE_BRANCH = 'company_code_branch';
     public const BUDGET_NUMBER = 'budget_number';
     public const STATUS = 'status';
     public const CREATED_AT = 'created_at';
@@ -44,7 +46,11 @@ class Budget extends Model
 
     public function company(): BelongsTo
     {
-        return $this->belongsTo(Company::class);
+        return $this->belongsTo(
+            Company::class,
+            self::COMPANY_CODE,
+            Company::CODE
+        );
     }
 
     public function quotes(): HasMany

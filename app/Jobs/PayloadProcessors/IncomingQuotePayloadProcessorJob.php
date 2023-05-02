@@ -160,7 +160,8 @@ class IncomingQuotePayloadProcessorJob extends PayloadProcessor
     {
         /** @var Budget $budget */
         $budget = Budget::query()->firstOrCreate([
-            Budget::COMPANY_ID => $company->id,
+            Budget::COMPANY_CODE => $data->EMPRESA,
+            Budget::COMPANY_CODE_BRANCH => $data->FILIAL,
             Budget::BUDGET_NUMBER => $data->SOLICITACAO_DE_COMPRAS,
         ]);
 

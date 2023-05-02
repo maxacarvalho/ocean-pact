@@ -35,12 +35,24 @@ class ListPaymentConditions extends ListRecords
             ->addSelect([
                 'company_name' => fn (Builder $query) => $query->select(Company::BUSINESS_NAME)
                     ->from(Company::TABLE_NAME)
-                    ->whereColumn(Company::TABLE_NAME.'.'.Company::CODE, PaymentCondition::TABLE_NAME.'.'.PaymentCondition::COMPANY_CODE)
+                    ->whereColumn(
+                        Company::TABLE_NAME.'.'.Company::CODE,
+                        '=',
+                        PaymentCondition::TABLE_NAME.'.'.PaymentCondition::COMPANY_CODE
+                    )
                     ->limit(1),
                 'company_branch' => fn (Builder $query) => $query->select(Company::BRANCH)
                     ->from(Company::TABLE_NAME)
-                    ->whereColumn(Company::TABLE_NAME.'.'.Company::CODE, PaymentCondition::TABLE_NAME.'.'.PaymentCondition::COMPANY_CODE)
-                    ->whereColumn(Company::TABLE_NAME.'.'.Company::CODE_BRANCH, PaymentCondition::TABLE_NAME.'.'.PaymentCondition::COMPANY_CODE_BRANCH)
+                    ->whereColumn(
+                        Company::TABLE_NAME.'.'.Company::CODE,
+                        '=',
+                        PaymentCondition::TABLE_NAME.'.'.PaymentCondition::COMPANY_CODE
+                    )
+                    ->whereColumn(
+                        Company::TABLE_NAME.'.'.Company::CODE_BRANCH,
+                        '=',
+                        PaymentCondition::TABLE_NAME.'.'.PaymentCondition::COMPANY_CODE_BRANCH
+                    )
                     ->limit(1),
             ]);
     }
