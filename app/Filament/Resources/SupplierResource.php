@@ -9,6 +9,7 @@ use App\Models\Company;
 use App\Models\Supplier;
 use App\Rules\CnpjRule;
 use App\Utils\Str;
+use Closure;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -19,7 +20,6 @@ use Filament\Tables\Actions\EditAction as TableEditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter as TableFilter;
 use Illuminate\Contracts\Database\Query\Builder;
-use Illuminate\Database\Eloquent\Model;
 
 class SupplierResource extends Resource
 {
@@ -49,24 +49,37 @@ class SupplierResource extends Resource
             ->schema([
                 Grid::make()
                     ->schema([
-                        Select::make(Supplier::COMPANY_ID)
-                            ->label(Str::formatTitle(__('supplier.company_id')))
-                            ->relationship(Supplier::RELATION_COMPANY, Company::CODE_BRANCH)
-                            ->getOptionLabelFromRecordUsing(function (Model|Company $record) {
-                                return "$record->code_branch - $record->branch";
+                        Select::make(Supplier::COMPANY_CODE)
+                            ->label(Str::formatTitle(__('supplier.company_code')))
+                            ->relationship(Supplier::RELATION_COMPANY, Company::NAME)
+                            ->reactive(),
+
+                        Select::make(Supplier::COMPANY_CODE_BRANCH)
+                            ->label(Str::formatTitle(__('supplier.company_code_branch')))
+                            ->options(function (Closure $get) {
+                                $companyCode = $get(Supplier::COMPANY_CODE);
+
+                                if (null === $companyCode) {
+                                    return [];
+                                }
+
+                                return Company::query()
+                                    ->where(Company::CODE, '=', $companyCode)
+                                    ->pluck(Company::BRANCH, Company::CODE_BRANCH)
+                                    ->toArray();
                             }),
 
                         TextInput::make(Supplier::STORE)
                             ->label(Str::formatTitle(__('supplier.store')))
                             ->required()
                             ->minLength(1)
-                            ->maxLength(2),
+                            ->maxLength(10),
 
                         TextInput::make(Supplier::CODE)
                             ->label(Str::formatTitle(__('supplier.code')))
                             ->required()
                             ->minLength(1)
-                            ->maxLength(6),
+                            ->maxLength(10),
 
                         TextInput::make(Supplier::NAME)
                             ->label(Str::formatTitle(__('supplier.name')))
@@ -102,11 +115,41 @@ class SupplierResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('company_info')
-                    ->label(Str::formatTitle(__('supplier.company_id')))
-                    ->sortable([Company::CODE_BRANCH, Company::BRANCH])
-                    ->formatStateUsing(function (?string $state, Model|Supplier|Company $record): ?string {
-                        return "{$record->code_branch} {$record->branch}";
+                TextColumn::make('company_name')
+                    ->label(Str::formatTitle(__('supplier.company_code')))
+                    ->sortable(query: function (Builder $query, string $direction): Builder {
+                        return $query->orderBy(
+                            Company::query()
+                                ->select(Company::TABLE_NAME.'.'.Company::BUSINESS_NAME)
+                                ->whereColumn(
+                                    Company::TABLE_NAME.'.'.Company::CODE,
+                                    '=',
+                                    Supplier::TABLE_NAME.'.'.Supplier::COMPANY_CODE
+                                )
+                                ->limit(1),
+                            $direction
+                        );
+                    }),
+
+                TextColumn::make('company_branch')
+                    ->label(Str::formatTitle(__('supplier.company_code_branch')))
+                    ->sortable(query: function (Builder $query, string $direction): Builder {
+                        return $query->orderBy(
+                            Company::query()
+                                ->select(Company::TABLE_NAME.'.'.Company::BRANCH)
+                                ->whereColumn(
+                                    Company::TABLE_NAME.'.'.Company::CODE,
+                                    '=',
+                                    Supplier::TABLE_NAME.'.'.Supplier::COMPANY_CODE
+                                )
+                                ->whereColumn(
+                                    Company::TABLE_NAME.'.'.Company::CODE_BRANCH,
+                                    '=',
+                                    Supplier::TABLE_NAME.'.'.Supplier::COMPANY_CODE_BRANCH
+                                )
+                                ->limit(1),
+                            $direction
+                        );
                     }),
 
                 TextColumn::make(Supplier::CODE)
@@ -130,17 +173,17 @@ class SupplierResource extends Resource
                     ->searchable(),
             ])
             ->filters([
-                TableFilter::make(Supplier::COMPANY_ID)
-                    ->label(Str::formatTitle(__('budget.company_id')))
+                TableFilter::make(Supplier::COMPANY_CODE)
+                    ->label(Str::formatTitle(__('supplier.company_code')))
                     ->form([
-                        Select::make(Supplier::COMPANY_ID)
-                            ->label(Str::formatTitle(__('budget.company_id')))
-                            ->options(fn () => Company::all()->pluck(Company::CODE_BRANCH_AND_BRANCH, Company::ID)),
+                        Select::make(Supplier::COMPANY_CODE)
+                            ->label(Str::formatTitle(__('supplier.company_code')))
+                            ->options(fn () => Company::all()->sortBy(Company::NAME)->pluck(Company::NAME, Company::CODE)),
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query->when(
-                            $data[Supplier::COMPANY_ID],
-                            fn (Builder $query, int $companyId): Builder => $query->where(Supplier::COMPANY_ID, '=', $companyId)
+                            $data[Supplier::COMPANY_CODE],
+                            fn (Builder $query, string $companyCode): Builder => $query->where(Supplier::COMPANY_CODE, '=', $companyCode)
                         );
                     }),
             ])

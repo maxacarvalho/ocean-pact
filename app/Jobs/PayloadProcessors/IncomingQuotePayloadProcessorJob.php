@@ -60,7 +60,7 @@ class IncomingQuotePayloadProcessorJob extends PayloadProcessor
 
         $codeToProductsMapping = $this->findOrCreateProducts($data);
 
-        $quote = $this->createQuote($budget, $company, $supplier, $paymentCondition, $buyer, $data);
+        $quote = $this->createQuote($budget, $supplier, $paymentCondition, $buyer, $data);
 
         foreach ($data->ITENS as $item) {
             $quote->items()->create([
@@ -95,14 +95,14 @@ class IncomingQuotePayloadProcessorJob extends PayloadProcessor
 
     public function createQuote(
         Budget $budget,
-        Company $company,
         Supplier $supplier,
         PaymentCondition $paymentCondition,
         User $buyer,
         ProtheusQuotePayloadData $data
     ): Quote {
         return $budget->quotes()->create([
-            Quote::COMPANY_ID => $company->id,
+            Quote::COMPANY_CODE => $data->EMPRESA,
+            Quote::COMPANY_CODE_BRANCH => $data->FILIAL,
             Quote::SUPPLIER_ID => $supplier->id,
             Quote::PAYMENT_CONDITION_ID => $paymentCondition->id,
             Quote::BUYER_ID => $buyer->id,
@@ -134,16 +134,16 @@ class IncomingQuotePayloadProcessorJob extends PayloadProcessor
     private function findOrCreateSupplier(ProtheusQuotePayloadData $data, Company $company): Supplier
     {
         $supplier = Supplier::query()
+            ->where(Supplier::COMPANY_CODE, '=', $data->EMPRESA)
+            ->where(Supplier::COMPANY_CODE_BRANCH, '=', $data->FILIAL)
             ->where(Supplier::CODE, '=', $data->FORNECEDOR->CODIGO)
             ->where(Supplier::STORE, '=', $data->FORNECEDOR->LOJA)
-            ->when($data->FORNECEDOR->FILIAL, function (Builder $query) use ($company) {
-                $query->where(Supplier::COMPANY_ID, '=', $company->id);
-            })
             ->first();
 
         if (null === $supplier) {
             $supplier = Supplier::query()->create([
-                Supplier::COMPANY_ID => $data->FORNECEDOR->FILIAL ? $company->id : null,
+                Supplier::COMPANY_CODE => $data->EMPRESA,
+                Supplier::COMPANY_CODE_BRANCH => $data->FILIAL,
                 Supplier::CODE => $data->FORNECEDOR->CODIGO,
                 Supplier::STORE => $data->FORNECEDOR->LOJA,
                 Supplier::NAME => $data->FORNECEDOR->NOME_FORNECEDOR,

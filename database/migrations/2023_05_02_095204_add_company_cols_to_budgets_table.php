@@ -14,12 +14,13 @@ return new class extends Migration
             $table->dropForeign(['company_id']);
             $table->dropColumn('company_id');
 
-            $table->string(Budget::COMPANY_CODE)->index()->after(Budget::ID);
-            $table->string(Budget::COMPANY_CODE_BRANCH)->nullable()->index()->after(Budget::COMPANY_CODE);
+            $table->string(Budget::COMPANY_CODE, 10)->index()->after(Budget::ID);
+            $table->string(Budget::COMPANY_CODE_BRANCH, 10)->nullable()->index()->after(Budget::COMPANY_CODE);
 
             $table->foreign(Budget::COMPANY_CODE)
                 ->references(Company::CODE)
-                ->on(Company::TABLE_NAME);
+                ->on(Company::TABLE_NAME)
+                ->cascadeOnDelete();
         });
     }
 

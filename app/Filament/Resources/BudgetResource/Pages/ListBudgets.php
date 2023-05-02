@@ -48,7 +48,7 @@ class ListBudgets extends ListRecords
                     ->from(Company::TABLE_NAME)
                     ->whereColumn(
                         Company::TABLE_NAME.'.'.Company::CODE,
-                        '=™',
+                        '=',
                         Budget::TABLE_NAME.'.'.Budget::COMPANY_CODE
                     )
                     ->limit(1),

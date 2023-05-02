@@ -11,7 +11,8 @@ use Illuminate\Support\Carbon;
 
 /**
  * @property int                         $id
- * @property int                         $company_id
+ * @property string                      $company_code
+ * @property string|null                 $company_code_branch
  * @property int                         $budget_id
  * @property string                      $budget_number
  * @property string                      $quote_number
@@ -33,6 +34,8 @@ class Quote extends Model
     public const TABLE_NAME = 'quotes';
     public const ID = 'id';
     public const COMPANY_ID = 'company_id';
+    public const COMPANY_CODE = 'company_code';
+    public const COMPANY_CODE_BRANCH = 'company_code_branch';
     public const BUDGET_ID = 'budget_id';
     public const SUPPLIER_ID = 'supplier_id';
     public const PAYMENT_CONDITION_ID = 'payment_condition_id';
@@ -68,7 +71,11 @@ class Quote extends Model
 
     public function company(): BelongsTo
     {
-        return $this->belongsTo(Company::class);
+        return $this->belongsTo(
+            Company::class,
+            self::COMPANY_CODE,
+            Company::CODE
+        );
     }
 
     public function supplier(): BelongsTo

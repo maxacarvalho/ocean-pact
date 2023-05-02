@@ -16,6 +16,7 @@ use App\Models\Role;
 use App\Models\Supplier;
 use App\Models\User;
 use App\Utils\Str;
+use Closure;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -29,7 +30,6 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter as TableFilter;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Contracts\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 
 class QuoteResource extends Resource
@@ -57,12 +57,25 @@ class QuoteResource extends Resource
     {
         return $form
             ->schema([
-                Select::make(Quote::COMPANY_ID)
-                    ->label(Str::formatTitle(__('quote.company_id')))
-                    ->required()
-                    ->relationship(Quote::RELATION_COMPANY, Company::CODE_BRANCH)
-                    ->getOptionLabelFromRecordUsing(function (Model|Company $record) {
-                        return "$record->code_branch - $record->branch";
+                Select::make(Quote::COMPANY_CODE)
+                    ->label(Str::formatTitle(__('product.company_code')))
+                    ->relationship(Quote::RELATION_COMPANY, Company::NAME)
+                    ->reactive()
+                    ->visible(fn () => Auth::user()->hasAnyRole(Role::ROLE_ADMIN, Role::ROLE_SUPER_ADMIN)),
+
+                Select::make(Quote::COMPANY_CODE_BRANCH)
+                    ->label(Str::formatTitle(__('product.company_code_branch')))
+                    ->options(function (Closure $get) {
+                        $companyCode = $get(Quote::COMPANY_CODE);
+
+                        if (null === $companyCode) {
+                            return [];
+                        }
+
+                        return Company::query()
+                            ->where(Company::CODE, '=', $companyCode)
+                            ->pluck(Company::BRANCH, Company::CODE_BRANCH)
+                            ->toArray();
                     })
                     ->visible(fn () => Auth::user()->hasAnyRole(Role::ROLE_ADMIN, Role::ROLE_SUPER_ADMIN)),
 
@@ -129,11 +142,41 @@ class QuoteResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('company_info')
-                    ->label(Str::formatTitle(__('quote.company_id')))
-                    ->sortable([Company::CODE_BRANCH, Company::BRANCH])
-                    ->formatStateUsing(function (?string $state, Model|Quote|Company $record): ?string {
-                        return "{$record->code_branch} {$record->branch}";
+                TextColumn::make('company_name')
+                    ->label(Str::formatTitle(__('quote.company_code')))
+                    ->sortable(query: function (Builder $query, string $direction): Builder {
+                        return $query->orderBy(
+                            Company::query()
+                                ->select(Company::TABLE_NAME.'.'.Company::BUSINESS_NAME)
+                                ->whereColumn(
+                                    Company::TABLE_NAME.'.'.Company::CODE,
+                                    '=',
+                                    Quote::TABLE_NAME.'.'.Quote::COMPANY_CODE
+                                )
+                                ->limit(1),
+                            $direction
+                        );
+                    }),
+
+                TextColumn::make('company_branch')
+                    ->label(Str::formatTitle(__('quote.company_code_branch')))
+                    ->sortable(query: function (Builder $query, string $direction): Builder {
+                        return $query->orderBy(
+                            Company::query()
+                                ->select(Company::TABLE_NAME.'.'.Company::BRANCH)
+                                ->whereColumn(
+                                    Company::TABLE_NAME.'.'.Company::CODE,
+                                    '=',
+                                    Quote::TABLE_NAME.'.'.Quote::COMPANY_CODE
+                                )
+                                ->whereColumn(
+                                    Company::TABLE_NAME.'.'.Company::CODE_BRANCH,
+                                    '=',
+                                    Quote::TABLE_NAME.'.'.Quote::COMPANY_CODE_BRANCH
+                                )
+                                ->limit(1),
+                            $direction
+                        );
                     }),
 
                 TextColumn::make(Quote::RELATION_BUDGET.'.'.Budget::BUDGET_NUMBER)
@@ -162,17 +205,17 @@ class QuoteResource extends Resource
                     ->sortable(),
             ])
             ->filters([
-                TableFilter::make(Quote::COMPANY_ID)
-                    ->label(Str::formatTitle(__('quote.company_id')))
+                TableFilter::make(Quote::COMPANY_CODE)
+                    ->label(Str::formatTitle(__('quote.company_code')))
                     ->form([
-                        Select::make(Quote::COMPANY_ID)
-                            ->label(Str::formatTitle(__('quote.company_id')))
-                            ->options(fn () => Company::all()->pluck(Company::CODE_BRANCH_AND_BRANCH, Company::ID)),
+                        Select::make(Quote::COMPANY_CODE)
+                            ->label(Str::formatTitle(__('quote.company_code')))
+                            ->options(fn () => Company::all()->sortBy(Company::NAME)->pluck(Company::NAME, Company::CODE)),
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query->when(
-                            $data[Quote::COMPANY_ID],
-                            fn (Builder $query, int $companyId): Builder => $query->where(Quote::COMPANY_ID, '=', $companyId)
+                            $data[Quote::COMPANY_CODE],
+                            fn (Builder $query, string $companyCode): Builder => $query->where(Quote::COMPANY_CODE, '=', $companyCode)
                         );
                     }),
 

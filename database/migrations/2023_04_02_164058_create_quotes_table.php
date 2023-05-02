@@ -16,7 +16,7 @@ return new class extends Migration
     {
         Schema::create(Quote::TABLE_NAME, function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger(Quote::COMPANY_ID)->nullable();
+            $table->unsignedBigInteger('company_id')->nullable();
             $table->unsignedBigInteger(Quote::SUPPLIER_ID);
             $table->unsignedBigInteger(Quote::PAYMENT_CONDITION_ID);
             $table->unsignedBigInteger(Quote::BUYER_ID)->nullable();
@@ -26,7 +26,7 @@ return new class extends Migration
             $table->text(Quote::COMMENTS)->nullable();
             $table->timestamps();
 
-            $table->foreign(Quote::COMPANY_ID)
+            $table->foreign('company_id')
                 ->references(Company::ID)
                 ->on(Company::TABLE_NAME)
                 ->nullOnDelete();
