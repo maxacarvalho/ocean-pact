@@ -142,7 +142,7 @@ class ProductResource extends Resource
                     ->form([
                         Select::make(Product::COMPANY_CODE)
                             ->label(Str::formatTitle(__('product.company_code')))
-                            ->options(fn () => Company::all()->pluck(Company::CODE_BRANCH_AND_BRANCH, Company::ID)),
+                            ->options(fn () => Company::all()->sortBy(Company::NAME)->pluck(Company::NAME, Company::CODE)),
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query->when(

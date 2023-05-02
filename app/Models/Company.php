@@ -75,7 +75,7 @@ class Company extends Model
     protected function codeBranchAndBranch(): Attribute
     {
         return Attribute::make(
-            get: fn (mixed $value, array $attributes) => "{$attributes[self::CODE_BRANCH]} {$attributes[self::BRANCH]}"
+            get: fn (mixed $value, array $attributes) => "{$attributes[self::BUSINESS_NAME]} - {$attributes[self::BRANCH]}"
         );
     }
 
