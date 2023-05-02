@@ -8,6 +8,7 @@ use App\Models\Product;
 use Filament\Pages\Actions\CreateAction as PageCreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Query\Builder as DbQueryBuilder;
 
 class ListProducts extends ListRecords
 {
@@ -34,15 +35,37 @@ class ListProducts extends ListRecords
     {
         return parent::getTableQuery()
             ->select([
-                Product::TABLE_NAME.'.*',
-                Company::TABLE_NAME.'.'.Company::CODE_BRANCH,
-                Company::TABLE_NAME.'.'.Company::BRANCH,
+                Product::TABLE_NAME.'.'.Product::ID,
+                Product::TABLE_NAME.'.'.Product::COMPANY_CODE,
+                Product::TABLE_NAME.'.'.Product::COMPANY_CODE_BRANCH,
+                Product::TABLE_NAME.'.'.Product::CODE,
+                Product::TABLE_NAME.'.'.Product::DESCRIPTION,
+                Product::TABLE_NAME.'.'.Product::MEASUREMENT_UNIT,
+                Product::TABLE_NAME.'.'.Product::CREATED_AT,
+                Product::TABLE_NAME.'.'.Product::UPDATED_AT,
             ])
-            ->leftJoin(
-                Company::TABLE_NAME,
-                Company::TABLE_NAME.'.'.Company::ID,
-                '=',
-                Product::TABLE_NAME.'.'.Product::COMPANY_ID
-            );
+            ->addSelect([
+                'company_name' => fn (DbQueryBuilder $query) => $query->select(Company::BUSINESS_NAME)
+                    ->from(Company::TABLE_NAME)
+                    ->whereColumn(
+                        Company::TABLE_NAME.'.'.Company::CODE,
+                        '=',
+                        Product::TABLE_NAME.'.'.Product::COMPANY_CODE
+                    )
+                    ->limit(1),
+                'company_branch' => fn (DbQueryBuilder $query) => $query->select(Company::BRANCH)
+                    ->from(Company::TABLE_NAME)
+                    ->whereColumn(
+                        Company::TABLE_NAME.'.'.Company::CODE,
+                        '=',
+                        Product::TABLE_NAME.'.'.Product::COMPANY_CODE
+                    )
+                    ->whereColumn(
+                        Company::TABLE_NAME.'.'.Company::CODE_BRANCH,
+                        '=',
+                        Product::TABLE_NAME.'.'.Product::COMPANY_CODE_BRANCH
+                    )
+                    ->limit(1),
+            ]);
     }
 }

@@ -8,6 +8,7 @@ use App\Filament\Resources\ProductResource\Pages\ListProducts;
 use App\Models\Company;
 use App\Models\Product;
 use App\Utils\Str;
+use Closure;
 use Filament\Forms;
 use Filament\Forms\Components\Select;
 use Filament\Resources\Form;
@@ -19,7 +20,6 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter as TableFilter;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Contracts\Database\Query\Builder;
-use Illuminate\Database\Eloquent\Model;
 
 class ProductResource extends Resource
 {
@@ -46,11 +46,24 @@ class ProductResource extends Resource
     {
         return $form
             ->schema([
-                Select::make(Product::COMPANY_ID)
-                    ->label(Str::formatTitle(__('product.company_id')))
-                    ->relationship(Product::RELATION_COMPANY, Company::CODE_BRANCH)
-                    ->getOptionLabelFromRecordUsing(function (Model|Company $record) {
-                        return "$record->code_branch - $record->branch";
+                Select::make(Product::COMPANY_CODE)
+                    ->label(Str::formatTitle(__('product.company_code')))
+                    ->relationship(Product::RELATION_COMPANY, Company::NAME)
+                    ->reactive(),
+
+                Select::make(Product::COMPANY_CODE_BRANCH)
+                    ->label(Str::formatTitle(__('product.company_code_branch')))
+                    ->options(function (Closure $get) {
+                        $companyCode = $get(Product::COMPANY_CODE);
+
+                        if (null === $companyCode) {
+                            return [];
+                        }
+
+                        return Company::query()
+                            ->where(Company::CODE, '=', $companyCode)
+                            ->pluck(Company::BRANCH, Company::CODE_BRANCH)
+                            ->toArray();
                     }),
 
                 Forms\Components\TextInput::make(Product::CODE)
@@ -71,11 +84,41 @@ class ProductResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('company_info')
-                    ->label(Str::formatTitle(__('product.company')))
-                    ->sortable([Company::CODE_BRANCH, Company::BRANCH])
-                    ->formatStateUsing(function (?string $state, Model|Product|Company $record): ?string {
-                        return "{$record->code_branch} {$record->branch}";
+                TextColumn::make('company_name')
+                    ->label(Str::formatTitle(__('product.company_code')))
+                    ->sortable(query: function (Builder $query, string $direction): Builder {
+                        return $query->orderBy(
+                            Company::query()
+                                ->select(Company::TABLE_NAME.'.'.Company::BUSINESS_NAME)
+                                ->whereColumn(
+                                    Company::TABLE_NAME.'.'.Company::CODE,
+                                    '=',
+                                    Product::TABLE_NAME.'.'.Product::COMPANY_CODE
+                                )
+                                ->limit(1),
+                            $direction
+                        );
+                    }),
+
+                TextColumn::make('company_branch')
+                    ->label(Str::formatTitle(__('product.company_code_branch')))
+                    ->sortable(query: function (Builder $query, string $direction): Builder {
+                        return $query->orderBy(
+                            Company::query()
+                                ->select(Company::TABLE_NAME.'.'.Company::BRANCH)
+                                ->whereColumn(
+                                    Company::TABLE_NAME.'.'.Company::CODE,
+                                    '=',
+                                    Product::TABLE_NAME.'.'.Product::COMPANY_CODE
+                                )
+                                ->whereColumn(
+                                    Company::TABLE_NAME.'.'.Company::CODE_BRANCH,
+                                    '=',
+                                    Product::TABLE_NAME.'.'.Product::COMPANY_CODE_BRANCH
+                                )
+                                ->limit(1),
+                            $direction
+                        );
                     }),
 
                 TextColumn::make(Product::CODE)
@@ -94,17 +137,17 @@ class ProductResource extends Resource
                     ->sortable(),
             ])
             ->filters([
-                TableFilter::make(Product::COMPANY_ID)
-                    ->label(Str::formatTitle(__('budget.company_id')))
+                TableFilter::make(Product::COMPANY_CODE)
+                    ->label(Str::formatTitle(__('product.company_code')))
                     ->form([
-                        Select::make(Product::COMPANY_ID)
-                            ->label(Str::formatTitle(__('budget.company_id')))
+                        Select::make(Product::COMPANY_CODE)
+                            ->label(Str::formatTitle(__('product.company_code')))
                             ->options(fn () => Company::all()->pluck(Company::CODE_BRANCH_AND_BRANCH, Company::ID)),
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query->when(
-                            $data[Product::COMPANY_ID],
-                            fn (Builder $query, int $companyId): Builder => $query->where(Product::COMPANY_ID, '=', $companyId)
+                            $data[Product::COMPANY_CODE],
+                            fn (Builder $query, string $companyCode): Builder => $query->where(Product::COMPANY_CODE, '=', $companyCode)
                         );
                     }),
 

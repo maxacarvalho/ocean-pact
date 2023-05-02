@@ -8,7 +8,8 @@ use Illuminate\Support\Carbon;
 
 /**
  * @property int               $id
- * @property int|null          $company_id
+ * @property string            $company_code
+ * @property string|null       $company_code_branch
  * @property string            $code
  * @property string            $description
  * @property string            $measurement_unit
@@ -20,7 +21,8 @@ class Product extends Model
 {
     public const TABLE_NAME = 'products';
     public const ID = 'id';
-    public const COMPANY_ID = 'company_id';
+    public const COMPANY_CODE = 'company_code';
+    public const COMPANY_CODE_BRANCH = 'company_code_branch';
     public const CODE = 'code';
     public const DESCRIPTION = 'description';
     public const MEASUREMENT_UNIT = 'measurement_unit';
@@ -37,6 +39,10 @@ class Product extends Model
 
     public function company(): BelongsTo
     {
-        return $this->belongsTo(Company::class);
+        return $this->belongsTo(
+            Company::class,
+            self::COMPANY_CODE,
+            Company::CODE
+        );
     }
 }

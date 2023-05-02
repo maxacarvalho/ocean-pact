@@ -134,7 +134,7 @@ class BudgetResource extends Resource
                     ->label(Str::formatTitle(__('budget.company_code')))
                     ->form([
                         Select::make(Budget::COMPANY_CODE)
-                            ->label(Str::formatTitle(__('budget.company_id')))
+                            ->label(Str::formatTitle(__('budget.company_code')))
                             ->options(fn () => Company::all()->pluck(Company::CODE_BRANCH_AND_BRANCH, Company::CODE)),
                     ])
                     ->query(function (Builder $query, array $data): Builder {

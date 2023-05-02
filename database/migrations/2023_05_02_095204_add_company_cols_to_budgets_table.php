@@ -14,8 +14,8 @@ return new class extends Migration
             $table->dropForeign(['company_id']);
             $table->dropColumn('company_id');
 
-            $table->string(Budget::COMPANY_CODE)->index();
-            $table->string(Budget::COMPANY_CODE_BRANCH)->nullable()->index();
+            $table->string(Budget::COMPANY_CODE)->index()->after(Budget::ID);
+            $table->string(Budget::COMPANY_CODE_BRANCH)->nullable()->index()->after(Budget::COMPANY_CODE);
 
             $table->foreign(Budget::COMPANY_CODE)
                 ->references(Company::CODE)

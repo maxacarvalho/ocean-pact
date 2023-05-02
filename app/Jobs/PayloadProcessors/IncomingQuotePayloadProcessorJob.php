@@ -56,9 +56,9 @@ class IncomingQuotePayloadProcessorJob extends PayloadProcessor
 
         $budget = $this->findOrCreateBudget($data, $company);
 
-        $paymentCondition = $this->findPaymentCondition($data, $company);
+        $paymentCondition = $this->findPaymentCondition($data);
 
-        $codeToProductsMapping = $this->findOrCreateProducts($data, $company);
+        $codeToProductsMapping = $this->findOrCreateProducts($data);
 
         $quote = $this->createQuote($budget, $company, $supplier, $paymentCondition, $buyer, $data);
 
@@ -112,13 +112,14 @@ class IncomingQuotePayloadProcessorJob extends PayloadProcessor
         ]);
     }
 
-    private function findOrCreateProducts(ProtheusQuotePayloadData $data, Company $company): array
+    private function findOrCreateProducts(ProtheusQuotePayloadData $data): array
     {
         $products = [];
 
         foreach ($data->getProducts() as $product) {
             $newProduct = Product::query()->firstOrCreate([
-                Product::COMPANY_ID => $product->FILIAL ? $company->id : null,
+                Product::COMPANY_CODE => $data->EMPRESA,
+                Product::COMPANY_CODE_BRANCH => $data->FILIAL,
                 Product::CODE => $product->CODIGO,
                 Product::DESCRIPTION => $product->DESCRICAO,
                 Product::MEASUREMENT_UNIT => $product->UNIDADE_MEDIDA,
@@ -156,7 +157,7 @@ class IncomingQuotePayloadProcessorJob extends PayloadProcessor
         return $supplier;
     }
 
-    private function findOrCreateBudget(ProtheusQuotePayloadData $data, Company $company): Budget
+    private function findOrCreateBudget(ProtheusQuotePayloadData $data): Budget
     {
         /** @var Budget $budget */
         $budget = Budget::query()->firstOrCreate([
