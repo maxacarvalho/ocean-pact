@@ -13,7 +13,7 @@ use RuntimeException;
 /**
  * @property int                              $id
  * @property int                              $integration_type_id
- * @property string                           $payload
+ * @property array                            $payload
  * @property array|null                       $payload_hash
  * @property string|null                      $stored_at
  * @property PayloadStoringStatusEnum         $storing_status

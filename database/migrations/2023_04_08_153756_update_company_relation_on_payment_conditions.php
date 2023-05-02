@@ -14,15 +14,15 @@ return new class extends Migration
         Schema::table(PaymentCondition::TABLE_NAME, function (Blueprint $table) {
             $table->dropForeign('payment_conditions_company_branch_code_foreign');
 
-            $table->unsignedBigInteger(PaymentCondition::COMPANY_ID)->nullable()->after(PaymentCondition::ID);
-            $table->foreign(PaymentCondition::COMPANY_ID)
+            $table->unsignedBigInteger('company_id')->nullable()->after(PaymentCondition::ID);
+            $table->foreign('company_id')
                 ->references(Company::ID)
                 ->on(Company::TABLE_NAME)
                 ->nullOnDelete();
         });
 
         DB::statement(
-            'UPDATE '.PaymentCondition::TABLE_NAME.' SET '.PaymentCondition::COMPANY_ID.' = company_branch_code'
+            'UPDATE '.PaymentCondition::TABLE_NAME.' SET company_id = company_branch_code'
         );
 
         Schema::table(PaymentCondition::TABLE_NAME, function (Blueprint $table) {

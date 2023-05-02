@@ -31,6 +31,7 @@ class IncomingQuotePayloadProcessorJob extends PayloadProcessor
         $data = ProtheusQuotePayloadData::from($this->getPayload()->payload);
 
         try {
+            /** @var Company $company */
             $company = Company::query()
                 ->where(Company::CODE, '=', $data->EMPRESA)
                 ->where(Company::CODE_BRANCH, '=', $data->FILIAL)
@@ -157,25 +158,25 @@ class IncomingQuotePayloadProcessorJob extends PayloadProcessor
 
     private function findOrCreateBudget(ProtheusQuotePayloadData $data, Company $company): Budget
     {
-        return Budget::query()->firstOrCreate([
+        /** @var Budget $budget */
+        $budget = Budget::query()->firstOrCreate([
             Budget::COMPANY_ID => $company->id,
             Budget::BUDGET_NUMBER => $data->SOLICITACAO_DE_COMPRAS,
         ]);
+
+        return $budget;
     }
 
-    private function findPaymentCondition(ProtheusQuotePayloadData $data, Company $company): PaymentCondition
+    private function findPaymentCondition(ProtheusQuotePayloadData $data): PaymentCondition
     {
+        /** @var PaymentCondition $paymentCondition */
         $paymentCondition = PaymentCondition::query()
             ->where(PaymentCondition::CODE, '=', $data->COND_PAGTO)
-            ->where(PaymentCondition::COMPANY_ID, '=', $company->id)
-            ->first();
-
-        if (null === $paymentCondition) {
-            $paymentCondition = PaymentCondition::query()
-                ->where(PaymentCondition::CODE, '=', $data->COND_PAGTO)
-                ->whereNull(PaymentCondition::COMPANY_ID)
-                ->firstOrFail();
-        }
+            ->where(PaymentCondition::COMPANY_CODE, '=', $data->EMPRESA)
+            ->when($data->FILIAL, function (Builder $query) use ($data) {
+                $query->where(PaymentCondition::COMPANY_CODE_BRANCH, '=', $data->FILIAL);
+            })
+            ->firstOrFail();
 
         return $paymentCondition;
     }

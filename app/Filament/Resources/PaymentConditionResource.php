@@ -8,6 +8,7 @@ use App\Filament\Resources\PaymentConditionResource\Pages\ListPaymentConditions;
 use App\Models\Company;
 use App\Models\PaymentCondition;
 use App\Utils\Str;
+use Closure;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Form;
@@ -18,7 +19,6 @@ use Filament\Tables\Actions\EditAction as TableEditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter as TableFilter;
 use Illuminate\Contracts\Database\Query\Builder;
-use Illuminate\Database\Eloquent\Model;
 
 class PaymentConditionResource extends Resource
 {
@@ -45,11 +45,24 @@ class PaymentConditionResource extends Resource
     {
         return $form
             ->schema([
-                Select::make(PaymentCondition::COMPANY_ID)
-                    ->label(Str::formatTitle(__('payment_condition.company_id')))
-                    ->relationship(PaymentCondition::RELATION_COMPANY, Company::CODE_BRANCH)
-                    ->getOptionLabelFromRecordUsing(function (Model|Company $record) {
-                        return "$record->code_branch - $record->branch";
+                Select::make(PaymentCondition::COMPANY_CODE)
+                    ->label(Str::formatTitle(__('payment_condition.company_code')))
+                    ->relationship(PaymentCondition::RELATION_COMPANY, Company::NAME)
+                    ->reactive(),
+
+                Select::make(PaymentCondition::COMPANY_CODE_BRANCH)
+                    ->label(Str::formatTitle(__('payment_condition.company_code_branch')))
+                    ->options(function (Closure $get) {
+                        $companyCode = $get(PaymentCondition::COMPANY_CODE);
+
+                        if (null === $companyCode) {
+                            return [];
+                        }
+
+                        return Company::query()
+                            ->where(Company::CODE, '=', $companyCode)
+                            ->pluck(Company::BRANCH, Company::CODE_BRANCH)
+                            ->toArray();
                     }),
 
                 TextInput::make(PaymentCondition::CODE)
@@ -70,11 +83,41 @@ class PaymentConditionResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('company_info')
-                    ->label(Str::formatTitle(__('payment_condition.company')))
-                    ->sortable([Company::CODE_BRANCH, Company::BRANCH])
-                    ->formatStateUsing(function (?string $state, Model|PaymentCondition|Company $record): ?string {
-                        return "{$record->code_branch} {$record->branch}";
+                TextColumn::make('company_name')
+                    ->label(Str::formatTitle(__('payment_condition.company_code')))
+                    ->sortable(query: function (Builder $query, string $direction): Builder {
+                        return $query->orderBy(
+                            Company::query()
+                                ->select(Company::TABLE_NAME.'.'.Company::BUSINESS_NAME)
+                                ->whereColumn(
+                                    Company::TABLE_NAME.'.'.Company::CODE,
+                                    '=',
+                                    PaymentCondition::TABLE_NAME.'.'.PaymentCondition::COMPANY_CODE
+                                )
+                                ->limit(1),
+                            $direction
+                        );
+                    }),
+
+                TextColumn::make('company_branch')
+                    ->label(Str::formatTitle(__('payment_condition.company_code_branch')))
+                    ->sortable(query: function (Builder $query, string $direction): Builder {
+                        return $query->orderBy(
+                            Company::query()
+                                ->select(Company::TABLE_NAME.'.'.Company::BRANCH)
+                                ->whereColumn(
+                                    Company::TABLE_NAME.'.'.Company::CODE,
+                                    '=',
+                                    PaymentCondition::TABLE_NAME.'.'.PaymentCondition::COMPANY_CODE
+                                )
+                                ->whereColumn(
+                                    Company::TABLE_NAME.'.'.Company::CODE_BRANCH,
+                                    '=',
+                                    PaymentCondition::TABLE_NAME.'.'.PaymentCondition::COMPANY_CODE_BRANCH
+                                )
+                                ->limit(1),
+                            $direction
+                        );
                     }),
 
                 TextColumn::make(PaymentCondition::CODE)
@@ -88,17 +131,17 @@ class PaymentConditionResource extends Resource
                     ->searchable(),
             ])
             ->filters([
-                TableFilter::make(PaymentCondition::COMPANY_ID)
-                    ->label(Str::formatTitle(__('budget.company_id')))
+                TableFilter::make(PaymentCondition::COMPANY_CODE)
+                    ->label(Str::formatTitle(__('budget.company_code')))
                     ->form([
-                        Select::make(PaymentCondition::COMPANY_ID)
-                            ->label(Str::formatTitle(__('budget.company_id')))
-                            ->options(fn () => Company::all()->pluck(Company::CODE_BRANCH_AND_BRANCH, Company::ID)),
+                        Select::make(PaymentCondition::COMPANY_CODE)
+                            ->label(Str::formatTitle(__('budget.company_code')))
+                            ->options(fn () => Company::all()->pluck(Company::CODE_BRANCH_AND_BRANCH, Company::CODE)),
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query->when(
-                            $data[PaymentCondition::COMPANY_ID],
-                            fn (Builder $query, int $companyId): Builder => $query->where(PaymentCondition::COMPANY_ID, '=', $companyId)
+                            $data[PaymentCondition::COMPANY_CODE],
+                            fn (Builder $query, string $companyCode): Builder => $query->where(PaymentCondition::COMPANY_CODE, '=', $companyCode)
                         );
                     }),
             ])
