@@ -11,9 +11,6 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table(Budget::TABLE_NAME, function (Blueprint $table) {
-            $table->dropForeign(['company_id']);
-            $table->dropColumn('company_id');
-
             $table->string(Budget::COMPANY_CODE, 10)->index()->after(Budget::ID);
             $table->string(Budget::COMPANY_CODE_BRANCH, 10)->nullable()->index()->after(Budget::COMPANY_CODE);
 
