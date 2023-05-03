@@ -14,7 +14,6 @@ use App\Models\Role;
 use App\Models\Supplier;
 use App\Models\User;
 use App\Utils\Str;
-use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Log;
 
@@ -52,9 +51,9 @@ class IncomingQuotePayloadProcessorJob extends PayloadProcessor
 
         $buyer = $this->findOrCreateBuyer($data, $company);
 
-        $supplier = $this->findOrCreateSupplier($data, $company);
+        $supplier = $this->findOrCreateSupplier($data);
 
-        $budget = $this->findOrCreateBudget($data, $company);
+        $budget = $this->findOrCreateBudget($data);
 
         $paymentCondition = $this->findPaymentCondition($data);
 
@@ -77,8 +76,10 @@ class IncomingQuotePayloadProcessorJob extends PayloadProcessor
 
     private function findOrCreateBuyer(ProtheusQuotePayloadData $data, Company $company): User
     {
+        /** @var User|null $buyer */
         $buyer = User::query()->where(User::BUYER_CODE, '=', $data->COMPRADOR->CODIGO)->first();
         if (null === $buyer) {
+            /** @var User $buyer */
             $buyer = User::query()->create([
                 User::BUYER_CODE => $data->COMPRADOR->CODIGO,
                 User::NAME => $data->COMPRADOR->NOME,
@@ -131,7 +132,7 @@ class IncomingQuotePayloadProcessorJob extends PayloadProcessor
         return $products;
     }
 
-    private function findOrCreateSupplier(ProtheusQuotePayloadData $data, Company $company): Supplier
+    private function findOrCreateSupplier(ProtheusQuotePayloadData $data): Supplier
     {
         $supplier = Supplier::query()
             ->where(Supplier::COMPANY_CODE, '=', $data->EMPRESA)
@@ -173,12 +174,12 @@ class IncomingQuotePayloadProcessorJob extends PayloadProcessor
     {
         /** @var PaymentCondition $paymentCondition */
         $paymentCondition = PaymentCondition::query()
-            ->where(PaymentCondition::CODE, '=', $data->COND_PAGTO)
-            ->where(PaymentCondition::COMPANY_CODE, '=', $data->EMPRESA)
-            ->when($data->FILIAL, function (Builder $query) use ($data) {
-                $query->where(PaymentCondition::COMPANY_CODE_BRANCH, '=', $data->FILIAL);
-            })
-            ->firstOrFail();
+            ->firstOrCreate([
+                PaymentCondition::CODE => $data->COND_PAGTO->CODIGO,
+                PaymentCondition::COMPANY_CODE => $data->EMPRESA,
+                PaymentCondition::COMPANY_CODE_BRANCH => $data->COND_PAGTO->FILIAL,
+                PaymentCondition::DESCRIPTION => $data->COND_PAGTO->DESCRICAO,
+            ]);
 
         return $paymentCondition;
     }

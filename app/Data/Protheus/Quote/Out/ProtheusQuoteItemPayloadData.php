@@ -10,14 +10,17 @@ use Spatie\LaravelData\Data;
 
 class ProtheusQuoteItemPayloadData extends Data
 {
-    public string $DESCRICAO;
-    public string $UNIDADE_MEDIDA;
-    public string $ITEM;
-    public float $QUANTIDADE;
-    public float $PRECO_UNITARIO;
-    #[WithCast(DateTimeInterfaceCast::class)]
-    public DateTime $DATA_ENTREGA;
-    public bool $INCLUIR_NA_COTACAO;
-    public string|null $OBS;
-    public ProtheusProductPayloadData $PRODUTO;
+    public function __construct(
+        public string $DESCRICAO,
+        public string $UNIDADE_MEDIDA,
+        public string $ITEM,
+        public float $QUANTIDADE,
+        public float $PRECO_UNITARIO,
+        #[WithCast(DateTimeInterfaceCast::class)]
+        public DateTime $DATA_ENTREGA,
+        public bool $INCLUIR_NA_COTACAO,
+        public ?string $OBS,
+        public ProtheusProductPayloadData $PRODUTO
+    ) {
+    }
 }
