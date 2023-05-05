@@ -54,12 +54,19 @@ class StorePayloadController extends Controller
         }
 
         try {
+            /** @var Payload $payloadModel */
             $payloadModel = $integrationType->payloads()->create([
                 Payload::PAYLOAD => $payloadInput,
                 Payload::PAYLOAD_HASH => md5(json_encode($payloadInput, JSON_THROW_ON_ERROR)),
                 Payload::STORED_AT => now(),
                 Payload::PROCESSING_STATUS => PayloadProcessingStatusEnum::READY(),
             ]);
+
+            if ($integrationType->isProcessable() && $integrationType->isSynchronous()) {
+                return response()->json([
+                    'id' => $payloadModel->dispatchToProcessor(),
+                ], Response::HTTP_CREATED);
+            }
 
             if ($integrationType->isProcessable()) {
                 $payloadModel->dispatchToProcessor();

@@ -108,6 +108,11 @@ class IntegrationType extends Model
         return $this->is_enabled && $this->processor;
     }
 
+    public function isSynchronous(): bool
+    {
+        return $this->is_synchronous;
+    }
+
     public function getProcessor(): ?string
     {
         return $this->processor;

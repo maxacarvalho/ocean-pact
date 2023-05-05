@@ -19,7 +19,10 @@ class PayloadProcessor implements PayloadProcessorInterface, ShouldQueue
 
     public function __construct(int $payloadId)
     {
-        $this->payload = Payload::query()->findOrFail($payloadId);
+        /** @var Payload $payload */
+        $payload = Payload::query()->findOrFail($payloadId);
+
+        $this->payload = $payload;
     }
 
     public function getPayload(): Payload

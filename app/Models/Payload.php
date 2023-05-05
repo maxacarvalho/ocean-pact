@@ -103,20 +103,26 @@ class Payload extends Model
         ]);
     }
 
-    public function dispatchToProcessor(): void
+    public function dispatchToProcessor(): ?int
     {
-        /** @var PayloadProcessor $processor */
-        $processor = $this->integrationType->getProcessor();
-
-        if (is_null($processor)) {
+        if (is_null($this->integrationType->getProcessor())) {
             throw new RuntimeException('No processor defined for this integration type');
         }
 
-        if ($this->integrationType->is_synchronous) {
-            $processor::dispatchSync($this->id);
+        if ($this->integrationType->isSynchronous()) {
+            $processClass = $this->integrationType->getProcessor();
+
+            /** @var PayloadProcessor $processor */
+            $processor = new $processClass($this->id);
+
+            return $processor->handle();
         } else {
+            /** @var PayloadProcessor $processor */
+            $processor = $this->integrationType->getProcessor();
             $processor::dispatch($this->id);
         }
+
+        return null;
     }
 
     public function markAsFailed(string $error): void

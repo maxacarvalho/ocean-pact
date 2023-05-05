@@ -19,12 +19,12 @@ use Illuminate\Support\Facades\Log;
 
 class IncomingQuotePayloadProcessorJob extends PayloadProcessor
 {
-    public function handle(): void
+    public function handle(): ?int
     {
         if (! $this->getPayload()->isReady()) {
             $this->delete();
 
-            return;
+            return null;
         }
 
         $data = ProtheusQuotePayloadData::from($this->getPayload()->payload);
@@ -46,7 +46,7 @@ class IncomingQuotePayloadProcessorJob extends PayloadProcessor
 
             $this->delete();
 
-            return;
+            return null;
         }
 
         $buyer = $this->findOrCreateBuyer($data, $company);
@@ -72,6 +72,8 @@ class IncomingQuotePayloadProcessorJob extends PayloadProcessor
                 QuoteItem::COMMENTS => $item->OBS,
             ]);
         }
+
+        return $quote->id;
     }
 
     private function findOrCreateBuyer(ProtheusQuotePayloadData $data, Company $company): User
