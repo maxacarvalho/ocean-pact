@@ -22,7 +22,7 @@ class ProtheusProductPayloadData extends Data
             CODIGO: $quoteItem->product->code,
             DESCRICAO: $quoteItem->product->description,
             UNIDADE_MEDIDA: $quoteItem->product->measurement_unit,
-            FILIAL: $quoteItem->product->company ? $quoteItem->product->company->code_branch : null
+            FILIAL: $quoteItem->product->company_code_branch
         );
     }
 }

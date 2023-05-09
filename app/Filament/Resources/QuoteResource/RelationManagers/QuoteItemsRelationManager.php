@@ -70,10 +70,9 @@ class QuoteItemsRelationManager extends RelationManager
 
                 Grid::make(3)
                     ->schema([
-                        TextInput::make(QuoteItem::QUANTITY)
+                        Placeholder::make(QuoteItem::QUANTITY)
                             ->label(Str::formatTitle(__('quote_item.quantity')))
-                            ->numeric()
-                            ->required(fn (Closure $get) => $get(QuoteItem::SHOULD_BE_QUOTED)),
+                            ->content(fn (Model|QuoteItem $record) => $record->quantity),
 
                         TextInput::make(QuoteItem::UNIT_PRICE)
                             ->label(Str::formatTitle(__('quote_item.unit_price')))
@@ -97,6 +96,7 @@ class QuoteItemsRelationManager extends RelationManager
 
                         DatePicker::make(QuoteItem::DELIVERY_DATE)
                             ->label(Str::formatTitle(__('quote_item.delivery_date')))
+                            ->displayFormat('d/m/Y')
                             ->required(fn (Closure $get) => $get(QuoteItem::SHOULD_BE_QUOTED)),
                     ])
                     ->columnSpanFull(),
@@ -156,8 +156,9 @@ class QuoteItemsRelationManager extends RelationManager
                     ->label(Str::formatTitle(__('quote_item.delivery_date')))
                     ->date(),
 
-                IconColumn::make(QuoteItem::SHOULD_BE_QUOTED)->boolean()
-                    ->label(Str::formatTitle(__('quote_item.should_be_quoted'))),
+                IconColumn::make(QuoteItem::SHOULD_BE_QUOTED)
+                    ->label(Str::formatTitle(__('quote_item.should_be_quoted')))
+                    ->boolean(),
             ])
             ->filters([
                 //

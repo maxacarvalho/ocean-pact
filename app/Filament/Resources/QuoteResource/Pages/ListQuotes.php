@@ -5,10 +5,12 @@ namespace App\Filament\Resources\QuoteResource\Pages;
 use App\Filament\Resources\QuoteResource;
 use App\Models\Company;
 use App\Models\Quote;
+use App\Models\User;
 use Filament\Pages\Actions\CreateAction as PageCreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\Builder as DbQueryBuilder;
+use Illuminate\Support\Facades\Auth;
 
 class ListQuotes extends ListRecords
 {
@@ -33,6 +35,9 @@ class ListQuotes extends ListRecords
 
     protected function getTableQuery(): Builder
     {
+        /** @var User $user */
+        $user = Auth::user();
+
         return parent::getTableQuery()
             ->select([
                 Quote::TABLE_NAME.'.'.Quote::ID,
@@ -71,6 +76,9 @@ class ListQuotes extends ListRecords
                         Quote::TABLE_NAME.'.'.Quote::COMPANY_CODE_BRANCH
                     )
                     ->limit(1),
-            ]);
+            ])
+            ->when($user->isSeller(), function (Builder $query) use ($user) {
+                $query->where(Quote::TABLE_NAME.'.'.Quote::SUPPLIER_ID, '=', $user->supplier_id);
+            });
     }
 }

@@ -36,8 +36,8 @@ class ProtheusQuotePayloadData extends Data
     public static function fromQuote(Quote $quote): self
     {
         return new self(
-            EMPRESA: $quote->company->code,
-            FILIAL: $quote->company->code_branch,
+            EMPRESA: $quote->company_code,
+            FILIAL: $quote->company_code_branch,
             SOLICITACAO_DE_COMPRAS: $quote->budget->budget_number,
             COTACAO: $quote->quote_number,
             DATA_LIMITE_RESPOSTA: $quote->valid_until,

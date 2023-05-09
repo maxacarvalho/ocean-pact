@@ -130,6 +130,7 @@ class QuoteResource extends Resource
                 DatePicker::make(Quote::VALID_UNTIL)
                     ->label(Str::formatTitle(__('quote.valid_until')))
                     ->required()
+                    ->displayFormat('d/m/Y')
                     ->hiddenOn('create'),
 
                 Textarea::make(Quote::COMMENTS)
@@ -182,7 +183,14 @@ class QuoteResource extends Resource
                 TextColumn::make(Quote::RELATION_BUDGET.'.'.Budget::BUDGET_NUMBER)
                     ->label(Str::formatTitle(__('quote.budget_number')))
                     ->sortable()
-                    ->searchable(),
+                    ->searchable()
+                    ->visible(fn () => Auth::user()->isSuperAdmin() || Auth::user()->isAdmin() || Auth::user()->isSeller()),
+
+                TextColumn::make(Quote::RELATION_SUPPLIER.'.'.Supplier::NAME)
+                    ->label(Str::formatTitle(__('quote.supplier')))
+                    ->sortable()
+                    ->searchable()
+                    ->visible(fn () => Auth::user()->isSuperAdmin() || Auth::user()->isAdmin() || Auth::user()->isBuyer()),
 
                 TextColumn::make(Quote::QUOTE_NUMBER)
                     ->label(Str::formatTitle(__('quote.quote_number')))

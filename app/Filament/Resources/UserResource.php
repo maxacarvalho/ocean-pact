@@ -19,6 +19,7 @@ use Filament\Resources\Resource;
 use Filament\Resources\Table;
 use Filament\Tables\Actions\DeleteBulkAction as TableDeleteBulkAction;
 use Filament\Tables\Actions\EditAction as TableEditAction;
+use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Illuminate\Database\Eloquent\Model;
 use STS\FilamentImpersonate\Impersonate;
@@ -126,13 +127,17 @@ class UserResource extends Resource
                 TextColumn::make(User::EMAIL)
                     ->label(Str::formatTitle(__('user.email'))),
 
-                TextColumn::make(User::CREATED_AT)
-                    ->label(Str::formatTitle(__('user.created_at')))
-                    ->dateTime(),
+                IconColumn::make('buyer')
+                    ->label(Str::formatTitle(__('user.is_buyer')))
+                    ->options([
+                        'heroicon-o-check-circle' => fn ($state, Model|User $record): bool => $record->isBuyer(),
+                    ]),
 
-                TextColumn::make(User::UPDATED_AT)
-                    ->label(Str::formatTitle(__('user.updated_at')))
-                    ->dateTime(),
+                IconColumn::make('seller')
+                    ->label(Str::formatTitle(__('user.is_seller')))
+                    ->options([
+                        'heroicon-o-check-circle' => fn ($state, Model|User $record): bool => $record->isSeller(),
+                    ]),
             ])
             ->filters([
                 //

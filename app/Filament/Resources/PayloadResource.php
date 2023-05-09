@@ -133,9 +133,11 @@ class PayloadResource extends Resource
                     })
                     ->form([
                         DatePicker::make('stored_at_from')
-                            ->label(Str::formatTitle(__('payload.stored_at_from'))),
+                            ->label(Str::formatTitle(__('payload.stored_at_from')))
+                            ->displayFormat('d/m/Y'),
                         DatePicker::make('stored_at_until')
-                            ->label(Str::formatTitle(__('payload.stored_at_until'))),
+                            ->label(Str::formatTitle(__('payload.stored_at_until')))
+                            ->displayFormat('d/m/Y'),
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query

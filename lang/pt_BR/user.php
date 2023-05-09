@@ -20,4 +20,6 @@ return [
     'roles' => 'funções',
     'companies' => 'empresas',
     'user_type' => 'tipo de usuário',
+    'is_seller' => 'vendedor',
+    'is_buyer' => 'comprador',
 ];
