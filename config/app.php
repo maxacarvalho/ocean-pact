@@ -213,4 +213,8 @@ return [
         // 'ExampleClass' => App\Example\ExampleClass::class,
     ])->toArray(),
 
+    'domain' => env('FILAMENT_DOMAIN'),
+
+    'path' => env('FILAMENT_PATH', 'admin'),
+
 ];

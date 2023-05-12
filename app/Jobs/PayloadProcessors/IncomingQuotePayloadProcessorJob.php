@@ -5,6 +5,7 @@ namespace App\Jobs\PayloadProcessors;
 use App\Data\Protheus\Quote\In\ProtheusQuotePayloadData;
 use App\Enums\QuoteStatusEnum;
 use App\Models\Budget;
+use App\Models\BuyerInvitation;
 use App\Models\Company;
 use App\Models\PaymentCondition;
 use App\Models\Product;
@@ -80,6 +81,7 @@ class IncomingQuotePayloadProcessorJob extends PayloadProcessor
     {
         /** @var User|null $buyer */
         $buyer = User::query()->where(User::BUYER_CODE, '=', $data->COMPRADOR->CODIGO)->first();
+
         if (null === $buyer) {
             /** @var User $buyer */
             $buyer = User::query()->create([
@@ -91,6 +93,11 @@ class IncomingQuotePayloadProcessorJob extends PayloadProcessor
             ]);
             $buyer->assignRole(Role::ROLE_BUYER);
             $buyer->companies()->attach($company->id);
+
+            BuyerInvitation::query()->create([
+                BuyerInvitation::BUYER_ID => $buyer->id,
+                BuyerInvitation::TOKEN => Str::uuid(),
+            ]);
         }
 
         return $buyer;

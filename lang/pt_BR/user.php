@@ -11,6 +11,7 @@ return [
     'email' => 'e-mail',
     'email_verified_at' => 'verificado em',
     'password' => 'senha',
+    'password_confirm' => 'confirmação de senha',
     'two_factor_secret' => 'segredo de autenticação de dois fatores',
     'two_factor_recovery_codes' => 'códigos de recuperação de autenticação de dois fatores',
     'two_factor_confirmed_at' => 'autenticação de dois fatores confirmada em',
