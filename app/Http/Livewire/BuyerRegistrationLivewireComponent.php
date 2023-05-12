@@ -43,7 +43,7 @@ class BuyerRegistrationLivewireComponent extends Component implements HasForms
         $this->invitation = BuyerInvitation::query()
             ->with(BuyerInvitation::RELATION_BUYER)
             ->where(BuyerInvitation::TOKEN, '=', $token)
-            ->where(BuyerInvitation::STATUS, '=', InvitationStatusEnum::PENDING())
+            ->where(BuyerInvitation::STATUS, '=', InvitationStatusEnum::SENT())
             ->firstOrFail();
 
         $this->user = $this->invitation->buyer;
