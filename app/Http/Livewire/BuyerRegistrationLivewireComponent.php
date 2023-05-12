@@ -76,6 +76,7 @@ class BuyerRegistrationLivewireComponent extends Component implements HasForms
 
         $user->password = Hash::make($this->password);
         $user->setRememberToken(Str::random(60));
+        $user->is_draft = false;
         $user->save();
 
         $this->invitation->update([
