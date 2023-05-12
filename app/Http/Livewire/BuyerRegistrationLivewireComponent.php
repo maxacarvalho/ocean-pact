@@ -46,6 +46,10 @@ class BuyerRegistrationLivewireComponent extends Component implements HasForms
             ->where(BuyerInvitation::STATUS, '=', InvitationStatusEnum::SENT())
             ->firstOrFail();
 
+        if (null !== $this->invitation->buyer) {
+            abort(404);
+        }
+
         $this->user = $this->invitation->buyer;
         $this->email = $this->user->email;
 
