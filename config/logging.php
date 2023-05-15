@@ -1,5 +1,6 @@
 <?php
 
+use Logtail\Monolog\LogtailHandler;
 use Monolog\Handler\NullHandler;
 use Monolog\Handler\StreamHandler;
 use Monolog\Handler\SyslogUdpHandler;
@@ -53,7 +54,7 @@ return [
     'channels' => [
         'stack' => [
             'driver' => 'stack',
-            'channels' => ['single'],
+            'channels' => ['single', 'logtail'],
             'ignore_exceptions' => false,
         ],
 
@@ -86,6 +87,16 @@ return [
                 'host' => env('PAPERTRAIL_URL'),
                 'port' => env('PAPERTRAIL_PORT'),
                 'connectionString' => 'tls://'.env('PAPERTRAIL_URL').':'.env('PAPERTRAIL_PORT'),
+            ],
+        ],
+
+        'logtail' => [
+            'driver' => 'monolog',
+            'level' => env('LOG_LEVEL', 'debug'),
+            'handler' => env('LOG_LOGTAIL_HANDLER', LogtailHandler::class),
+            'handler_with' => [
+                'sourceToken' => env('LOGTAIL_TOKEN'),
+                'level' => env('LOGTAIL_LEVEL', 'debug'),
             ],
         ],
 
