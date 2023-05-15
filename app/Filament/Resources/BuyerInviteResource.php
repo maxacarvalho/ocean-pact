@@ -68,12 +68,13 @@ class BuyerInviteResource extends Resource
 
                 TextColumn::make(BuyerInvitation::SENT_AT)
                     ->label(Str::formatTitle(__('invitation.sent_at')))
-                    ->dateTime(),
+                    ->dateTime('d/m/Y H:i:s'),
 
                 TextColumn::make(BuyerInvitation::REGISTERED_AT)
                     ->label(Str::formatTitle(__('invitation.registered_at')))
-                    ->dateTime(),
-            ]);
+                    ->dateTime('d/m/Y H:i:s'),
+            ])
+            ->actions([]);
     }
 
     public static function getPages(): array
@@ -81,7 +82,6 @@ class BuyerInviteResource extends Resource
         return [
             'index' => Pages\ListBuyerInvites::route('/'),
             'create' => Pages\CreateBuyerInvite::route('/create'),
-            'edit' => Pages\EditBuyerInvite::route('/{record}/edit'),
         ];
     }
 }

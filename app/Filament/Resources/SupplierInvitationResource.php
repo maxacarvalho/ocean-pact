@@ -58,7 +58,7 @@ class SupplierInvitationResource extends Resource
 
                 TextColumn::make(SupplierInvitation::SENT_AT)
                     ->label(Str::formatTitle(__('invitation.sent_at')))
-                    ->dateTime(),
+                    ->dateTime('d/m/Y H:i:s'),
 
                 TextColumn::make(SupplierInvitation::STATUS)
                     ->label(Str::formatTitle(__('invitation.status')))
@@ -71,7 +71,7 @@ class SupplierInvitationResource extends Resource
         return [
             'index' => Pages\ListSupplierInvitations::route('/'),
             'create' => Pages\CreateSupplierInvitation::route('/create'),
-            'edit' => Pages\EditSupplierInvitation::route('/{record}/edit'),
+            // 'edit' => Pages\EditSupplierInvitation::route('/{record}/edit'),
         ];
     }
 }
