@@ -6,7 +6,7 @@ use App\Models\BuyerInvitation;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-class BuyerInvitePolicy
+class BuyerInvitationPolicy
 {
     use HandlesAuthorization;
 
