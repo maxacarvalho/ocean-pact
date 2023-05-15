@@ -3,7 +3,6 @@
 namespace App\Filament\Resources\BuyerInviteResource\Pages;
 
 use App\Filament\Resources\BuyerInviteResource;
-use Filament\Pages\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
 
 class EditBuyerInvite extends EditRecord
@@ -12,8 +11,6 @@ class EditBuyerInvite extends EditRecord
 
     protected function getActions(): array
     {
-        return [
-            DeleteAction::make(),
-        ];
+        return [];
     }
 }

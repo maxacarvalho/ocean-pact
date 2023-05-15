@@ -13,6 +13,7 @@ use App\Models\Quote;
 use App\Models\QuoteItem;
 use App\Models\Role;
 use App\Models\Supplier;
+use App\Models\SupplierInvitation;
 use App\Models\User;
 use App\Utils\Str;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -74,6 +75,12 @@ class IncomingQuotePayloadProcessorJob extends PayloadProcessor
             ]);
         }
 
+        SupplierInvitation::query()->create([
+            SupplierInvitation::SUPPLIER_ID => $supplier->id,
+            SupplierInvitation::QUOTE_ID => $quote->id,
+            SupplierInvitation::TOKEN => Str::uuid(),
+        ]);
+
         return $quote->id;
     }
 
@@ -127,6 +134,7 @@ class IncomingQuotePayloadProcessorJob extends PayloadProcessor
         $products = [];
 
         foreach ($data->getProducts() as $product) {
+            /** @var Product $newProduct */
             $newProduct = Product::query()->firstOrCreate([
                 Product::COMPANY_CODE => $data->EMPRESA,
                 Product::COMPANY_CODE_BRANCH => $data->FILIAL,
@@ -143,7 +151,9 @@ class IncomingQuotePayloadProcessorJob extends PayloadProcessor
 
     private function findOrCreateSupplier(ProtheusQuotePayloadData $data): Supplier
     {
+        /** @var Supplier|null $supplier */
         $supplier = Supplier::query()
+            ->with(Supplier::RELATION_USERS)
             ->where(Supplier::COMPANY_CODE, '=', $data->EMPRESA)
             ->where(Supplier::COMPANY_CODE_BRANCH, '=', $data->FILIAL)
             ->where(Supplier::CODE, '=', $data->FORNECEDOR->CODIGO)

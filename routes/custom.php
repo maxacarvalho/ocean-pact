@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Livewire\BuyerRegistrationLivewireComponent;
+use App\Http\Livewire\SupplierInvitationLivewireComponent;
 use Illuminate\Routing\Router;
 
 Route::domain(config('filament.domain'))
@@ -10,4 +11,7 @@ Route::domain(config('filament.domain'))
     ->group(function (Router $router) {
         $router->get('buyer-registration/{token}', BuyerRegistrationLivewireComponent::class)
             ->name('buyer-registration');
+
+        $router->get('supplier-registration/{token}', SupplierInvitationLivewireComponent::class)
+            ->name('supplier-registration');
     });

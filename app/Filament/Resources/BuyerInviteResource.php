@@ -84,9 +84,4 @@ class BuyerInviteResource extends Resource
             'edit' => Pages\EditBuyerInvite::route('/{record}/edit'),
         ];
     }
-
-    public static function getGloballySearchableAttributes(): array
-    {
-        return [];
-    }
 }

@@ -59,6 +59,7 @@ class Supplier extends Model
 
     // Relations
     public const RELATION_COMPANY = 'company';
+    public const RELATION_USERS = 'users';
 
     protected $table = self::TABLE_NAME;
     protected $guarded = [

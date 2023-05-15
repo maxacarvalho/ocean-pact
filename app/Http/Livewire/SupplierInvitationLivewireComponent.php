@@ -3,7 +3,9 @@
 namespace App\Http\Livewire;
 
 use App\Enums\InvitationStatusEnum;
-use App\Models\BuyerInvitation;
+use App\Models\Role;
+use App\Models\Supplier;
+use App\Models\SupplierInvitation;
 use App\Models\User;
 use App\Utils\Str;
 use Filament\Facades\Filament;
@@ -12,7 +14,7 @@ use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
-use Filament\Notifications\Notification;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Hash;
@@ -21,13 +23,13 @@ use Livewire\Component;
 /**
  * @property ComponentContainer $form
  */
-class BuyerRegistrationLivewireComponent extends Component implements HasForms
+class SupplierInvitationLivewireComponent extends Component implements HasForms
 {
     use InteractsWithForms;
 
     public $token;
-    public User $user;
-    public BuyerInvitation|Model $invitation;
+    public Supplier $supplier;
+    public SupplierInvitation|Model $invitation;
     public $name;
     public $email;
     public $password;
@@ -41,28 +43,25 @@ class BuyerRegistrationLivewireComponent extends Component implements HasForms
             return;
         }
 
-        $this->invitation = BuyerInvitation::query()
-            ->with(BuyerInvitation::RELATION_BUYER)
-            ->where(BuyerInvitation::TOKEN, '=', $token)
-            ->where(BuyerInvitation::STATUS, '=', InvitationStatusEnum::SENT())
+        $this->invitation = SupplierInvitation::query()
+            ->with([
+                SupplierInvitation::RELATION_SUPPLIER,
+                SupplierInvitation::RELATION_QUOTE,
+            ])
+            ->where(SupplierInvitation::TOKEN, '=', $token)
+            ->where(SupplierInvitation::STATUS, '=', InvitationStatusEnum::SENT())
             ->firstOrFail();
 
-        if (null === $this->invitation->buyer) {
+        if (null === $this->invitation->supplier) {
             abort(404);
         }
 
-        $this->user = $this->invitation->buyer;
-        $this->email = $this->user->email;
-
-        $this->form->fill([
-            User::EMAIL => $this->user->email,
-            User::NAME => $this->user->name,
-        ]);
+        $this->supplier = $this->invitation->supplier;
     }
 
     public function render(): View
     {
-        $view = view('livewire.buyer-registration');
+        $view = view('livewire.supplier-invitation');
 
         $view->layout('filament::components.layouts.base', [
             'title' => Str::ucfirst(__('invitation.buyer_registration_page_title')),
@@ -73,36 +72,38 @@ class BuyerRegistrationLivewireComponent extends Component implements HasForms
 
     public function submit(): void
     {
-        $user = $this->user;
-
-        $user->password = Hash::make($this->password);
-        $user->setRememberToken(Str::random(60));
-        $user->is_draft = false;
-        $user->save();
-
-        $this->invitation->update([
-            BuyerInvitation::STATUS => InvitationStatusEnum::ACCEPTED(),
-            BuyerInvitation::REGISTERED_AT => now(),
+        /** @var User $user */
+        $user = User::query()->create([
+            User::NAME => $this->name,
+            User::EMAIL => $this->email,
+            User::PASSWORD => Hash::make($this->password),
+            User::SUPPLIER_ID => $this->supplier->id,
         ]);
 
-        Notification::make()
-            ->title(Str::ucfirst(__('invitation.buyer_registration_notification_success')))
-            ->success()
-            ->send();
+        $user->assignRole(Role::ROLE_SELLER);
 
-        redirect(route('filament.auth.login', ['email' => $this->email]));
+        event(new Registered($user));
+
+        Filament::auth()->login($user);
+
+        redirect()->route('filament.resources.quotes.edit', ['record' => $this->invitation->quote_id]);
     }
 
     protected function getFormSchema(): array
     {
         return [
-            Placeholder::make(User::EMAIL)
-                ->label(Str::title(__('user.email')))
-                ->content($this->user->email),
+            Placeholder::make(Supplier::NAME)
+                ->label(Str::title(__('supplier.supplier')))
+                ->content($this->supplier->name),
 
             TextInput::make(User::NAME)
                 ->label(Str::title(__('user.name')))
                 ->required(),
+
+            TextInput::make(User::EMAIL)
+                ->label(Str::title(__('user.email')))
+                ->required()
+                ->email(),
 
             TextInput::make(User::PASSWORD)
                 ->label(Str::title(__('user.password')))

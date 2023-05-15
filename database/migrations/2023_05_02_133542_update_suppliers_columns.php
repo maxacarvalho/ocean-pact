@@ -10,8 +10,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table(Supplier::TABLE_NAME, function (Blueprint $table) {
-            $table->string(Supplier::STORE, 10)->change();
-            $table->string(Supplier::CODE, 10)->change();
+            $table->string(Supplier::STORE, 50)->change();
+            $table->string(Supplier::CODE, 50)->change();
         });
     }
 
