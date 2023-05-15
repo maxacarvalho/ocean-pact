@@ -204,12 +204,12 @@ class QuoteResource extends Resource
 
                 TextColumn::make(Quote::CREATED_AT)
                     ->label(Str::formatTitle(__('quote.created_at')))
-                    ->dateTime()
+                    ->dateTime('d/m/Y')
                     ->sortable(),
 
                 TextColumn::make(Quote::UPDATED_AT)
                     ->label(Str::formatTitle(__('quote.updated_at')))
-                    ->dateTime()
+                    ->dateTime('d/m/Y')
                     ->sortable(),
             ])
             ->filters([

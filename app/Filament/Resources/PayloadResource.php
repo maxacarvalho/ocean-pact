@@ -81,7 +81,7 @@ class PayloadResource extends Resource
 
                 TextColumn::make(Payload::STORED_AT)
                     ->label(Str::formatTitle(__('payload.stored_at')))
-                    ->dateTime(),
+                    ->dateTime('d/m/Y H:i:s'),
 
                 TextColumn::make(Payload::STORING_STATUS)
                     ->label(Str::formatTitle(__('payload.stored_status')))
@@ -89,7 +89,7 @@ class PayloadResource extends Resource
 
                 TextColumn::make(Payload::PROCESSED_AT)
                     ->label(Str::formatTitle(__('payload.processed_at')))
-                    ->dateTime(),
+                    ->dateTime('d/m/Y H:i:s'),
 
                 TextColumn::make(Payload::PROCESSING_STATUS)
                     ->label(Str::formatTitle(__('payload.processed_status')))
