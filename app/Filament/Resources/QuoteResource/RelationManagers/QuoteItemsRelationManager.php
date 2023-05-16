@@ -154,7 +154,7 @@ class QuoteItemsRelationManager extends RelationManager
 
                 TextColumn::make(QuoteItem::DELIVERY_DATE)
                     ->label(Str::formatTitle(__('quote_item.delivery_date')))
-                    ->date(),
+                    ->date('d/m/Y'),
 
                 IconColumn::make(QuoteItem::SHOULD_BE_QUOTED)
                     ->label(Str::formatTitle(__('quote_item.should_be_quoted')))
