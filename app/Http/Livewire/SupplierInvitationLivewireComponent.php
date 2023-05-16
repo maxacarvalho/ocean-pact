@@ -17,7 +17,6 @@ use Filament\Forms\Contracts\HasForms;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Hash;
 use Livewire\Component;
 
 /**
@@ -72,13 +71,10 @@ class SupplierInvitationLivewireComponent extends Component implements HasForms
 
     public function submit(): void
     {
+        $data = $this->form->getState();
+
         /** @var User $user */
-        $user = User::query()->create([
-            User::NAME => $this->name,
-            User::EMAIL => $this->email,
-            User::PASSWORD => Hash::make($this->password),
-            User::SUPPLIER_ID => $this->supplier->id,
-        ]);
+        $user = User::query()->create($data);
 
         $user->assignRole(Role::ROLE_SELLER);
 
@@ -103,6 +99,7 @@ class SupplierInvitationLivewireComponent extends Component implements HasForms
             TextInput::make(User::EMAIL)
                 ->label(Str::title(__('user.email')))
                 ->required()
+                ->unique(table: User::TABLE_NAME, column: User::EMAIL)
                 ->email(),
 
             TextInput::make(User::PASSWORD)

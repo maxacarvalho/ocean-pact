@@ -73,9 +73,11 @@ class BuyerRegistrationLivewireComponent extends Component implements HasForms
 
     public function submit(): void
     {
+        $data = $this->form->getState();
+
         $user = $this->user;
 
-        $user->password = Hash::make($this->password);
+        $user->password = Hash::make($data[User::PASSWORD]);
         $user->setRememberToken(Str::random(60));
         $user->is_draft = false;
         $user->save();
