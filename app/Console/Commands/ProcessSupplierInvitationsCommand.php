@@ -27,7 +27,13 @@ class ProcessSupplierInvitationsCommand extends Command
                     ['token' => $invitation->token]
                 );
 
-                Mail::to($supplier->email)->send(new QuoteCreatedMail($supplier, $url));
+                $addresses = collect(explode(';', $supplier->email))->map(function ($email) {
+                    return trim($email);
+                })->toArray();
+
+                foreach ($addresses as $address) {
+                    Mail::to($address)->send(new QuoteCreatedMail($supplier, $url));
+                }
 
                 $invitation->update([
                     SupplierInvitation::SENT_AT => now(),
