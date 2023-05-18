@@ -2,10 +2,9 @@
 
 namespace App\Data\Protheus\Quote\In;
 
-use Akaunting\Money\Currency;
-use Akaunting\Money\Money;
 use App\Data\Protheus\Quote\ProtheusProductPayloadData;
 use App\Models\QuoteItem;
+use Brick\Money\Money;
 use Spatie\LaravelData\Data;
 
 class ProtheusQuoteItemPayloadData extends Data
@@ -28,7 +27,7 @@ class ProtheusQuoteItemPayloadData extends Data
             UNIDADE_MEDIDA: $quote->measurement_unit,
             ITEM: $quote->item,
             QUANTIDADE: $quote->quantity,
-            PRECO_UNITARIO: (new Money($quote->unit_price, new Currency('BRL')))->getValue(),
+            PRECO_UNITARIO: Money::ofMinor($quote->unit_price, 'BRL')->formatTo('pt_BR'),
             OBS: $quote->comments,
             PRODUTO: ProtheusProductPayloadData::fromQuoteItem($quote)
         );
