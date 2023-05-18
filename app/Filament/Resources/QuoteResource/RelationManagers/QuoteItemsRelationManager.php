@@ -2,12 +2,11 @@
 
 namespace App\Filament\Resources\QuoteResource\RelationManagers;
 
-use Akaunting\Money\Currency;
-use Akaunting\Money\Money;
 use App\Models\Product;
 use App\Models\Quote;
 use App\Models\QuoteItem;
 use App\Utils\Str;
+use Brick\Money\Money;
 use Closure;
 use Exception;
 use Filament\Forms\Components\Checkbox;
@@ -133,10 +132,14 @@ class QuoteItemsRelationManager extends RelationManager
 
                 TextColumn::make(QuoteItem::UNIT_PRICE)
                     ->label(Str::formatTitle(__('quote_item.unit_price')))
-                    ->formatStateUsing(function (?string $state): ?string {
-                        $money = new Money($state, new Currency('BRL'));
+                    ->formatStateUsing(function (?int $state): ?string {
+                        if ($state === null) {
+                            return null;
+                        }
 
-                        return $money->format();
+                        $money = Money::ofMinor($state, 'BRL');
+
+                        return $money->formatTo('pt_BR');
                     }),
 
                 TextColumn::make('total_price')
@@ -144,9 +147,9 @@ class QuoteItemsRelationManager extends RelationManager
                     ->getStateUsing(function (Model|QuoteItem $record): string {
                         try {
                             $totalPrice = $record->quantity * $record->unit_price;
-                            $money = new Money($totalPrice, new Currency('BRL'));
+                            $money = Money::ofMinor($totalPrice, 'BRL');
 
-                            return $money->format();
+                            return $money->formatTo('pt_BR');
                         } catch (Exception $exception) {
                             return $exception->getMessage();
                         }
@@ -169,14 +172,16 @@ class QuoteItemsRelationManager extends RelationManager
             ->actions([
                 TableEditAction::make()
                     ->mutateRecordDataUsing(function (array $data) {
-                        $data[QuoteItem::UNIT_PRICE] = self::makeMoney($data[QuoteItem::UNIT_PRICE])->formatSimple();
+                        $money = Money::ofMinor($data[QuoteItem::UNIT_PRICE], 'BRL');
+
+                        $data[QuoteItem::UNIT_PRICE] = $money->formatTo('pt_BR');
 
                         return $data;
                     })
                     ->mutateFormDataUsing(function (array $data) {
-                        $amount = number_format((float) $data[QuoteItem::UNIT_PRICE], 2, '.', ',');
+                        $amount = Money::of($data[QuoteItem::UNIT_PRICE], 'BRL');
 
-                        $data[QuoteItem::UNIT_PRICE] = self::makeMoney($amount)->getAmount();
+                        $data[QuoteItem::UNIT_PRICE] = $amount->getMinorAmount()->toInt();
 
                         return $data;
                     }),
@@ -184,11 +189,6 @@ class QuoteItemsRelationManager extends RelationManager
             ->bulkActions([
                 //
             ]);
-    }
-
-    private static function makeMoney(mixed $amount): Money
-    {
-        return new Money($amount, new Currency('BRL'));
     }
 
     protected function getTableQuery(): Builder|Relation
