@@ -69,6 +69,6 @@
             'dark:border-gray-600': (! error) && @js(config('forms.dark_mode')),
             'border-danger-600 ring-1 ring-inset ring-danger-600': error,
         }"
-        x-mask:dynamic="$money($input, ',', '.', 2)"
+        x-mask="99/99/9999" placeholder="dd/mm/aaaa"
     />
 </div>

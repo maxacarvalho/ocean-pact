@@ -84,6 +84,8 @@ return [
 
     'locale' => 'pt_BR',
 
+    'currency' => 'BRL',
+
     /*
     |--------------------------------------------------------------------------
     | Application Fallback Locale

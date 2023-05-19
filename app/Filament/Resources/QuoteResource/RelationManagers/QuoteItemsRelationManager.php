@@ -6,8 +6,9 @@ use App\Models\Product;
 use App\Models\Quote;
 use App\Models\QuoteItem;
 use App\Tables\Columns\CurrencyInputColumn;
+use App\Tables\Columns\DateInputColumn;
+use App\Utils\Money;
 use App\Utils\Str;
-use Brick\Money\Money;
 use Closure;
 use Exception;
 use Filament\Forms\Components\Checkbox;
@@ -21,7 +22,6 @@ use Filament\Resources\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Resources\Table;
 use Filament\Tables\Actions\EditAction as TableEditAction;
-use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ToggleColumn;
 use Illuminate\Database\Eloquent\Builder;
@@ -132,34 +132,35 @@ class QuoteItemsRelationManager extends RelationManager
                 TextColumn::make(QuoteItem::QUANTITY)
                     ->label(Str::formatTitle(__('quote_item.quantity'))),
 
-                TextColumn::make(QuoteItem::UNIT_PRICE)
+                CurrencyInputColumn::make(QuoteItem::UNIT_PRICE)
                     ->label(Str::formatTitle(__('quote_item.unit_price')))
-                    ->formatStateUsing(function (?int $state): ?string {
-                        if ($state === null) {
+                    ->rules(['required'])
+                    ->getStateUsing(function (Model|QuoteItem $record): ?string {
+                        if ($record->unit_price === null) {
                             return null;
                         }
 
-                        $money = Money::ofMinor($state, 'BRL');
-
-                        return $money->formatTo('pt_BR');
+                        return Money::fromMinor($record->unit_price)->toDecimal();
                     }),
 
-                CurrencyInputColumn::make('total_price')
+                TextColumn::make('total_price')
                     ->label(Str::formatTitle(__('quote_item.total_price')))
-                    ->getStateUsing(function (Model|QuoteItem $record): string {
+                    ->getStateUsing(function (Model|QuoteItem $record): ?string {
                         try {
                             $totalPrice = $record->quantity * $record->unit_price;
-                            $money = Money::ofMinor($totalPrice, 'BRL');
 
-                            return $money->formatTo('pt_BR');
+                            return Money::fromMinor($totalPrice)->toCurrency();
                         } catch (Exception $exception) {
-                            return $exception->getMessage();
+                            return null;
                         }
                     }),
 
-                TextColumn::make(QuoteItem::DELIVERY_DATE)
+                DateInputColumn::make(QuoteItem::DELIVERY_DATE)
                     ->label(Str::formatTitle(__('quote_item.delivery_date')))
-                    ->date('d/m/Y'),
+                    ->rules(['required', 'date_format:d/m/Y'])
+                    ->getStateUsing(function (Model|QuoteItem $record): ?string {
+                        return $record?->delivery_date->format('d/m/Y');
+                    }),
 
                 ToggleColumn::make(QuoteItem::SHOULD_BE_QUOTED)
                     ->label(Str::formatTitle(__('quote_item.should_be_quoted'))),
@@ -173,17 +174,13 @@ class QuoteItemsRelationManager extends RelationManager
             ->actions([
                 TableEditAction::make()
                     ->mutateRecordDataUsing(function (array $data) {
-                        $money = Money::ofMinor($data[QuoteItem::UNIT_PRICE], 'BRL');
-
-                        $data[QuoteItem::UNIT_PRICE] = $money->formatTo('pt_BR');
+                        $data[QuoteItem::UNIT_PRICE] = Money::fromMinor($data[QuoteItem::UNIT_PRICE])->toDecimal();
 
                         return $data;
                     })
                     ->mutateFormDataUsing(function (array $data) {
                         try {
-                            $amount = Money::of($data[QuoteItem::UNIT_PRICE], 'BRL');
-
-                            $data[QuoteItem::UNIT_PRICE] = $amount->getMinorAmount()->toInt();
+                            $data[QuoteItem::UNIT_PRICE] = Money::fromMonetary($data[QuoteItem::UNIT_PRICE])->toMinor();
                         } catch (Exception $exception) {
                             unset($data[QuoteItem::UNIT_PRICE]);
                         }
