@@ -179,9 +179,13 @@ class QuoteItemsRelationManager extends RelationManager
                         return $data;
                     })
                     ->mutateFormDataUsing(function (array $data) {
-                        $amount = Money::of($data[QuoteItem::UNIT_PRICE], 'BRL');
+                        try {
+                            $amount = Money::of($data[QuoteItem::UNIT_PRICE], 'BRL');
 
-                        $data[QuoteItem::UNIT_PRICE] = $amount->getMinorAmount()->toInt();
+                            $data[QuoteItem::UNIT_PRICE] = $amount->getMinorAmount()->toInt();
+                        } catch (Exception $exception) {
+                            unset($data[QuoteItem::UNIT_PRICE]);
+                        }
 
                         return $data;
                     }),
