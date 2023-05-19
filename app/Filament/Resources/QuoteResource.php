@@ -232,7 +232,7 @@ class QuoteResource extends Resource
                     ->options(fn () => QuoteStatusEnum::toArray()),
             ])
             ->actions([
-                // TableEditAction::make(),
+                TableEditAction::make(),
                 TableViewAction::make(),
             ])
             ->bulkActions([
@@ -253,7 +253,7 @@ class QuoteResource extends Resource
             'index' => ListQuotes::route('/'),
             'view' => ViewQuote::route('/{record}'),
             // 'create' => CreateQuote::route('/create'),
-            // 'edit' => EditQuote::route('/{record}/edit'),
+            'edit' => EditQuote::route('/{record}/edit'),
         ];
     }
 
