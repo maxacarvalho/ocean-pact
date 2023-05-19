@@ -23,7 +23,7 @@ class ProcessSupplierInvitationsCommand extends Command
             ->each(function (SupplierInvitation $invitation) {
                 $supplier = $invitation->supplier;
                 $url = URL::signedRoute(
-                    'supplier-registration',
+                    'filament.auth.login',
                     ['token' => $invitation->token]
                 );
 

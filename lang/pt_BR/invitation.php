@@ -23,7 +23,8 @@ return [
     'click_below_to_reply_the_quote' => 'clique abaixo para responder a cotação',
     'reply_quote' => 'responder cotação',
     'create_supplier_user_account' => 'crie uma conta para ter acesso as cotações',
-    'or_if_you_already_have_an_account' => 'ou, se você já possui uma conta,',
+    'register_here' => 'cadastre aqui',
     'click_here_to_login' => 'clique aqui para fazer login',
     'create_user_account' => 'criar conta',
+    'or' => 'ou',
 ];
