@@ -8,6 +8,13 @@ class Login extends BreezyLogin
 {
     public ?string $token;
 
+    public function boot(): void
+    {
+        parent::boot();
+
+        $this->token = null;
+    }
+
     public function mount(): void
     {
         parent::mount();
