@@ -90,25 +90,25 @@ class SupplierInvitationLivewireComponent extends Component implements HasForms
     {
         return [
             Placeholder::make(Supplier::NAME)
-                ->label(Str::title(__('supplier.supplier')))
+                ->label(Str::ucfirst(__('supplier.supplier')))
                 ->content($this->supplier->name),
 
             TextInput::make(User::NAME)
-                ->label(Str::title(__('user.name')))
+                ->label(Str::ucfirst(__('user.name')))
                 ->required(),
 
             TextInput::make(User::EMAIL)
-                ->label(Str::title(__('user.email')))
+                ->label(Str::ucfirst(__('user.email')))
                 ->required()
                 ->unique(table: User::TABLE_NAME, column: User::EMAIL)
                 ->email(),
 
             TextInput::make(User::PASSWORD)
-                ->label(Str::title(__('user.password')))
+                ->label(Str::ucfirst(__('user.password')))
                 ->required()
                 ->password(),
             TextInput::make('password_confirm')
-                ->label(Str::title(__('user.password_confirm')))
+                ->label(Str::ucfirst(__('user.password_confirm')))
                 ->required()
                 ->password()
                 ->same(User::PASSWORD),

@@ -25,6 +25,6 @@ return [
     'create_supplier_user_account' => 'crie uma conta para ter acesso as cotações',
     'register_here' => 'cadastre aqui',
     'click_here_to_login' => 'clique aqui para fazer login',
-    'create_user_account' => 'criar de conta',
+    'create_user_account' => 'criar conta',
     'or' => 'ou',
 ];
