@@ -5,6 +5,7 @@ namespace App\Filament\Resources\QuoteResource\RelationManagers;
 use App\Models\Product;
 use App\Models\Quote;
 use App\Models\QuoteItem;
+use App\Tables\Columns\CurrencyInputColumn;
 use App\Utils\Str;
 use Brick\Money\Money;
 use Closure;
@@ -22,6 +23,7 @@ use Filament\Resources\Table;
 use Filament\Tables\Actions\EditAction as TableEditAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ToggleColumn;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
@@ -142,7 +144,7 @@ class QuoteItemsRelationManager extends RelationManager
                         return $money->formatTo('pt_BR');
                     }),
 
-                TextColumn::make('total_price')
+                CurrencyInputColumn::make('total_price')
                     ->label(Str::formatTitle(__('quote_item.total_price')))
                     ->getStateUsing(function (Model|QuoteItem $record): string {
                         try {
@@ -159,9 +161,8 @@ class QuoteItemsRelationManager extends RelationManager
                     ->label(Str::formatTitle(__('quote_item.delivery_date')))
                     ->date('d/m/Y'),
 
-                IconColumn::make(QuoteItem::SHOULD_BE_QUOTED)
-                    ->label(Str::formatTitle(__('quote_item.should_be_quoted')))
-                    ->boolean(),
+                ToggleColumn::make(QuoteItem::SHOULD_BE_QUOTED)
+                    ->label(Str::formatTitle(__('quote_item.should_be_quoted'))),
             ])
             ->filters([
                 //
