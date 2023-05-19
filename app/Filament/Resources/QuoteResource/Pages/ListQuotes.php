@@ -19,7 +19,7 @@ class ListQuotes extends ListRecords
     protected function getActions(): array
     {
         return [
-            PageCreateAction::make(),
+            // PageCreateAction::make(),
         ];
     }
 
