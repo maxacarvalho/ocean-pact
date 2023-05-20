@@ -27,6 +27,7 @@ use Filament\Tables\Columns\ToggleColumn;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Support\Carbon;
 
 class QuoteItemsRelationManager extends RelationManager
 {
@@ -159,7 +160,9 @@ class QuoteItemsRelationManager extends RelationManager
                     ->label(Str::formatTitle(__('quote_item.delivery_date')))
                     ->rules(['required', 'date_format:d/m/Y'])
                     ->getStateUsing(function (Model|QuoteItem $record): ?string {
-                        return $record?->delivery_date->format('d/m/Y');
+                        return $record->delivery_date instanceof Carbon
+                            ? $record->delivery_date->format('d/m/Y')
+                            : '';
                     }),
 
                 ToggleColumn::make(QuoteItem::SHOULD_BE_QUOTED)
