@@ -74,6 +74,8 @@ class SupplierInvitationLivewireComponent extends Component implements HasForms
         $data = $this->form->getState();
         unset($data['password_confirm']);
 
+        $data[User::SUPPLIER_ID] = $this->supplier->id;
+
         /** @var User $user */
         $user = User::query()->create($data);
 
