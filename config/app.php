@@ -15,7 +15,7 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'Portal do Fornecedor OceanPact'),
+    'name' => env('APP_NAME', 'Portal do Fornecedor Inguz'),
 
     /*
     |--------------------------------------------------------------------------
