@@ -27,7 +27,7 @@ class ProtheusQuoteItemPayloadData extends Data
             UNIDADE_MEDIDA: $quote->measurement_unit,
             ITEM: $quote->item,
             QUANTIDADE: $quote->quantity,
-            PRECO_UNITARIO: Money::fromMinor($quote->unit_price)->toDecimal(),
+            PRECO_UNITARIO: Money::fromMinor($quote->unit_price)->getBrickMoney()->getAmount(),
             OBS: $quote->comments,
             PRODUTO: ProtheusProductPayloadData::fromQuoteItem($quote)
         );

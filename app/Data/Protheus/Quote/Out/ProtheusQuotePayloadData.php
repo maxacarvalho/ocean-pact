@@ -23,7 +23,7 @@ class ProtheusQuotePayloadData extends Data
         public string $SOLICITACAO_DE_COMPRAS,
         public string $COTACAO,
         #[WithCast(DateTimeInterfaceCast::class)]
-        public DateTime $DATA_LIMITE_RESPOSTA,
+        public DateTime|null $DATA_LIMITE_RESPOSTA,
         public string|null|Optional $OBSERVACAO_GERAL,
         public ProtheusSupplierPayloadData $FORNECEDOR,
         public string $COND_PAGTO,

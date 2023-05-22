@@ -29,8 +29,13 @@ class Money
         return self::make($brickMoney);
     }
 
+    public function getBrickMoney(): BrickMoney
+    {
+        return $this->brickMoney;
+    }
+
     public static function fromMinor(
-        BigNumber|int|float|string $minorAmount,
+        BigNumber|int|float|string $minorAmount
     ): self {
         $brickMoney = BrickMoney::ofMinor(
             $minorAmount,
