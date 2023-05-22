@@ -25,7 +25,7 @@
                 x-bind:style="'display: flex'" {{-- Mimics `x-cloak`, as using `x-cloak` causes visual issues with chart widgets --}}
             @endif
             @class([
-                'filament-main flex-col gap-y-6 w-screen flex-1 rtl:lg:pl-0',
+                'filament-main flex-col gap-y-6 w-screen flex-1 rtl:lg:pl-0 flex flex-col h-screen',
                 'hidden h-full transition-all' => config('filament.layout.sidebar.is_collapsible_on_desktop'),
                 'flex lg:pl-[var(--sidebar-width)] rtl:lg:pr-[var(--sidebar-width)]' => ! config('filament.layout.sidebar.is_collapsible_on_desktop'),
             ])
@@ -54,7 +54,7 @@
             </div>
 
             <div class="filament-main-footer py-4 shrink-0">
-                {{--<x-filament::footer />--}}
+                <x-filament::footer />
             </div>
         </div>
     </div>
