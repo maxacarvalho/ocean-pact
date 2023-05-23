@@ -15,21 +15,25 @@ class ProtheusQuoteItemPayloadData extends Data
         public string $ITEM,
         public float $QUANTIDADE,
         public string $PRECO_UNITARIO,
+        public ?string $DATA_ENTREGA,
+        public bool $INCLUIR_NA_COTACAO,
         public ?string $OBS,
         public ProtheusProductPayloadData $PRODUTO
     ) {
     }
 
-    public static function fromQuoteItem(QuoteItem $quote): self
+    public static function fromQuoteItem(QuoteItem $quoteItem): self
     {
         return new self(
-            DESCRICAO: $quote->description,
-            UNIDADE_MEDIDA: $quote->measurement_unit,
-            ITEM: $quote->item,
-            QUANTIDADE: $quote->quantity,
-            PRECO_UNITARIO: Money::fromMinor($quote->unit_price)->getBrickMoney()->getAmount(),
-            OBS: $quote->comments,
-            PRODUTO: ProtheusProductPayloadData::fromQuoteItem($quote)
+            DESCRICAO: $quoteItem->description,
+            UNIDADE_MEDIDA: $quoteItem->measurement_unit,
+            ITEM: $quoteItem->item,
+            QUANTIDADE: $quoteItem->quantity,
+            PRECO_UNITARIO: Money::fromMinor($quoteItem->unit_price)->getBrickMoney()->getAmount(),
+            DATA_ENTREGA: $quoteItem->delivery_date->format('Y-m-d'),
+            INCLUIR_NA_COTACAO: $quoteItem->should_be_quoted,
+            OBS: $quoteItem->comments,
+            PRODUTO: ProtheusProductPayloadData::fromQuoteItem($quoteItem)
         );
     }
 }
