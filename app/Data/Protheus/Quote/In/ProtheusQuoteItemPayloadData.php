@@ -6,6 +6,7 @@ use App\Data\Protheus\Quote\ProtheusProductPayloadData;
 use App\Models\QuoteItem;
 use App\Utils\Money;
 use Spatie\LaravelData\Data;
+use Spatie\LaravelData\Optional;
 
 class ProtheusQuoteItemPayloadData extends Data
 {
@@ -15,8 +16,8 @@ class ProtheusQuoteItemPayloadData extends Data
         public string $ITEM,
         public float $QUANTIDADE,
         public string $PRECO_UNITARIO,
-        public ?string $DATA_ENTREGA,
-        public bool $INCLUIR_NA_COTACAO,
+        public string|null|Optional $DATA_ENTREGA,
+        public bool|null|Optional $INCLUIR_NA_COTACAO,
         public ?string $OBS,
         public ProtheusProductPayloadData $PRODUTO
     ) {
