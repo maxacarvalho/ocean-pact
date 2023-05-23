@@ -7,5 +7,5 @@
 {{$button}}
 </x-mail::button>
 
-{{ config('app.name') }}
+Portal do Fornecedor OceanPact
 </x-mail::message>
