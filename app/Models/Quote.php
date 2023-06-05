@@ -13,8 +13,10 @@ use Illuminate\Support\Carbon;
  * @property int                         $id
  * @property string                      $company_code
  * @property string|null                 $company_code_branch
+ * @property int                         $supplier_id
+ * @property int                         $payment_condition_id
+ * @property int                         $buyer_id
  * @property int                         $budget_id
- * @property string                      $budget_number
  * @property string                      $quote_number
  * @property Carbon|null                 $valid_until
  * @property QuoteStatusEnum             $status
@@ -109,5 +111,12 @@ class Quote extends Model
     public function canBeResponded(): bool
     {
         return ! $this->status->equals(QuoteStatusEnum::RESPONDED());
+    }
+
+    public function markAsResponded(): void
+    {
+        $this->update([
+            self::STATUS => QuoteStatusEnum::RESPONDED(),
+        ]);
     }
 }

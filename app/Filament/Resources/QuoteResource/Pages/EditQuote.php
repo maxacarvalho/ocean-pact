@@ -2,25 +2,53 @@
 
 namespace App\Filament\Resources\QuoteResource\Pages;
 
-use App\Enums\QuoteStatusEnum;
 use App\Events\QuoteRespondedEvent;
 use App\Filament\Resources\QuoteResource;
 use App\Models\Quote;
-use App\Models\User;
+use App\Models\QuoteItem;
 use App\Utils\Str;
-use Filament\Pages\Actions\Action;
-use Filament\Pages\Actions\DeleteAction as PageDeleteAction;
+use Filament\Forms\Components\ViewField;
+use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
-use Illuminate\Support\Facades\Auth;
 
+/**
+ * @property Quote $record
+ */
 class EditQuote extends EditRecord
 {
+    public bool $missingItemsUnitPriceOrDeliveryDate = false;
+
     protected static string $resource = QuoteResource::class;
+
+    protected static string $view = 'filament::resources.pages.quote-custom-edit-record-page';
+
+    public function sendQuote(): void
+    {
+        $items = $this->record->items->firstWhere(function (QuoteItem $item) {
+            return $item->unit_price <= 0 || $item->delivery_date === null;
+        });
+
+        if ($items) {
+            $this->missingItemsUnitPriceOrDeliveryDate = true;
+
+            return;
+        }
+
+        $this->record->markAsResponded();
+        QuoteRespondedEvent::dispatch($this->record->id);
+
+        $this->redirect(static::getResource()::getUrl());
+    }
+
+    public function cancel(): void
+    {
+        $this->redirect(static::getResource()::getUrl());
+    }
 
     protected function getActions(): array
     {
         return [
-            PageDeleteAction::make(),
+            // PageDeleteAction::make(),
         ];
     }
 
@@ -29,45 +57,27 @@ class EditQuote extends EditRecord
         return $this->getResource()::getUrl('index');
     }
 
-    protected function getSaveFormAction(): Action
+    protected function beforeSave(): void
     {
-        /** @var User $user */
-        $user = Auth::user();
+        $items = $this->record->items->firstWhere(function (QuoteItem $item) {
+            return $item->unit_price <= 0 || $item->delivery_date === null;
+        });
 
-        if ($user->isSeller()) {
-            return
-                Action::make('send_quote')
-                    ->label(Str::formatTitle(__('quote.form_save_action_label')))
-                    ->action(fn () => $this->save())
-                    ->requiresConfirmation()
-                    ->modalSubheading(Str::ucfirst(__('quote.form_save_action_confirmation')));
-        }
+        /** @var ViewField $incompleteItemsWarning */
+        $incompleteItemsWarning = $this->form->getFlatFields()['incomplete_items_warning'];
 
-        return parent::getSaveFormAction();
-    }
+        if ($items) {
+            $incompleteItemsWarning->hidden(false);
 
-    protected function mutateFormDataBeforeSave(array $data): array
-    {
-        /** @var User $user */
-        $user = Auth::user();
+            Notification::make()
+                ->danger()
+                ->title(Str::ucfirst(__('quote.quote_is_not_ready_to_be_sent')))
+                ->body(Str::ucfirst(__('quote.please_fill_the_unit_price_and_delivery_date_for_all_items')))
+                ->persistent()
+                ->actions(fn () => null)
+                ->send();
 
-        if ($user->isSeller()) {
-            $data[Quote::STATUS] = QuoteStatusEnum::RESPONDED();
-        }
-
-        return $data;
-    }
-
-    protected function afterSave(): void
-    {
-        /** @var User $user */
-        $user = Auth::user();
-
-        /** @var Quote $quote */
-        $quote = $this->record;
-
-        if ($user->isSeller() && $quote->isResponded()) {
-            QuoteRespondedEvent::dispatch($quote->id);
+            $this->halt();
         }
     }
 }

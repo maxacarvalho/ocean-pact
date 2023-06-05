@@ -25,5 +25,7 @@ class AppServiceProvider extends ServiceProvider
         Filament::registerScripts([
             'https://cdn.jsdelivr.net/npm/@alpinejs/mask@3.x.x/dist/cdn.min.js',
         ], true);
+
+        Filament::registerViteTheme('resources/css/app.css');
     }
 }
