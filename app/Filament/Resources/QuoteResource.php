@@ -3,7 +3,6 @@
 namespace App\Filament\Resources;
 
 use App\Enums\QuoteStatusEnum;
-use App\Filament\Resources\QuoteResource\Pages\CreateQuote;
 use App\Filament\Resources\QuoteResource\Pages\EditQuote;
 use App\Filament\Resources\QuoteResource\Pages\ListQuotes;
 use App\Filament\Resources\QuoteResource\Pages\ViewQuote;
@@ -30,6 +29,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter as TableFilter;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Contracts\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 
 class QuoteResource extends Resource
@@ -88,10 +88,19 @@ class QuoteResource extends Resource
                 Select::make(Quote::PAYMENT_CONDITION_ID)
                     ->label(Str::formatTitle(__('quote.payment_condition_id')))
                     ->required()
-                    ->relationship(
-                        Quote::RELATION_PAYMENT_CONDITION,
-                        PaymentCondition::DESCRIPTION
-                    ),
+                    ->options(function (Closure $get) {
+                        $companyCode = $get(Quote::COMPANY_CODE);
+
+                        return PaymentCondition::query()
+                            ->where(PaymentCondition::COMPANY_CODE, '=', $companyCode)
+                            ->pluck(PaymentCondition::DESCRIPTION, PaymentCondition::ID)
+                            ->toArray();
+                    })
+                    ->reactive()
+                    ->afterStateUpdated(function (Model|Quote|null $record, $state) {
+                        $record->payment_condition_id = $state;
+                        $record->save();
+                    }),
 
                 Select::make(Quote::BUYER_ID)
                     ->label(Str::formatTitle(__('quote.buyer_id')))
@@ -131,11 +140,21 @@ class QuoteResource extends Resource
                     ->label(Str::formatTitle(__('quote.valid_until')))
                     ->required()
                     ->displayFormat('d/m/Y')
-                    ->hiddenOn('create'),
+                    ->hiddenOn('create')
+                    ->reactive()
+                    ->afterStateUpdated(function (Model|Quote|null $record, $state) {
+                        $record->valid_until = $state;
+                        $record->save();
+                    }),
 
                 Textarea::make(Quote::COMMENTS)
                     ->label(Str::formatTitle(__('quote.comments')))
-                    ->columnSpanFull(),
+                    ->columnSpanFull()
+                    ->reactive()
+                    ->afterStateUpdated(function (Model|Quote|null $record, $state) {
+                        $record->comments = $state;
+                        $record->save();
+                    }),
             ]);
     }
 

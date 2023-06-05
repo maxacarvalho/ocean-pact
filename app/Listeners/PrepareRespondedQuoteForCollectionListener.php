@@ -10,6 +10,7 @@ class PrepareRespondedQuoteForCollectionListener
 {
     public function handle(QuoteRespondedEvent $event): void
     {
+        /** @var Quote $quote */
         $quote = Quote::query()->findOrFail($event->quoteId);
 
         if ($quote->isResponded()) {
