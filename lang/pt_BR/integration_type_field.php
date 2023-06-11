@@ -34,4 +34,5 @@ return [
     'starts_with' => 'começa com',
     'starts_with_helper_text' => 'exemplo: texto, texto, texto',
     'max' => 'comprimento máximo',
+    'custom' => 'customizadas',
 ];

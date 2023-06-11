@@ -138,6 +138,7 @@ return [
     'uuid' => 'O campo :attribute deve ser um UUID válido.',
     'cnpj' => 'CNPJ inválido.',
     'cpf' => 'CPF inválido.',
+    'multi_email' => 'Um dos emails enviados é inválido.',
 
     /*
     |--------------------------------------------------------------------------

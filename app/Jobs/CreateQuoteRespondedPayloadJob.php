@@ -9,6 +9,7 @@ use App\Models\Payload;
 use App\Models\Product;
 use App\Models\Quote;
 use App\Models\QuoteItem;
+use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -34,6 +35,7 @@ class CreateQuoteRespondedPayloadJob implements ShouldQueue
                 Quote::RELATION_SUPPLIER,
                 Quote::RELATION_PAYMENT_CONDITION,
                 Quote::RELATION_BUYER,
+                Quote::RELATION_BUYER.'.'.User::RELATION_COMPANIES,
                 Quote::RELATION_ITEMS,
                 Quote::RELATION_ITEMS.'.'.QuoteItem::RELATION_PRODUCT,
                 Quote::RELATION_ITEMS.'.'.QuoteItem::RELATION_PRODUCT.'.'.Product::RELATION_COMPANY

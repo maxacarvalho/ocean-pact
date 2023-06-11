@@ -31,7 +31,7 @@ class ProtheusQuoteItemPayloadData extends Data
             ITEM: $quoteItem->item,
             QUANTIDADE: $quoteItem->quantity,
             PRECO_UNITARIO: Money::fromMinor($quoteItem->unit_price)->getBrickMoney()->getAmount(),
-            DATA_ENTREGA: $quoteItem->delivery_date->format('Y-m-d'),
+            DATA_ENTREGA: $quoteItem->delivery_date?->format('Y-m-d'),
             INCLUIR_NA_COTACAO: $quoteItem->should_be_quoted,
             OBS: $quoteItem->comments,
             PRODUTO: ProtheusProductPayloadData::fromQuoteItem($quoteItem)
