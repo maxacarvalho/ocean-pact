@@ -128,7 +128,8 @@ class User extends Authenticatable implements FilamentUser
                 CompanyUser::TABLE_NAME,
                 CompanyUser::USER_ID,
                 CompanyUser::COMPANY_ID
-            );
+            )
+            ->withPivot(CompanyUser::BUYER_CODE);
     }
 
     public function supplier(): BelongsTo

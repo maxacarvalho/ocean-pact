@@ -7,6 +7,7 @@ use App\Enums\QuoteStatusEnum;
 use App\Models\Budget;
 use App\Models\BuyerInvitation;
 use App\Models\Company;
+use App\Models\CompanyUser;
 use App\Models\PaymentCondition;
 use App\Models\Product;
 use App\Models\Quote;
@@ -18,6 +19,7 @@ use App\Models\User;
 use App\Utils\Str;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Log;
+use Throwable;
 
 class IncomingQuotePayloadProcessorJob extends PayloadProcessor
 {
@@ -51,61 +53,88 @@ class IncomingQuotePayloadProcessorJob extends PayloadProcessor
             return null;
         }
 
-        $buyer = $this->findOrCreateBuyer($data, $company);
+        try {
+            $buyer = $this->findOrCreateBuyer($data, $company);
 
-        $supplier = $this->findOrCreateSupplier($data);
+            $supplier = $this->findOrCreateSupplier($data);
 
-        $budget = $this->findOrCreateBudget($data);
+            $budget = $this->findOrCreateBudget($data);
 
-        $paymentCondition = $this->findPaymentCondition($data);
+            $paymentCondition = $this->findPaymentCondition($data);
 
-        $codeToProductsMapping = $this->findOrCreateProducts($data);
+            $codeToProductsMapping = $this->findOrCreateProducts($data);
 
-        $quote = $this->createQuote($budget, $supplier, $paymentCondition, $buyer, $data);
+            $quote = $this->createQuote($budget, $supplier, $paymentCondition, $buyer, $data);
 
-        foreach ($data->ITENS as $item) {
-            $quote->items()->create([
-                QuoteItem::PRODUCT_ID => $codeToProductsMapping[$item->PRODUTO->CODIGO],
-                QuoteItem::DESCRIPTION => $item->DESCRICAO,
-                QuoteItem::MEASUREMENT_UNIT => $item->UNIDADE_MEDIDA,
-                QuoteItem::ITEM => $item->ITEM,
-                QuoteItem::QUANTITY => $item->QUANTIDADE,
-                QuoteItem::UNIT_PRICE => $item->PRECO_UNITARIO,
-                QuoteItem::COMMENTS => $item->OBS,
+            foreach ($data->ITENS as $item) {
+                $quote->items()->create([
+                    QuoteItem::PRODUCT_ID => $codeToProductsMapping[$item->PRODUTO->CODIGO],
+                    QuoteItem::DESCRIPTION => $item->DESCRICAO,
+                    QuoteItem::MEASUREMENT_UNIT => $item->UNIDADE_MEDIDA,
+                    QuoteItem::ITEM => $item->ITEM,
+                    QuoteItem::QUANTITY => $item->QUANTIDADE,
+                    QuoteItem::UNIT_PRICE => $item->PRECO_UNITARIO,
+                    QuoteItem::COMMENTS => $item->OBS,
+                ]);
+            }
+
+            SupplierInvitation::query()->create([
+                SupplierInvitation::SUPPLIER_ID => $supplier->id,
+                SupplierInvitation::QUOTE_ID => $quote->id,
+                SupplierInvitation::TOKEN => Str::uuid(),
             ]);
+
+            return $quote->id;
+        } catch (Throwable $exception) {
+            Log::error('IncomingQuotePayloadProcessorJob: could not process payload', [
+                'payload' => $this->getPayload()->payload,
+                'exception_message' => $exception->getMessage(),
+            ]);
+
+            $this->getPayload()->markAsFailed($exception->getMessage());
+
+            $this->delete();
+
+            return null;
         }
-
-        SupplierInvitation::query()->create([
-            SupplierInvitation::SUPPLIER_ID => $supplier->id,
-            SupplierInvitation::QUOTE_ID => $quote->id,
-            SupplierInvitation::TOKEN => Str::uuid(),
-        ]);
-
-        return $quote->id;
     }
 
     private function findOrCreateBuyer(ProtheusQuotePayloadData $data, Company $company): User
     {
         /** @var User|null $buyer */
-        $buyer = User::query()->where(User::BUYER_CODE, '=', $data->COMPRADOR->CODIGO)->first();
+        $buyer = User::query()
+            ->with([User::RELATION_COMPANIES])
+            ->where(User::EMAIL, '=', $data->COMPRADOR->EMAIL)
+            ->first();
 
         if (null === $buyer) {
             /** @var User $buyer */
             $buyer = User::query()->create([
-                User::BUYER_CODE => $data->COMPRADOR->CODIGO,
                 User::NAME => $data->COMPRADOR->NOME,
                 User::EMAIL => $data->COMPRADOR->EMAIL,
                 User::PASSWORD => bcrypt(Str::random(30)),
                 User::IS_DRAFT => true,
             ]);
             $buyer->assignRole(Role::ROLE_BUYER);
-            $buyer->companies()->attach($company->id);
+            $buyer->companies()->attach($company->id, [
+                CompanyUser::BUYER_CODE => $data->COMPRADOR->CODIGO,
+            ]);
 
             BuyerInvitation::query()->create([
                 BuyerInvitation::BUYER_ID => $buyer->id,
                 BuyerInvitation::TOKEN => Str::uuid(),
             ]);
+
+            return $buyer;
         }
+
+        if ($buyer->companies()->wherePivot(CompanyUser::BUYER_CODE, '=', $data->COMPRADOR->CODIGO)->exists()) {
+            return $buyer;
+        }
+
+        $buyer->companies()->attach($company->id, [
+            CompanyUser::BUYER_CODE => $data->COMPRADOR->CODIGO,
+        ]);
 
         return $buyer;
     }
