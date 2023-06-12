@@ -2,6 +2,7 @@
 
 namespace App\Utils;
 
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 
@@ -38,17 +39,28 @@ class ValidationRules
                     $rawRules = array_merge(['required' => true], $rawRules);
                 }
 
+                if (Arr::has($rawRules, 'custom')) {
+                    $customRules = $rawRules['custom'];
+                    unset($rawRules['custom']);
+
+                    foreach ($customRules as $customRule) {
+                        $rawRules[] = new $customRule();
+                    }
+                }
+
                 if (is_array($rawRules)) {
                     foreach ($rawRules as $key => $value) {
                         if (true === $value) {
                             $rules[] = $key;
+                        } elseif (is_a($value, ValidationRule::class)) {
+                            $rules[] = $value;
                         } else {
                             $rules[] = "$key:$value";
                         }
                     }
                 }
 
-                return implode('|', $rules);
+                return $rules;
             })
             ->toArray();
     }

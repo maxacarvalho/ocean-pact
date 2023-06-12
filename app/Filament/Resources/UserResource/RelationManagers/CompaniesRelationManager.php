@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\UserResource\RelationManagers;
 
 use App\Models\Company;
+use App\Models\CompanyUser;
 use App\Utils\Str;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Form;
@@ -51,6 +52,9 @@ class CompaniesRelationManager extends RelationManager
 
                 TextColumn::make(Company::NAME)
                     ->label(Str::formatTitle(__('company.name'))),
+
+                TextColumn::make(CompanyUser::BUYER_CODE)
+                    ->label(Str::formatTitle(__('user.buyer_code'))),
             ])
             ->filters([
                 //

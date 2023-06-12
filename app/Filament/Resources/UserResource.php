@@ -104,16 +104,6 @@ class UserResource extends Resource
                             ->where(Role::NAME, Role::ROLE_SELLER)
                             ->exists();
                     }),
-
-                TextInput::make(User::BUYER_CODE)
-                    ->label(Str::formatTitle(__('user.buyer_code')))
-                    ->required()
-                    ->visible(function (Closure $get) {
-                        return Role::query()
-                            ->whereIn(Role::ID, $get(User::RELATION_ROLES))
-                            ->where(Role::NAME, Role::ROLE_BUYER)
-                            ->exists();
-                    }),
             ]);
     }
 
@@ -122,10 +112,12 @@ class UserResource extends Resource
         return $table
             ->columns([
                 TextColumn::make(User::NAME)
-                    ->label(Str::formatTitle(__('user.name'))),
+                    ->label(Str::formatTitle(__('user.name')))
+                    ->searchable(),
 
                 TextColumn::make(User::EMAIL)
-                    ->label(Str::formatTitle(__('user.email'))),
+                    ->label(Str::formatTitle(__('user.email')))
+                    ->searchable(),
 
                 IconColumn::make('buyer')
                     ->label(Str::formatTitle(__('user.is_buyer')))

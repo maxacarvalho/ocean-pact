@@ -4,6 +4,7 @@ namespace App\Filament\Resources\IntegrationTypeResource\RelationManagers;
 
 use App\Enums\IntegrationTypeFieldTypeEnum;
 use App\Models\IntegrationTypeField;
+use App\Rules\MultipleEmailsRule;
 use App\Utils\Str;
 use Closure;
 use Filament\Forms\Components\Grid;
@@ -144,6 +145,13 @@ class FieldsRelationManager extends RelationManager
 
                                 TextInput::make(IntegrationTypeField::FIELD_RULES.'.max')
                                     ->label(Str::formatTitle(__('integration_type_field.max'))),
+
+                                Select::make(IntegrationTypeField::FIELD_RULES.'.custom')
+                                    ->label(Str::formatTitle(__('integration_type_field.max')))
+                                    ->multiple()
+                                    ->options([
+                                        MultipleEmailsRule::class => MultipleEmailsRule::class,
+                                    ]),
                             ]),
                     ]),
             ])

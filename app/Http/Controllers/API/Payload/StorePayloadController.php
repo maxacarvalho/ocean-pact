@@ -36,7 +36,13 @@ class StorePayloadController extends Controller
             try {
                 $payloadHash = md5(json_encode($payloadInput, JSON_THROW_ON_ERROR));
 
-                if ($integrationType->payloads()->where(Payload::PAYLOAD_HASH, $payloadHash)->exists()) {
+                $duplicatedPayloadExists = $integrationType
+                    ->payloads()
+                    ->where(Payload::PROCESSING_STATUS, '!=', PayloadProcessingStatusEnum::FAILED())
+                    ->where(Payload::PAYLOAD_HASH, '=', $payloadHash)
+                    ->exists();
+
+                if ($duplicatedPayloadExists) {
                     return response()->json([
                         'message' => Str::formatTitle(__('payload.payload_is_duplicated')),
                     ], Response::HTTP_CONFLICT);

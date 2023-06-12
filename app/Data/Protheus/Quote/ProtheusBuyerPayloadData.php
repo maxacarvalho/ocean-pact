@@ -19,10 +19,15 @@ class ProtheusBuyerPayloadData extends \Spatie\LaravelData\Data
     public static function fromQuote(Quote $quote): self
     {
         /** @var Company|null $company */
-        $company = $quote->buyer->companies->count() ? $quote->buyer->companies->first() : null;
+        $company = $quote
+            ->buyer
+            ->companies()
+            ->where(Company::CODE, '=', $quote->company_code)
+            ->where(Company::CODE_BRANCH, '=', $quote->company_code_branch)
+            ->first();
 
         return new self(
-            CODIGO: $quote->buyer->buyer_code,
+            CODIGO: $company->pivot->buyer_code,
             NOME: $quote->buyer->name,
             EMAIL: $quote->buyer->email,
             FILIAL: $company?->code_branch
