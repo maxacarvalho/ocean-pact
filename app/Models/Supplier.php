@@ -6,32 +6,34 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 
 /**
- * @property int                    $id
- * @property string                 $company_code
- * @property string|null            $company_code_branch
- * @property string                 $code
- * @property string                 $store
- * @property string                 $name
- * @property string                 $business_name
- * @property string                 $address
- * @property string|null            $number
- * @property string                 $neighborhood
- * @property string                 $state_code
- * @property string|null            $state_name
- * @property string                 $postal_code
- * @property string                 $cnpj_cpf
- * @property string                 $phone_code
- * @property string                 $phone_number
- * @property string                 $contact
- * @property string                 $email
- * @property Carbon|null            $created_at
- * @property Carbon|null            $updated_at
- * @property-read Company|null      $company
- * @property-read User[]|Collection $users
+ * @property int                       $id
+ * @property string                    $company_code
+ * @property string|null               $company_code_branch
+ * @property string                    $code
+ * @property string                    $store
+ * @property string                    $name
+ * @property string                    $business_name
+ * @property string                    $address
+ * @property string|null               $number
+ * @property string                    $neighborhood
+ * @property string                    $state_code
+ * @property string|null               $state_name
+ * @property string                    $postal_code
+ * @property string                    $cnpj_cpf
+ * @property string                    $phone_code
+ * @property string                    $phone_number
+ * @property string                    $contact
+ * @property string                    $email
+ * @property Carbon|null               $created_at
+ * @property Carbon|null               $updated_at
+ * @property-read Company|null         $company
+ * @property-read Company[]|Collection $companies
+ * @property-read User[]|Collection    $users
  */
 class Supplier extends Model
 {
@@ -60,6 +62,7 @@ class Supplier extends Model
     // Relations
     public const RELATION_COMPANY = 'company';
     public const RELATION_USERS = 'users';
+    public const RELATION_COMPANIES = 'companies';
 
     protected $table = self::TABLE_NAME;
     protected $guarded = [
@@ -72,6 +75,16 @@ class Supplier extends Model
             Company::class,
             self::COMPANY_CODE,
             Company::CODE
+        );
+    }
+
+    public function companies(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            Company::class,
+            CompanySupplier::TABLE_NAME,
+            CompanySupplier::SUPPLIER_ID,
+            CompanySupplier::COMPANY_ID
         );
     }
 

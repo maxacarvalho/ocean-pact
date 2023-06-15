@@ -61,11 +61,15 @@ class QuoteResource extends Resource
                     ->label(Str::formatTitle(__('product.company_code')))
                     ->relationship(Quote::RELATION_COMPANY, Company::NAME)
                     ->reactive()
-                    ->visible(fn () => Auth::user()->hasAnyRole(Role::ROLE_ADMIN, Role::ROLE_SUPER_ADMIN)),
+                    ->visible(fn () => Auth::user()->hasAnyRole(Role::ROLE_ADMIN, Role::ROLE_SUPER_ADMIN))
+                    ->afterStateUpdated(function (Model|Quote|null $record, $state) {
+                        $record->company_code = $state;
+                        $record->save();
+                    }),
 
                 Select::make(Quote::COMPANY_CODE_BRANCH)
                     ->label(Str::formatTitle(__('product.company_code_branch')))
-                    ->options(function (Closure $get) {
+                    ->options(function (Closure $get, Model $record) {
                         $companyCode = $get(Quote::COMPANY_CODE);
 
                         if (null === $companyCode) {
@@ -77,13 +81,23 @@ class QuoteResource extends Resource
                             ->pluck(Company::BRANCH, Company::CODE_BRANCH)
                             ->toArray();
                     })
-                    ->visible(fn () => Auth::user()->hasAnyRole(Role::ROLE_ADMIN, Role::ROLE_SUPER_ADMIN)),
+                    ->visible(fn () => Auth::user()->hasAnyRole(Role::ROLE_ADMIN, Role::ROLE_SUPER_ADMIN))
+                    ->reactive()
+                    ->afterStateUpdated(function (Model|Quote|null $record, $state) {
+                        $record->company_code_branch = $state;
+                        $record->save();
+                    }),
 
                 Select::make(Quote::SUPPLIER_ID)
                     ->label(Str::formatTitle(__('quote.supplier_id')))
                     ->required()
                     ->relationship(Quote::RELATION_SUPPLIER, Supplier::NAME)
-                    ->visible(fn () => Auth::user()->hasAnyRole(Role::ROLE_ADMIN, Role::ROLE_SUPER_ADMIN)),
+                    ->visible(fn () => Auth::user()->hasAnyRole(Role::ROLE_ADMIN, Role::ROLE_SUPER_ADMIN))
+                    ->reactive()
+                    ->afterStateUpdated(function (Model|Quote|null $record, $state) {
+                        $record->supplier_id = $state;
+                        $record->save();
+                    }),
 
                 Select::make(Quote::PAYMENT_CONDITION_ID)
                     ->label(Str::formatTitle(__('quote.payment_condition_id')))

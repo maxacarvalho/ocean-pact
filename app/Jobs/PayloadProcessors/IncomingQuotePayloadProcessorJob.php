@@ -56,7 +56,7 @@ class IncomingQuotePayloadProcessorJob extends PayloadProcessor
         try {
             $buyer = $this->findOrCreateBuyer($data, $company);
 
-            $supplier = $this->findOrCreateSupplier($data);
+            $supplier = $this->findOrCreateSupplier($data, $company);
 
             $budget = $this->findOrCreateBudget($data);
 
@@ -178,13 +178,11 @@ class IncomingQuotePayloadProcessorJob extends PayloadProcessor
         return $products;
     }
 
-    private function findOrCreateSupplier(ProtheusQuotePayloadData $data): Supplier
+    private function findOrCreateSupplier(ProtheusQuotePayloadData $data, Company $company): Supplier
     {
         /** @var Supplier|null $supplier */
         $supplier = Supplier::query()
-            ->with(Supplier::RELATION_USERS)
-            ->where(Supplier::COMPANY_CODE, '=', $data->EMPRESA)
-            ->where(Supplier::COMPANY_CODE_BRANCH, '=', $data->FILIAL)
+            ->with(Supplier::RELATION_USERS, Supplier::RELATION_COMPANIES)
             ->where(Supplier::CODE, '=', $data->FORNECEDOR->CODIGO)
             ->where(Supplier::STORE, '=', $data->FORNECEDOR->LOJA)
             ->first();
@@ -201,6 +199,10 @@ class IncomingQuotePayloadProcessorJob extends PayloadProcessor
                 Supplier::EMAIL => $data->FORNECEDOR->EMAIL,
                 Supplier::CONTACT => $data->FORNECEDOR->CONTATO,
             ]);
+        }
+
+        if (! $supplier->companies->contains($company->id)) {
+            $supplier->companies()->attach($company->id);
         }
 
         return $supplier;
