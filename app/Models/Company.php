@@ -9,31 +9,34 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 /**
- * @property int                    $id
- * @property string                 $code
- * @property string                 $code_branch
- * @property string                 $branch
- * @property string                 $name
- * @property string                 $business_name
- * @property string|null            $phone_number
- * @property string|null            $fax_number
- * @property string                 $cnpj_cpf
- * @property string|null            $state_inscription
- * @property string|null            $inscm
- * @property string|null            $address
- * @property string|null            $complement
- * @property string|null            $neighborhood
- * @property string|null            $city
- * @property string|null            $state
- * @property string|null            $postal_code
- * @property string|null            $city_code
- * @property string|null            $cnae
- * @property Carbon|null            $created_at
- * @property Carbon|null            $updated_at
+ * @property int                        $id
+ * @property string                     $code
+ * @property string                     $code_branch
+ * @property string                     $branch
+ * @property string                     $name
+ * @property string                     $business_name
+ * @property string|null                $phone_number
+ * @property string|null                $fax_number
+ * @property string                     $cnpj_cpf
+ * @property string|null                $state_inscription
+ * @property string|null                $inscm
+ * @property string|null                $address
+ * @property string|null                $complement
+ * @property string|null                $neighborhood
+ * @property string|null                $city
+ * @property string|null                $state
+ * @property string|null                $postal_code
+ * @property string|null                $city_code
+ * @property string|null                $cnae
+ * @property Carbon|null                $created_at
+ * @property Carbon|null                $updated_at
+ * @property-read string                $code_code_branch_and_business_name
+ * @property-read string                $code_code_branch_and_branch
  * // Virtual
- * @property-read string            $codeBranchAndBranch
+ * @property-read string                $codeBranchAndBranch
  * // Relations
- * @property-read User[]|Collection $users
+ * @property-read User[]|Collection     $users
+ * @property-read Supplier[]|Collection $suppliers
  */
 class Company extends Model
 {
@@ -43,6 +46,8 @@ class Company extends Model
     public const CODE_BRANCH = 'code_branch';
     public const BRANCH = 'branch';
     public const NAME = 'name';
+    public const CODE_CODE_BRANCH_AND_BUSINESS_NAME = 'code_code_branch_and_business_name';
+    public const CODE_CODE_BRANCH_AND_BRANCH = 'code_code_branch_and_branch';
     public const BUSINESS_NAME = 'business_name';
     public const PHONE_NUMBER = 'phone_number';
     public const FAX_NUMBER = 'fax_number';
@@ -65,11 +70,14 @@ class Company extends Model
 
     // Relations
     public const RELATION_USERS = 'users';
+    public const RELATION_SUPPLIERS = 'suppliers';
 
     protected $table = self::TABLE_NAME;
 
     protected $guarded = [
         self::ID,
+        self::CODE_CODE_BRANCH_AND_BUSINESS_NAME,
+        self::CODE_CODE_BRANCH_AND_BRANCH,
     ];
 
     protected function codeBranchAndBranch(): Attribute
@@ -94,6 +102,16 @@ class Company extends Model
             CompanyUser::TABLE_NAME,
             CompanyUser::COMPANY_ID,
             CompanyUser::USER_ID,
+        );
+    }
+
+    public function suppliers(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            Supplier::class,
+            CompanySupplier::TABLE_NAME,
+            CompanySupplier::COMPANY_ID,
+            CompanySupplier::SUPPLIER_ID,
         );
     }
 }
