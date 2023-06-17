@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Enums\InvitationStatusEnum;
 use App\Mail\QuoteCreatedMail;
+use App\Models\Quote;
 use App\Models\SupplierInvitation;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Mail;
@@ -18,7 +19,7 @@ class ProcessSupplierInvitationsCommand extends Command
     public function handle(): void
     {
         SupplierInvitation::query()
-            ->with(SupplierInvitation::RELATION_SUPPLIER)
+            ->with(SupplierInvitation::RELATION_SUPPLIER, SupplierInvitation::RELATION_QUOTE.'.'.Quote::RELATION_COMPANY)
             ->where(SupplierInvitation::STATUS, '=', InvitationStatusEnum::PENDING())
             ->each(function (SupplierInvitation $invitation) {
                 $supplier = $invitation->supplier;
@@ -32,7 +33,13 @@ class ProcessSupplierInvitationsCommand extends Command
                 })->toArray();
 
                 foreach ($addresses as $address) {
-                    Mail::to($address)->send(new QuoteCreatedMail($supplier, $url));
+                    Mail::to($address)->send(
+                        new QuoteCreatedMail(
+                            $supplier,
+                            $invitation->quote->company,
+                            $url
+                        )
+                    );
                 }
 
                 $invitation->update([

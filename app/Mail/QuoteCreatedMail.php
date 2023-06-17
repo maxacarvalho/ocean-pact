@@ -2,6 +2,7 @@
 
 namespace App\Mail;
 
+use App\Models\Company;
 use App\Models\Supplier;
 use App\Utils\Str;
 use Illuminate\Bus\Queueable;
@@ -17,6 +18,7 @@ class QuoteCreatedMail extends Mailable implements ShouldQueue
 
     public function __construct(
         public readonly Supplier $supplier,
+        public readonly Company $company,
         public readonly string $url
     ) {
     }
@@ -24,7 +26,7 @@ class QuoteCreatedMail extends Mailable implements ShouldQueue
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: Str::ucfirst(__('invitation.new_quote_ready_for_reply')),
+            subject: Str::ucfirst(__('invitation.new_quote_ready_for_reply', ['company' => $this->company->business_name])),
         );
     }
 
@@ -37,6 +39,7 @@ class QuoteCreatedMail extends Mailable implements ShouldQueue
                 'body' => Str::ucfirst(__('invitation.click_below_to_reply_the_quote')),
                 'button' => Str::formatTitle(__('invitation.reply_quote')),
                 'url' => $this->url,
+                'company_name' => $this->company->business_name,
             ],
         );
     }
