@@ -7,5 +7,7 @@
 {{$button}}
 </x-mail::button>
 
+**{{$quote}}**
+
 Portal do Fornecedor {{ $company_name  }}
 </x-mail::message>

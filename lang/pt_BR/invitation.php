@@ -27,4 +27,5 @@ return [
     'click_here_to_login' => 'clique aqui para fazer login',
     'create_user_account' => 'criar conta',
     'or' => 'ou',
+    'quote_number' => 'cotação: :quote_number',
 ];

@@ -23,6 +23,8 @@ class ProcessSupplierInvitationsCommand extends Command
             ->where(SupplierInvitation::STATUS, '=', InvitationStatusEnum::PENDING())
             ->each(function (SupplierInvitation $invitation) {
                 $supplier = $invitation->supplier;
+                $quote = $invitation->quote;
+
                 $url = URL::signedRoute(
                     'filament.auth.login',
                     ['token' => $invitation->token]
@@ -35,17 +37,18 @@ class ProcessSupplierInvitationsCommand extends Command
                 foreach ($addresses as $address) {
                     Mail::to($address)->send(
                         new QuoteCreatedMail(
-                            $supplier,
-                            $invitation->quote->company,
+                            $supplier->name,
+                            $quote->company->business_name,
+                            $quote->quote_number,
                             $url
                         )
                     );
                 }
 
-                $invitation->update([
+                /*$invitation->update([
                     SupplierInvitation::SENT_AT => now(),
                     SupplierInvitation::STATUS => InvitationStatusEnum::SENT(),
-                ]);
+                ]);*/
             });
     }
 }
