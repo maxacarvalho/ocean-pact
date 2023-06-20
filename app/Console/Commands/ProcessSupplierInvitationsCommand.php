@@ -45,10 +45,10 @@ class ProcessSupplierInvitationsCommand extends Command
                     );
                 }
 
-                /*$invitation->update([
+                $invitation->update([
                     SupplierInvitation::SENT_AT => now(),
                     SupplierInvitation::STATUS => InvitationStatusEnum::SENT(),
-                ]);*/
+                ]);
             });
     }
 }
