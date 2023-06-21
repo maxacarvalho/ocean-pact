@@ -7,5 +7,7 @@
 {{$button}}
 </x-mail::button>
 
-Portal do Fornecedor OceanPact
+**{{$quote}}**
+
+Portal do Fornecedor {{ $company_name  }}
 </x-mail::message>

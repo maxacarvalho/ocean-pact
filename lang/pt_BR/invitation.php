@@ -19,7 +19,7 @@ return [
     'finish_registration' => 'finalizar cadastro',
     'buyer_registration_page_title' => 'complete o seu cadastro',
     'buyer_registration_notification_success' => 'cadastro foi realizado com sucesso!',
-    'new_quote_ready_for_reply' => 'nova cotação no portal do fornecedor OceanPact',
+    'new_quote_ready_for_reply' => 'nova cotação no portal do fornecedor :company',
     'click_below_to_reply_the_quote' => 'clique abaixo para responder a cotação',
     'reply_quote' => 'responder cotação',
     'create_supplier_user_account' => 'crie uma conta para ter acesso as cotações',
@@ -27,4 +27,5 @@ return [
     'click_here_to_login' => 'clique aqui para fazer login',
     'create_user_account' => 'criar conta',
     'or' => 'ou',
+    'quote_number' => 'cotação: :quote_number',
 ];
