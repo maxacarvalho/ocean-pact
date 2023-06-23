@@ -1,14 +1,14 @@
-FROM alpine:3.17
+FROM alpine:3.18
 
 # Arguments
 ARG USER_NAME="php"
 ARG USER_UID="1000"
 ARG GROUP_NAME="php"
 ARG GROUP_GID="1000"
-ARG PHP_EXTENSIONS="php81 php81-fpm php81-mysqlnd php81-mysqli php81-xml php81-opcache php81-pdo php81-pdo_mysql \
-    php81-pdo php81-redis php81-bcmath php81-ctype php81-intl php81-xsl php81-sockets php81-json php81-openssl php81-phar \
-    php81-zlib php81-mbstring php81-zip php81-gd php81-tokenizer php81-xmlwriter php81-dom php81-curl php81-fileinfo \
-    php81-simplexml php81-iconv php81-pcntl php81-xmlreader php81-posix php81-sodium php81-ftp php81-pecl-xdebug"
+ARG PHP_EXTENSIONS="php82 php82-bcmath php82-ctype php82-curl php82-dom php82-fileinfo php82-fpm php82-ftp php82-gd \
+    php82-iconv php82-intl php82-mbstring php82-mysqli php82-mysqlnd php82-opcache php82-openssl php82-pcntl php82-pdo \
+    php82-pdo_mysql php82-pecl-redis php82-pecl-xdebug php82-phar php82-posix php82-simplexml php82-sockets \
+    php82-sodium php82-tokenizer php82-xml php82-xmlreader php82-xmlwriter php82-xsl php82-zip"
 ENV COMPOSER_MEMORY_LIMIT="3G"
 
 # Environment variables
@@ -24,25 +24,30 @@ RUN addgroup -g $GROUP_GID -S $GROUP_NAME && \
 # Install softwares
 RUN set -ex \
     apk update -qq && \
-    apk add tzdata ca-certificates openssl curl git patch $PHP_EXTENSIONS && \
+    apk add tzdata ca-certificates argon2-dev libsodium-dev openssl-dev curl git patch $PHP_EXTENSIONS && \
+    ln -snf /usr/bin/php82 /usr/bin/php && \
     curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer \
     rm -rf /var/lib/{apt,dpkg,cache,log}/ /tmp/* /var/tmp/*
 
- # Forward logs and configure permissions
- RUN set -ex && \
-     ln -sf /dev/stderr /var/log/php81/error.log && \
-     chown -R $USER_UID:$GROUP_GID /etc/php81/ && \
-     chown -R $USER_UID:$GROUP_GID /var/log/php81/ && \
+# Forward logs and configure permissions
+RUN set -ex && \
+     ln -sf /dev/stderr /var/log/php82/error.log && \
+     chown -R $USER_UID:$GROUP_GID /etc/php82/ && \
+     chown -R $USER_UID:$GROUP_GID /var/log/php82/ && \
      mkdir -p /var/lib/php/session/ && \
      chown -R $USER_UID:$GROUP_GID /var/lib/php/session && \
      chmod 770 /var/lib/php/session/
 
  # Create app directory and set permissions
- RUN set -ex && \
+RUN set -ex && \
      mkdir /app/ && \
      chown -R 1000:1000 /app/ && \
      find /app/ -type f -exec chmod 664 {} \; && \
      find /app/ -type d -exec chmod 775 {} \;
+
+#RUN sed -i '/^default = default_sect/a legacy = legacy_sect' /etc/ssl/openssl.cnf
+#RUN sed -i '/^\[default_sect\]/a activate = 1' /etc/ssl/openssl.cnf
+#RUN printf "[legacy_sect]\nactivate = 1" >> /etc/ssl/openssl.cnf
 
 # Workdir
 WORKDIR /app
@@ -50,8 +55,5 @@ WORKDIR /app
 # User
 USER $USER_NAME
 
-# Override stop signal to stop process gracefully
-STOPSIGNAL SIGQUIT
-
 EXPOSE 9000
-CMD ["php-fpm81", "-F"]
+CMD ["php-fpm82", "-F"]
