@@ -40,18 +40,22 @@ RUN set -ex && \
     chown -R $USER_NAME:$GROUP_NAME /var/lib/nginx/ && \
     chown -R $USER_NAME:$GROUP_NAME /var/log/nginx
 
+ARG TARGETARCH
+
+RUN cd /usr/local/bin/ \
+  && curl -L https://github.com/FiloSottile/mkcert/releases/download/v1.4.3/mkcert-v1.4.3-linux-$TARGETARCH -o mkcert \
+  && chmod +x mkcert
+
 # Workdir
 WORKDIR /app/
 
 # User
 USER $USER_NAME
 
-# Override stop signal to stop process gracefully
-STOPSIGNAL SIGQUIT
-
 # Expose ports
 EXPOSE 80
 EXPOSE 443
+STOPSIGNAL SIGTERM
 
 # Set the default command to run on boot
 CMD ["nginx", "-g", "daemon off;"]
