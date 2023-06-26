@@ -38,16 +38,16 @@ RUN set -ex && \
      chown -R $USER_UID:$GROUP_GID /var/lib/php/session && \
      chmod 770 /var/lib/php/session/
 
+COPY ./conf/php.ini /etc/php82/php.ini
+COPY ./conf/php-fpm.d/www.conf /etc/php82/php-fpm.d/www.conf
+COPY ./conf/conf.d/50_xdebug.ini /etc/php82/conf.d/50_xdebug.ini
+
  # Create app directory and set permissions
 RUN set -ex && \
      mkdir /app/ && \
      chown -R 1000:1000 /app/ && \
      find /app/ -type f -exec chmod 664 {} \; && \
      find /app/ -type d -exec chmod 775 {} \;
-
-#RUN sed -i '/^default = default_sect/a legacy = legacy_sect' /etc/ssl/openssl.cnf
-#RUN sed -i '/^\[default_sect\]/a activate = 1' /etc/ssl/openssl.cnf
-#RUN printf "[legacy_sect]\nactivate = 1" >> /etc/ssl/openssl.cnf
 
 # Workdir
 WORKDIR /app
