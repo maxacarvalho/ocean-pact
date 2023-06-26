@@ -19,10 +19,6 @@ services:
         image: oceanpact/app
         build: docker/php
         volumes:
-            - "$PWD/docker/php/php-fpm:/php-fpm"
-            - "$PWD/docker/php/conf/php.ini:/etc/php82/php.ini"
-            - "$PWD/docker/php/conf/php-fpm.d/www.conf:/etc/php82/php-fpm.d/www.conf"
-            - "$PWD/docker/php/conf/conf.d/50_xdebug.ini:/etc/php82/conf.d/50_xdebug.ini"
             - "$PWD:/app"
         working_dir: /app
         tty: true
