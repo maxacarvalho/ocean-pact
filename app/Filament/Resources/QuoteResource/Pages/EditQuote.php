@@ -24,6 +24,8 @@ class EditQuote extends EditRecord
 
     public function sendQuote(): void
     {
+        $this->validate();
+
         $items = $this->record->items->firstWhere(function (QuoteItem $item) {
             if (! $item->should_be_quoted) {
                 return false;
@@ -63,6 +65,8 @@ class EditQuote extends EditRecord
 
     protected function beforeSave(): void
     {
+        $this->validate();
+
         $items = $this->record->items->firstWhere(function (QuoteItem $item) {
             if (! $item->should_be_quoted) {
                 return false;
