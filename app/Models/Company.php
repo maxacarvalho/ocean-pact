@@ -48,6 +48,7 @@ class Company extends Model
     public const NAME = 'name';
     public const CODE_CODE_BRANCH_AND_BUSINESS_NAME = 'code_code_branch_and_business_name';
     public const CODE_CODE_BRANCH_AND_BRANCH = 'code_code_branch_and_branch';
+    public const CODE_AND_BUSINESS_NAME = 'code_and_business_name';
     public const BUSINESS_NAME = 'business_name';
     public const PHONE_NUMBER = 'phone_number';
     public const FAX_NUMBER = 'fax_number';
