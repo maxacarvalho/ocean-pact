@@ -24,8 +24,14 @@ class EditQuote extends EditRecord
 
     public function sendQuote(): void
     {
+        $this->validate();
+
         $items = $this->record->items->firstWhere(function (QuoteItem $item) {
-            return $item->unit_price <= 0 || $item->delivery_date === null;
+            if (! $item->should_be_quoted) {
+                return false;
+            }
+
+            return $item->should_be_quoted && ($item->unit_price <= 0 || $item->delivery_date === null);
         });
 
         if ($items) {
@@ -59,7 +65,13 @@ class EditQuote extends EditRecord
 
     protected function beforeSave(): void
     {
+        $this->validate();
+
         $items = $this->record->items->firstWhere(function (QuoteItem $item) {
+            if (! $item->should_be_quoted) {
+                return false;
+            }
+
             return $item->unit_price <= 0 || $item->delivery_date === null;
         });
 
