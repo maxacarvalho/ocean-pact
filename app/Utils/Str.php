@@ -40,6 +40,11 @@ class Str extends LaravelStr
         '8K',
         'WhatsApp',
         'CNPJ/CPF',
+        'IPI',
+        'ICMS',
+        'CIF',
+        'FOB',
+        'UM',
     ];
     public const ACRONYMS = [
         '2D',
