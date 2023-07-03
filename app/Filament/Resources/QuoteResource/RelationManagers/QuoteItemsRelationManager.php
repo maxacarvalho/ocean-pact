@@ -273,7 +273,18 @@ class QuoteItemsRelationManager extends RelationManager
 
                 SelectColumn::make(QuoteItem::FREIGHT_TYPE)
                     ->label(Str::formatTitle(__('quote_item.freight_type')))
-                    ->options(fn () => FreightTypeEnum::toArray()),
+                    ->options(fn () => FreightTypeEnum::toArray())
+                    ->updateStateUsing(function ($state, QuoteItem|Model $record) {
+                        if (empty($state)) {
+                            $record->freight_type = null;
+                        } else {
+                            $record->freight_type = $state;
+                        }
+
+                        $record->save();
+
+                        return $state;
+                    }),
 
                 CurrencyInputColumn::make(QuoteItem::FREIGHT_COST)
                     ->label(Str::formatTitle(__('quote_item.freight_cost')))
@@ -320,6 +331,7 @@ class QuoteItemsRelationManager extends RelationManager
                         $data[QuoteItem::IPI] = Money::fromMinor($data[QuoteItem::IPI])->toDecimal();
                         $data[QuoteItem::ICMS] = Money::fromMinor($data[QuoteItem::ICMS])->toDecimal();
                         $data[QuoteItem::FREIGHT_COST] = Money::fromMinor($data[QuoteItem::FREIGHT_COST])->toDecimal();
+                        $data[QuoteItem::EXPENSES] = Money::fromMinor($data[QuoteItem::EXPENSES])->toDecimal();
 
                         return $data;
                     })
@@ -329,6 +341,8 @@ class QuoteItemsRelationManager extends RelationManager
                             $data[QuoteItem::IPI] = Money::fromMonetary($data[QuoteItem::IPI])->toMinor();
                             $data[QuoteItem::ICMS] = Money::fromMonetary($data[QuoteItem::ICMS])->toMinor();
                             $data[QuoteItem::FREIGHT_COST] = Money::fromMonetary($data[QuoteItem::FREIGHT_COST])->toMinor();
+                            $data[QuoteItem::EXPENSES] = Money::fromMonetary($data[QuoteItem::EXPENSES])->toMinor();
+                            $data[QuoteItem::FREIGHT_TYPE] = empty($data[QuoteItem::FREIGHT_TYPE]) ? null : $data[QuoteItem::FREIGHT_TYPE];
                         } catch (Exception $exception) {
                             unset($data[QuoteItem::UNIT_PRICE]);
                         }
