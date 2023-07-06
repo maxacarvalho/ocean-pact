@@ -263,6 +263,14 @@ class QuoteResource extends Resource
                 SelectFilter::make(Quote::STATUS)
                     ->label(Str::formatTitle(__('quote.status')))
                     ->options(fn () => QuoteStatusEnum::toArray()),
+
+                SelectFilter::make(Quote::SUPPLIER_ID)
+                    ->label(Str::formatTitle(__('quote.supplier')))
+                    ->relationship(Quote::RELATION_SUPPLIER, Supplier::NAME),
+
+                SelectFilter::make(Quote::BUDGET_ID)
+                    ->label(Str::formatTitle(__('quote.buyer')))
+                    ->relationship(Quote::RELATION_BUYER, User::NAME),
             ])
             ->actions([
                 TableEditAction::make(),
