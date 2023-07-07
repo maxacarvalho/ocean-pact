@@ -40,7 +40,7 @@ class ProtheusQuotePayloadData extends Data
             FILIAL: $quote->company_code_branch,
             SOLICITACAO_DE_COMPRAS: $quote->budget->budget_number,
             COTACAO: $quote->quote_number,
-            DATA_LIMITE_RESPOSTA: $quote->valid_until,
+            DATA_LIMITE_RESPOSTA: $quote->valid_until ?? $quote->updated_at,
             OBSERVACAO_GERAL: $quote->comments,
             FORNECEDOR: ProtheusSupplierPayloadData::fromQuote($quote),
             COND_PAGTO: $quote->paymentCondition->code,
