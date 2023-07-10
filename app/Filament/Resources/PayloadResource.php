@@ -58,7 +58,7 @@ class PayloadResource extends Resource
                     ->preload(),
 
                 Select::make(Payload::PROCESSING_STATUS)
-                    ->label(Str::formatTitle(__('integration_type.integration_type')))
+                    ->label(Str::formatTitle(__('payload.processed_status')))
                     ->required()
                     ->options(fn () => PayloadProcessingStatusEnum::toArray()),
 
