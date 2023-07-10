@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\PayloadResource\Pages;
 
 use App\Filament\Resources\PayloadResource;
+use App\Models\Payload;
 use Filament\Pages\Actions\DeleteAction as PageDeleteAction;
 use Filament\Resources\Pages\EditRecord;
 
@@ -15,5 +16,12 @@ class EditPayload extends EditRecord
         return [
             PageDeleteAction::make(),
         ];
+    }
+
+    protected function mutateFormDataBeforeFill(array $data): array
+    {
+        $data[Payload::PAYLOAD] = json_encode($data[Payload::PAYLOAD], JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT);
+
+        return $data;
     }
 }
