@@ -17,6 +17,7 @@ use App\Models\Supplier;
 use App\Models\SupplierInvitation;
 use App\Models\User;
 use App\Utils\Str;
+use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Log;
 use Throwable;
@@ -128,7 +129,16 @@ class IncomingQuotePayloadProcessorJob extends PayloadProcessor
             return $buyer;
         }
 
-        if ($buyer->companies()->wherePivot(CompanyUser::BUYER_CODE, '=', $data->COMPRADOR->CODIGO)->exists()) {
+        $companyIsAssociated = $buyer
+            ->companies()
+            ->where(function (Builder $query) use ($data) {
+                $query->where(Company::TABLE_NAME.'.'.Company::CODE, '=', $data->EMPRESA)
+                    ->where(Company::TABLE_NAME.'.'.Company::CODE_BRANCH, '=', $data->FILIAL);
+            })
+            ->wherePivot(CompanyUser::TABLE_NAME.'.'.CompanyUser::BUYER_CODE, '=', $data->COMPRADOR->CODIGO)
+            ->exists();
+
+        if ($companyIsAssociated) {
             return $buyer;
         }
 
