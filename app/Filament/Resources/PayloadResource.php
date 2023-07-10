@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Enums\PayloadProcessingStatusEnum;
 use App\Enums\PayloadStoringStatusEnum;
 use App\Filament\Plugins\FilamentSimpleHighlightField\HighlightField;
+use App\Filament\Resources\PayloadResource\Pages\EditPayload;
 use App\Filament\Resources\PayloadResource\Pages\ListPayloads;
 use App\Filament\Resources\PayloadResource\Pages\ViewPayload;
 use App\Filament\Resources\PayloadResource\RelationManagers\ProcessingAttemptsRelationManager;
@@ -56,19 +57,24 @@ class PayloadResource extends Resource
                     ->relationship('integrationType', 'code')
                     ->preload(),
 
+                Select::make(Payload::PROCESSING_STATUS)
+                    ->label(Str::formatTitle(__('integration_type.integration_type')))
+                    ->required()
+                    ->options(fn () => PayloadProcessingStatusEnum::toArray()),
+
                 Textarea::make(Payload::PAYLOAD)
                     ->label(Str::formatTitle(__('payload.payload')))
                     ->required()
                     ->json()
                     ->columnSpanFull()
-                    ->hiddenOn('view'),
+                    ->hiddenOn(['view', 'edit']),
 
                 HighlightField::make(Payload::PAYLOAD)
                     ->label(Str::formatTitle(__('payload.payload')))
                     ->required()
                     ->json()
                     ->columnSpanFull()
-                    ->hiddenOn('create'),
+                    ->hiddenOn(['create']),
             ]);
     }
 
@@ -181,6 +187,7 @@ class PayloadResource extends Resource
         return [
             'index' => ListPayloads::route('/'),
             'view' => ViewPayload::route('/{record}'),
+            'edit' => EditPayload::route('/{record}/edit'),
         ];
     }
 }
