@@ -2,7 +2,6 @@
 
 namespace App\Filament\Resources\QuoteResource\RelationManagers;
 
-use App\Enums\FreightTypeEnum;
 use App\Models\Product;
 use App\Models\Quote;
 use App\Models\QuoteItem;
@@ -16,7 +15,6 @@ use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Placeholder;
-use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\TextInput\Mask;
@@ -24,7 +22,6 @@ use Filament\Resources\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Resources\Table;
 use Filament\Tables\Actions\EditAction as TableEditAction;
-use Filament\Tables\Columns\SelectColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ToggleColumn;
 use Illuminate\Database\Eloquent\Builder;
@@ -100,88 +97,6 @@ class QuoteItemsRelationManager extends RelationManager
                                 ->lazyPlaceholder(false)
                             ),
 
-                        TextInput::make(QuoteItem::IPI)
-                            ->label(Str::formatTitle(__('quote_item.ipi')))
-                            ->default(0)
-                            ->mask(fn (TextInput\Mask $mask) => $mask
-                                ->patternBlocks([
-                                    'money' => fn (Mask $mask) => $mask
-                                        ->numeric()
-                                        ->decimalPlaces(2)
-                                        ->decimalSeparator(',')
-                                        ->mapToDecimalSeparator([','])
-                                        ->signed(true)
-                                        ->normalizeZeros()
-                                        ->padFractionalZeros()
-                                        ->thousandsSeparator('.'),
-                                ])
-                                ->pattern('money%')
-                                ->lazyPlaceholder(false)
-                            ),
-
-                        TextInput::make(QuoteItem::ICMS)
-                            ->label(Str::formatTitle(__('quote_item.icms')))
-                            ->default(0)
-                            ->mask(fn (TextInput\Mask $mask) => $mask
-                                ->patternBlocks([
-                                    'money' => fn (Mask $mask) => $mask
-                                        ->numeric()
-                                        ->decimalPlaces(2)
-                                        ->decimalSeparator(',')
-                                        ->mapToDecimalSeparator([','])
-                                        ->signed(true)
-                                        ->normalizeZeros()
-                                        ->padFractionalZeros()
-                                        ->thousandsSeparator('.'),
-                                ])
-                                ->pattern('money%')
-                                ->lazyPlaceholder(false)
-                            ),
-
-                        Select::make(QuoteItem::FREIGHT_TYPE)
-                            ->label(Str::formatTitle(__('quote_item.freight_type')))
-                            ->options(fn () => FreightTypeEnum::toArray())
-                            ->reactive(),
-
-                        TextInput::make(QuoteItem::FREIGHT_COST)
-                            ->label(Str::formatTitle(__('quote_item.freight_cost')))
-                            ->required(fn (Closure $get) => $get(QuoteItem::FREIGHT_TYPE) !== null)
-                            ->default(0)
-                            ->mask(fn (TextInput\Mask $mask) => $mask
-                                ->patternBlocks([
-                                    'money' => fn (Mask $mask) => $mask
-                                        ->numeric()
-                                        ->decimalPlaces(2)
-                                        ->decimalSeparator(',')
-                                        ->mapToDecimalSeparator([','])
-                                        ->signed(true)
-                                        ->normalizeZeros()
-                                        ->padFractionalZeros()
-                                        ->thousandsSeparator('.'),
-                                ])
-                                ->pattern('R$money')
-                                ->lazyPlaceholder(false)
-                            ),
-
-                        TextInput::make(QuoteItem::EXPENSES)
-                            ->label(Str::formatTitle(__('quote_item.expenses')))
-                            ->default(0)
-                            ->mask(fn (TextInput\Mask $mask) => $mask
-                                ->patternBlocks([
-                                    'money' => fn (Mask $mask) => $mask
-                                        ->numeric()
-                                        ->decimalPlaces(2)
-                                        ->decimalSeparator(',')
-                                        ->mapToDecimalSeparator([','])
-                                        ->signed(true)
-                                        ->normalizeZeros()
-                                        ->padFractionalZeros()
-                                        ->thousandsSeparator('.'),
-                                ])
-                                ->pattern('R$money')
-                                ->lazyPlaceholder(false)
-                            ),
-
                         DatePicker::make(QuoteItem::DELIVERY_DATE)
                             ->label(Str::formatTitle(__('quote_item.delivery_date')))
                             ->displayFormat('d/m/Y')
@@ -230,80 +145,16 @@ class QuoteItemsRelationManager extends RelationManager
                         return Money::fromMinor($record->unit_price)->toDecimal();
                     }),
 
-                CurrencyInputColumn::make(QuoteItem::IPI)
-                    ->label(Str::formatTitle(__('quote_item.ipi')))
-                    ->getStateUsing(function (Model|QuoteItem $record): ?string {
-                        if ($record->ipi === null) {
-                            return null;
-                        }
-
-                        return Money::fromMinor($record->ipi)->toDecimal();
-                    }),
-
                 TextColumn::make('total_price')
                     ->label(Str::formatTitle(__('quote_item.total_price')))
                     ->getStateUsing(function (Model|QuoteItem $record): ?string {
                         try {
-                            $subtotal = Money::fromMinor($record->unit_price);
-                            $tax = Money::fromMinor($record->ipi);
+                            $totalPrice = $record->quantity * $record->unit_price;
 
-                            $taxAmount = $subtotal->getBrickMoney()->multipliedBy(
-                                $tax->getBrickMoney()->getAmount()->toFloat() / 100
-                            );
-
-                            $subtotalWithTax = $subtotal->getBrickMoney()->plus($taxAmount);
-
-                            $total = $subtotalWithTax->multipliedBy($record->quantity);
-
-                            return $total->formatTo(config('app.locale'));
+                            return Money::fromMinor($totalPrice)->toCurrency();
                         } catch (Exception $exception) {
                             return null;
                         }
-                    }),
-
-                CurrencyInputColumn::make(QuoteItem::ICMS)
-                    ->label(Str::formatTitle(__('quote_item.icms')))
-                    ->getStateUsing(function (Model|QuoteItem $record): ?string {
-                        if ($record->icms === null) {
-                            return null;
-                        }
-
-                        return Money::fromMinor($record->icms)->toDecimal();
-                    }),
-
-                SelectColumn::make(QuoteItem::FREIGHT_TYPE)
-                    ->label(Str::formatTitle(__('quote_item.freight_type')))
-                    ->options(fn () => FreightTypeEnum::toArray())
-                    ->updateStateUsing(function ($state, QuoteItem|Model $record) {
-                        if (empty($state)) {
-                            $record->freight_type = null;
-                        } else {
-                            $record->freight_type = $state;
-                        }
-
-                        $record->save();
-
-                        return $state;
-                    }),
-
-                CurrencyInputColumn::make(QuoteItem::FREIGHT_COST)
-                    ->label(Str::formatTitle(__('quote_item.freight_cost')))
-                    ->getStateUsing(function (Model|QuoteItem $record): ?string {
-                        if ($record->freight_cost === null) {
-                            return null;
-                        }
-
-                        return Money::fromMinor($record->freight_cost)->toDecimal();
-                    }),
-
-                CurrencyInputColumn::make(QuoteItem::EXPENSES)
-                    ->label(Str::formatTitle(__('quote_item.expenses')))
-                    ->getStateUsing(function (Model|QuoteItem $record): ?string {
-                        if ($record->expenses === null) {
-                            return null;
-                        }
-
-                        return Money::fromMinor($record->expenses)->toDecimal();
                     }),
 
                 DateInputColumn::make(QuoteItem::DELIVERY_DATE)
@@ -328,21 +179,12 @@ class QuoteItemsRelationManager extends RelationManager
                 TableEditAction::make()
                     ->mutateRecordDataUsing(function (array $data) {
                         $data[QuoteItem::UNIT_PRICE] = Money::fromMinor($data[QuoteItem::UNIT_PRICE])->toDecimal();
-                        $data[QuoteItem::IPI] = Money::fromMinor($data[QuoteItem::IPI])->toDecimal();
-                        $data[QuoteItem::ICMS] = Money::fromMinor($data[QuoteItem::ICMS])->toDecimal();
-                        $data[QuoteItem::FREIGHT_COST] = Money::fromMinor($data[QuoteItem::FREIGHT_COST])->toDecimal();
-                        $data[QuoteItem::EXPENSES] = Money::fromMinor($data[QuoteItem::EXPENSES])->toDecimal();
 
                         return $data;
                     })
                     ->mutateFormDataUsing(function (array $data) {
                         try {
                             $data[QuoteItem::UNIT_PRICE] = Money::fromMonetary($data[QuoteItem::UNIT_PRICE])->toMinor();
-                            $data[QuoteItem::IPI] = Money::fromMonetary($data[QuoteItem::IPI])->toMinor();
-                            $data[QuoteItem::ICMS] = Money::fromMonetary($data[QuoteItem::ICMS])->toMinor();
-                            $data[QuoteItem::FREIGHT_COST] = Money::fromMonetary($data[QuoteItem::FREIGHT_COST])->toMinor();
-                            $data[QuoteItem::EXPENSES] = Money::fromMonetary($data[QuoteItem::EXPENSES])->toMinor();
-                            $data[QuoteItem::FREIGHT_TYPE] = empty($data[QuoteItem::FREIGHT_TYPE]) ? null : $data[QuoteItem::FREIGHT_TYPE];
                         } catch (Exception $exception) {
                             unset($data[QuoteItem::UNIT_PRICE]);
                         }

@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Enums\FreightTypeEnum;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
@@ -16,11 +15,6 @@ use Illuminate\Support\Carbon;
  * @property string               $item
  * @property int                  $quantity
  * @property int                  $unit_price
- * @property int                  $ipi
- * @property int                  $icms
- * @property FreightTypeEnum|null $freight_type
- * @property int                  $freight_cost
- * @property int                  $expenses
  * @property Carbon|null          $delivery_date
  * @property bool                 $should_be_quoted
  * @property string|null          $comments
@@ -40,11 +34,6 @@ class QuoteItem extends Model
     public const ITEM = 'item';
     public const QUANTITY = 'quantity';
     public const UNIT_PRICE = 'unit_price';
-    public const IPI = 'ipi';
-    public const ICMS = 'icms';
-    public const FREIGHT_TYPE = 'freight_type';
-    public const FREIGHT_COST = 'freight_cost';
-    public const EXPENSES = 'expenses';
     public const DELIVERY_DATE = 'delivery_date';
     public const SHOULD_BE_QUOTED = 'should_be_quoted';
     public const COMMENTS = 'comments';
@@ -60,7 +49,6 @@ class QuoteItem extends Model
         self::ID,
     ];
     protected $casts = [
-        self::FREIGHT_TYPE => FreightTypeEnum::class.':nullable',
         self::DELIVERY_DATE => 'date',
         self::SHOULD_BE_QUOTED => 'boolean',
     ];
