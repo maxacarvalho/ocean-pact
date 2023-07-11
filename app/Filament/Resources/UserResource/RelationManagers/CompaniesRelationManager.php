@@ -4,6 +4,7 @@ namespace App\Filament\Resources\UserResource\RelationManagers;
 
 use App\Models\Company;
 use App\Models\CompanyUser;
+use App\Models\User;
 use App\Utils\Str;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Form;
@@ -12,13 +13,14 @@ use Filament\Resources\Table;
 use Filament\Tables\Actions\AttachAction as TableAttachAction;
 use Filament\Tables\Actions\DetachAction as TableDetachAction;
 use Filament\Tables\Actions\DetachBulkAction as TableDetachBulkAction;
+use Filament\Tables\Actions\EditAction as TableEditAction;
 use Filament\Tables\Columns\TextColumn;
 
 class CompaniesRelationManager extends RelationManager
 {
-    protected static string $relationship = 'companies';
+    protected static string $relationship = User::RELATION_COMPANIES;
 
-    protected static ?string $recordTitleAttribute = 'description';
+    protected static ?string $recordTitleAttribute = Company::CODE_CODE_BRANCH_AND_BUSINESS_NAME;
 
     public static function getModelLabel(): string
     {
@@ -34,9 +36,9 @@ class CompaniesRelationManager extends RelationManager
     {
         return $form
             ->schema([
-                TextInput::make(Company::BRANCH)
-                    ->required()
-                    ->maxLength(255),
+                TextInput::make(CompanyUser::BUYER_CODE)
+                    ->label(Str::formatTitle(__('user.buyer_code')))
+                    ->required(),
             ]);
     }
 
@@ -50,7 +52,7 @@ class CompaniesRelationManager extends RelationManager
                 TextColumn::make(Company::BRANCH)
                     ->label(Str::formatTitle(__('company.branch'))),
 
-                TextColumn::make(Company::NAME)
+                TextColumn::make(Company::BUSINESS_NAME)
                     ->label(Str::formatTitle(__('company.name'))),
 
                 TextColumn::make(CompanyUser::BUYER_CODE)
@@ -60,10 +62,18 @@ class CompaniesRelationManager extends RelationManager
                 //
             ])
             ->headerActions([
-                TableAttachAction::make(),
+                TableAttachAction::make()
+                    ->form(fn (TableAttachAction $action): array => [
+                        $action->getRecordSelect(),
+                        TextInput::make(CompanyUser::BUYER_CODE)
+                            ->label(Str::formatTitle(__('user.buyer_code')))
+                            ->required(),
+                    ])
+                    ->preloadRecordSelect(),
             ])
             ->actions([
                 TableDetachAction::make(),
+                TableEditAction::make(),
             ])
             ->bulkActions([
                 TableDetachBulkAction::make(),
