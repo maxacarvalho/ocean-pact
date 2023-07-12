@@ -7,6 +7,7 @@ use App\Data\Protheus\Quote\ProtheusBuyerPayloadData;
 use App\Data\Protheus\Quote\ProtheusSupplierPayloadData;
 use App\Models\Quote;
 use App\Models\QuoteItem;
+use App\Utils\Money;
 use DateTime;
 use Spatie\LaravelData\Attributes\DataCollectionOf;
 use Spatie\LaravelData\Attributes\WithCast;
@@ -25,6 +26,11 @@ class ProtheusQuotePayloadData extends Data
         #[WithCast(DateTimeInterfaceCast::class)]
         public DateTime|null $DATA_LIMITE_RESPOSTA,
         public string|null|Optional $OBSERVACAO_GERAL,
+        public string $IPI,
+        public string $ICMS,
+        public string $DESPESAS,
+        public string|null $TIPO_FRETE,
+        public string $VALOR_FRETE,
         public ProtheusSupplierPayloadData $FORNECEDOR,
         public string $COND_PAGTO,
         public ProtheusBuyerPayloadData $COMPRADOR,
@@ -42,6 +48,11 @@ class ProtheusQuotePayloadData extends Data
             COTACAO: $quote->quote_number,
             DATA_LIMITE_RESPOSTA: $quote->valid_until ?? $quote->updated_at,
             OBSERVACAO_GERAL: $quote->comments,
+            IPI: (string) Money::fromMinor($quote->ipi)->getBrickMoney()->getAmount(),
+            ICMS: (string) Money::fromMinor($quote->icms)->getBrickMoney()->getAmount(),
+            DESPESAS: (string) Money::fromMinor($quote->expenses)->getBrickMoney()->getAmount(),
+            TIPO_FRETE: $quote->freight_type,
+            VALOR_FRETE: (string) Money::fromMinor($quote->freight_cost)->getBrickMoney()->getAmount(),
             FORNECEDOR: ProtheusSupplierPayloadData::fromQuote($quote),
             COND_PAGTO: $quote->paymentCondition->code,
             COMPRADOR: ProtheusBuyerPayloadData::fromQuote($quote),

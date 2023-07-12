@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\FreightTypeEnum;
 use App\Enums\QuoteStatusEnum;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -21,6 +22,11 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null                 $valid_until
  * @property QuoteStatusEnum             $status
  * @property string|null                 $comments
+ * @property int                         $ipi
+ * @property int                         $icms
+ * @property int                         $expenses
+ * @property int                         $freight_cost
+ * @property FreightTypeEnum|null        $freight_type
  * @property Carbon|null                 $created_at
  * @property Carbon|null                 $updated_at
  * // Relations
@@ -46,6 +52,11 @@ class Quote extends Model
     public const VALID_UNTIL = 'valid_until';
     public const STATUS = 'status';
     public const COMMENTS = 'comments';
+    public const IPI = 'ipi';
+    public const ICMS = 'icms';
+    public const EXPENSES = 'expenses';
+    public const FREIGHT_COST = 'freight_cost';
+    public const FREIGHT_TYPE = 'freight_type';
     public const CREATED_AT = 'created_at';
     public const UPDATED_AT = 'updated_at';
 
@@ -64,6 +75,7 @@ class Quote extends Model
     protected $casts = [
         self::STATUS => QuoteStatusEnum::class,
         self::VALID_UNTIL => 'date',
+        self::FREIGHT_TYPE => FreightTypeEnum::class.':nullable',
     ];
 
     public function budget(): BelongsTo
