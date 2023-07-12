@@ -37,4 +37,5 @@ return [
     'please_fill_the_unit_price_and_delivery_date_for_all_items' => 'por favor, preencha o preço unitário e a data de entrega para todos os itens.',
     'CIF' => 'CIF',
     'FOB' => 'FOB',
+    'total' => 'total',
 ];

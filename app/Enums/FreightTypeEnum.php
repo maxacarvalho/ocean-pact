@@ -14,8 +14,8 @@ class FreightTypeEnum extends Enum
     protected static function labels(): array
     {
         return [
-            'CIF' => Str::formatTitle(__('quote_item.CIF')),
-            'FOB' => Str::formatTitle(__('quote_item.FOB')),
+            'CIF' => Str::formatTitle(__('quote.CIF')),
+            'FOB' => Str::formatTitle(__('quote.FOB')),
         ];
     }
 }

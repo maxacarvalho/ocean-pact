@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Enums\FreightTypeEnum;
 use App\Enums\QuoteStatusEnum;
 use App\Filament\Resources\QuoteResource\Pages\EditQuote;
 use App\Filament\Resources\QuoteResource\Pages\ListQuotes;
@@ -14,12 +15,15 @@ use App\Models\Quote;
 use App\Models\Role;
 use App\Models\Supplier;
 use App\Models\User;
+use App\Utils\Money;
 use App\Utils\Str;
 use Closure;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\TextInput\Mask;
 use Filament\Resources\Form;
 use Filament\Resources\Resource;
 use Filament\Resources\Table;
@@ -160,6 +164,123 @@ class QuoteResource extends Resource
                         $record->valid_until = $state;
                         $record->save();
                     }),
+
+                Grid::make(3)
+                    ->schema([
+                        TextInput::make(Quote::IPI)
+                            ->label(Str::formatTitle(__('quote.ipi')))
+                            ->default(0)
+                            ->mask(fn (TextInput\Mask $mask) => $mask
+                                ->patternBlocks([
+                                    'percentage' => fn (Mask $mask) => $mask
+                                        ->numeric()
+                                        ->decimalPlaces(2)
+                                        ->decimalSeparator(',')
+                                        ->mapToDecimalSeparator([','])
+                                        ->signed(true)
+                                        ->normalizeZeros()
+                                        ->padFractionalZeros()
+                                        ->thousandsSeparator('.'),
+                                ])
+                                ->pattern('percentage')
+                                ->lazyPlaceholder(false)
+                            )
+                            ->reactive()
+                            ->afterStateUpdated(function (Model|Quote|null $record, $state) {
+                                if ($state) {
+                                    $record->ipi = Money::fromMonetary($state)->toMinor();
+                                    $record->save();
+                                }
+                            }),
+
+                        TextInput::make(Quote::ICMS)
+                            ->label(Str::formatTitle(__('quote.icms')))
+                            ->default(0)
+                            ->mask(fn (TextInput\Mask $mask) => $mask
+                                ->patternBlocks([
+                                    'percentage' => fn (Mask $mask) => $mask
+                                        ->numeric()
+                                        ->decimalPlaces(2)
+                                        ->decimalSeparator(',')
+                                        ->mapToDecimalSeparator([','])
+                                        ->signed(true)
+                                        ->normalizeZeros()
+                                        ->padFractionalZeros()
+                                        ->thousandsSeparator('.'),
+                                ])
+                                ->pattern('percentage')
+                                ->lazyPlaceholder(false)
+                            )
+                            ->reactive()
+                            ->afterStateUpdated(function (Model|Quote|null $record, $state) {
+                                if ($state) {
+                                    $record->icms = Money::fromMonetary($state)->toMinor();
+                                    $record->save();
+                                }
+                            }),
+
+                        TextInput::make(Quote::EXPENSES)
+                            ->label(Str::formatTitle(__('quote.expenses')))
+                            ->default(0)
+                            ->mask(fn (TextInput\Mask $mask) => $mask
+                                ->patternBlocks([
+                                    'money' => fn (Mask $mask) => $mask
+                                        ->numeric()
+                                        ->decimalPlaces(2)
+                                        ->decimalSeparator(',')
+                                        ->mapToDecimalSeparator([','])
+                                        ->signed(true)
+                                        ->normalizeZeros()
+                                        ->padFractionalZeros()
+                                        ->thousandsSeparator('.'),
+                                ])
+                                ->pattern('R$money')
+                                ->lazyPlaceholder(false)
+                            )
+                            ->reactive()
+                            ->afterStateUpdated(function (Model|Quote|null $record, $state) {
+                                if ($state) {
+                                    $record->expenses = Money::fromMonetary($state)->toMinor();
+                                    $record->save();
+                                }
+                            }),
+
+                        Select::make(Quote::FREIGHT_TYPE)
+                            ->label(Str::formatTitle(__('quote.freight_type')))
+                            ->options(fn () => FreightTypeEnum::toArray())
+                            ->reactive()
+                            ->afterStateUpdated(function (Model|Quote|null $record, $state) {
+                                $record->freight_type = $state;
+                                $record->save();
+                            }),
+
+                        TextInput::make(Quote::FREIGHT_COST)
+                            ->label(Str::formatTitle(__('quote.freight_cost')))
+                            ->default(0)
+                            ->mask(fn (TextInput\Mask $mask) => $mask
+                                ->patternBlocks([
+                                    'money' => fn (Mask $mask) => $mask
+                                        ->numeric()
+                                        ->decimalPlaces(2)
+                                        ->decimalSeparator(',')
+                                        ->mapToDecimalSeparator([','])
+                                        ->signed(true)
+                                        ->normalizeZeros()
+                                        ->padFractionalZeros()
+                                        ->thousandsSeparator('.'),
+                                ])
+                                ->pattern('R$money')
+                                ->lazyPlaceholder(false)
+                            )
+                            ->reactive()
+                            ->afterStateUpdated(function (Model|Quote|null $record, $state) {
+                                if ($state) {
+                                    $record->freight_cost = Money::fromMonetary($state)->toMinor();
+                                    $record->save();
+                                }
+                            }),
+                    ])
+                    ->columnSpanFull(),
 
                 Textarea::make(Quote::COMMENTS)
                     ->label(Str::formatTitle(__('quote.comments')))
