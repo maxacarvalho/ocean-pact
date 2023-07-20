@@ -26,7 +26,7 @@ class BudgetResource extends Resource
 {
     protected static ?string $model = Budget::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-collection';
+    protected static ?string $navigationIcon = 'far-cart-shopping-fast';
 
     public static function getNavigationLabel(): string
     {

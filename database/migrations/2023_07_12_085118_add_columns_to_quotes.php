@@ -11,8 +11,6 @@ return new class extends Migration
     {
         Schema::table(Quote::TABLE_NAME, function (Blueprint $table) {
             $table->after(Quote::COMMENTS, function (Blueprint $table) {
-                $table->bigInteger(Quote::IPI)->default(0);
-                $table->bigInteger(Quote::ICMS)->default(0);
                 $table->bigInteger(Quote::EXPENSES)->default(0);
                 $table->bigInteger(Quote::FREIGHT_COST)->default(0);
                 $table->string(Quote::FREIGHT_TYPE)->nullable();

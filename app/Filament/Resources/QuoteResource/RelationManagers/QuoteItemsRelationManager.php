@@ -93,7 +93,7 @@ class QuoteItemsRelationManager extends RelationManager
                                         ->padFractionalZeros()
                                         ->thousandsSeparator('.'),
                                 ])
-                                ->pattern('R$money')
+                                ->pattern('money')
                                 ->lazyPlaceholder(false)
                             ),
 
@@ -134,18 +134,19 @@ class QuoteItemsRelationManager extends RelationManager
                 TextColumn::make(QuoteItem::QUANTITY)
                     ->label(Str::formatTitle(__('quote_item.quantity'))),
 
+                CurrencyInputColumn::make(QuoteItem::ICMS)
+                    ->label(Str::formatTitle(__('quote_item.icms')))
+                    ->rules(['required']),
+
+                CurrencyInputColumn::make(QuoteItem::IPI)
+                    ->label(Str::formatTitle(__('quote_item.ipi')))
+                    ->rules(['required']),
+
                 CurrencyInputColumn::make(QuoteItem::UNIT_PRICE)
                     ->label(Str::formatTitle(__('quote_item.unit_price')))
-                    ->rules(['required'])
-                    ->getStateUsing(function (Model|QuoteItem $record): ?string {
-                        if ($record->unit_price === null) {
-                            return null;
-                        }
+                    ->rules(['required']),
 
-                        return Money::fromMinor($record->unit_price)->toDecimal();
-                    }),
-
-                TextColumn::make('total_price')
+                /*TextColumn::make('total_price')
                     ->label(Str::formatTitle(__('quote_item.total_price')))
                     ->getStateUsing(function (Model|QuoteItem $record): ?string {
                         try {
@@ -155,7 +156,7 @@ class QuoteItemsRelationManager extends RelationManager
                         } catch (Exception $exception) {
                             return null;
                         }
-                    }),
+                    }),*/
 
                 DateInputColumn::make(QuoteItem::DELIVERY_DATE)
                     ->label(Str::formatTitle(__('quote_item.delivery_date')))
