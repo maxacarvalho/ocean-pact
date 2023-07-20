@@ -10,16 +10,19 @@ use App\Filament\Resources\QuoteResource\Pages\ViewQuote;
 use App\Filament\Resources\QuoteResource\RelationManagers\QuoteItemsRelationManager;
 use App\Models\Budget;
 use App\Models\Company;
+use App\Models\Currency;
 use App\Models\PaymentCondition;
 use App\Models\Quote;
 use App\Models\Role;
 use App\Models\Supplier;
 use App\Models\User;
-use App\Utils\Money;
 use App\Utils\Str;
 use Closure;
+use Filament\Forms\Components\Card;
+use Filament\Forms\Components\Component;
 use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Group;
+use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -36,11 +39,14 @@ use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 
+/**
+ * @property Quote $record
+ */
 class QuoteResource extends Resource
 {
     protected static ?string $model = Quote::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-collection';
+    protected static ?string $navigationIcon = 'far-receipt';
 
     public static function getNavigationLabel(): string
     {
@@ -61,236 +67,138 @@ class QuoteResource extends Resource
     {
         return $form
             ->schema([
-                Select::make(Quote::COMPANY_CODE)
-                    ->label(Str::formatTitle(__('product.company_code')))
-                    ->relationship(Quote::RELATION_COMPANY, Company::NAME)
-                    ->reactive()
-                    ->visible(fn () => Auth::user()->hasAnyRole(Role::ROLE_ADMIN, Role::ROLE_SUPER_ADMIN))
-                    ->afterStateUpdated(function (Model|Quote|null $record, $state) {
-                        $record->company_code = $state;
-                        $record->save();
-                    }),
-
-                Select::make(Quote::COMPANY_CODE_BRANCH)
-                    ->label(Str::formatTitle(__('product.company_code_branch')))
-                    ->options(function (Closure $get, Model $record) {
-                        $companyCode = $get(Quote::COMPANY_CODE);
-
-                        if (null === $companyCode) {
-                            return [];
+                Group::make()
+                    ->columnSpan(['lg' => 2])
+                    ->columnSpan(function (Component $component) {
+                        if (Auth::user()->hasAnyRole(Role::ROLE_ADMIN, Role::ROLE_SUPER_ADMIN)) {
+                            $component->columnSpanFull();
                         }
 
-                        return Company::query()
-                            ->where(Company::CODE, '=', $companyCode)
-                            ->pluck(Company::BRANCH, Company::CODE_BRANCH)
-                            ->toArray();
+                        $component->columnSpan(['lg' => 2]);
                     })
-                    ->visible(fn () => Auth::user()->hasAnyRole(Role::ROLE_ADMIN, Role::ROLE_SUPER_ADMIN))
-                    ->reactive()
-                    ->afterStateUpdated(function (Model|Quote|null $record, $state) {
-                        $record->company_code_branch = $state;
-                        $record->save();
-                    }),
-
-                Select::make(Quote::SUPPLIER_ID)
-                    ->label(Str::formatTitle(__('quote.supplier_id')))
-                    ->required()
-                    ->relationship(Quote::RELATION_SUPPLIER, Supplier::NAME)
-                    ->visible(fn () => Auth::user()->hasAnyRole(Role::ROLE_ADMIN, Role::ROLE_SUPER_ADMIN))
-                    ->reactive()
-                    ->afterStateUpdated(function (Model|Quote|null $record, $state) {
-                        $record->supplier_id = $state;
-                        $record->save();
-                    }),
-
-                Select::make(Quote::PAYMENT_CONDITION_ID)
-                    ->label(Str::formatTitle(__('quote.payment_condition_id')))
-                    ->required()
-                    ->options(function (Closure $get) {
-                        $companyCode = $get(Quote::COMPANY_CODE);
-
-                        return PaymentCondition::query()
-                            ->where(PaymentCondition::COMPANY_CODE, '=', $companyCode)
-                            ->pluck(PaymentCondition::DESCRIPTION, PaymentCondition::ID)
-                            ->toArray();
-                    })
-                    ->reactive()
-                    ->afterStateUpdated(function (Model|Quote|null $record, $state) {
-                        $record->payment_condition_id = $state;
-                        $record->save();
-                    }),
-
-                Select::make(Quote::BUYER_ID)
-                    ->label(Str::formatTitle(__('quote.buyer_id')))
-                    ->required()
-                    ->relationship(
-                        Quote::RELATION_BUYER,
-                        User::NAME,
-                        function (Builder $query) {
-                            $query->whereHas(User::RELATION_ROLES, function (Builder $query) {
-                                $query->where(Role::NAME, Role::ROLE_BUYER);
-                            });
-                        }
-                    )
-                    ->visible(fn () => Auth::user()->hasAnyRole(Role::ROLE_ADMIN, Role::ROLE_SUPER_ADMIN)),
-
-                Select::make(Quote::BUDGET_ID)
-                    ->label(Str::formatTitle(__('quote.budget_id')))
-                    ->required()
-                    ->relationship(
-                        Quote::RELATION_BUDGET,
-                        Budget::BUDGET_NUMBER
-                    )
-                    ->visible(fn () => Auth::user()->hasAnyRole(Role::ROLE_ADMIN, Role::ROLE_SUPER_ADMIN)),
-
-                TextInput::make(Quote::QUOTE_NUMBER)
-                    ->label(Str::formatTitle(__('quote.quote_number')))
-                    ->required()
-                    ->visible(fn () => Auth::user()->hasAnyRole(Role::ROLE_ADMIN, Role::ROLE_SUPER_ADMIN)),
-
-                Select::make(Quote::STATUS)
-                    ->label(Str::formatTitle(__('quote.status')))
-                    ->required()
-                    ->options(fn () => QuoteStatusEnum::toArray())
-                    ->visible(fn () => Auth::user()->hasAnyRole(Role::ROLE_ADMIN, Role::ROLE_SUPER_ADMIN)),
-
-                DatePicker::make(Quote::VALID_UNTIL)
-                    ->label(Str::formatTitle(__('quote.valid_until')))
-                    ->required()
-                    ->displayFormat('d/m/Y')
-                    ->hiddenOn('create')
-                    ->reactive()
-                    ->afterStateUpdated(function (Model|Quote|null $record, $state) {
-                        $record->valid_until = $state;
-                        $record->save();
-                    }),
-
-                Grid::make(3)
                     ->schema([
-                        TextInput::make(Quote::IPI)
-                            ->label(Str::formatTitle(__('quote.ipi')))
-                            ->default(0)
-                            ->mask(fn (TextInput\Mask $mask) => $mask
-                                ->patternBlocks([
-                                    'percentage' => fn (Mask $mask) => $mask
-                                        ->numeric()
-                                        ->decimalPlaces(2)
-                                        ->decimalSeparator(',')
-                                        ->mapToDecimalSeparator([','])
-                                        ->signed(true)
-                                        ->normalizeZeros()
-                                        ->padFractionalZeros()
-                                        ->thousandsSeparator('.'),
-                                ])
-                                ->pattern('percentage')
-                                ->lazyPlaceholder(false)
-                            )
-                            ->reactive()
-                            ->afterStateUpdated(function (Model|Quote|null $record, $state) {
-                                if ($state) {
-                                    $record->ipi = Money::fromMonetary($state)->toMinor();
-                                    $record->save();
-                                }
-                            }),
+                        Card::make()
+                            ->columns(3)
+                            ->schema([
+                                Select::make(Quote::CURRENCY_ID)
+                                    ->label(Str::formatTitle(__('quote.currency_id')))
+                                    ->required()
+                                    ->relationship(Quote::RELATION_CURRENCY, Currency::DESCRIPTION),
 
-                        TextInput::make(Quote::ICMS)
-                            ->label(Str::formatTitle(__('quote.icms')))
-                            ->default(0)
-                            ->mask(fn (TextInput\Mask $mask) => $mask
-                                ->patternBlocks([
-                                    'percentage' => fn (Mask $mask) => $mask
-                                        ->numeric()
-                                        ->decimalPlaces(2)
-                                        ->decimalSeparator(',')
-                                        ->mapToDecimalSeparator([','])
-                                        ->signed(true)
-                                        ->normalizeZeros()
-                                        ->padFractionalZeros()
-                                        ->thousandsSeparator('.'),
-                                ])
-                                ->pattern('percentage')
-                                ->lazyPlaceholder(false)
-                            )
-                            ->reactive()
-                            ->afterStateUpdated(function (Model|Quote|null $record, $state) {
-                                if ($state) {
-                                    $record->icms = Money::fromMonetary($state)->toMinor();
-                                    $record->save();
-                                }
-                            }),
+                                Select::make(Quote::PAYMENT_CONDITION_ID)
+                                    ->label(Str::formatTitle(__('quote.payment_condition_id')))
+                                    ->required()
+                                    ->options(function (Closure $get) {
+                                        $companyCode = $get(Quote::COMPANY_CODE);
 
-                        TextInput::make(Quote::EXPENSES)
-                            ->label(Str::formatTitle(__('quote.expenses')))
-                            ->default(0)
-                            ->mask(fn (TextInput\Mask $mask) => $mask
-                                ->patternBlocks([
-                                    'money' => fn (Mask $mask) => $mask
-                                        ->numeric()
-                                        ->decimalPlaces(2)
-                                        ->decimalSeparator(',')
-                                        ->mapToDecimalSeparator([','])
-                                        ->signed(true)
-                                        ->normalizeZeros()
-                                        ->padFractionalZeros()
-                                        ->thousandsSeparator('.'),
-                                ])
-                                ->pattern('R$money')
-                                ->lazyPlaceholder(false)
-                            )
-                            ->reactive()
-                            ->afterStateUpdated(function (Model|Quote|null $record, $state) {
-                                if ($state) {
-                                    $record->expenses = Money::fromMonetary($state)->toMinor();
-                                    $record->save();
-                                }
-                            }),
+                                        return PaymentCondition::query()
+                                            ->where(PaymentCondition::COMPANY_CODE, '=', $companyCode)
+                                            ->pluck(PaymentCondition::DESCRIPTION, PaymentCondition::ID)
+                                            ->toArray();
+                                    }),
 
-                        Select::make(Quote::FREIGHT_TYPE)
-                            ->label(Str::formatTitle(__('quote.freight_type')))
-                            ->options(fn () => FreightTypeEnum::toArray())
-                            ->reactive()
-                            ->afterStateUpdated(function (Model|Quote|null $record, $state) {
-                                $record->freight_type = $state;
-                                $record->save();
-                            }),
+                                DatePicker::make(Quote::VALID_UNTIL)
+                                    ->label(Str::formatTitle(__('quote.valid_until')))
+                                    ->required()
+                                    ->displayFormat('d/m/Y')
+                                    ->hiddenOn('create'),
+                            ]),
 
-                        TextInput::make(Quote::FREIGHT_COST)
-                            ->label(Str::formatTitle(__('quote.freight_cost')))
-                            ->default(0)
-                            ->mask(fn (TextInput\Mask $mask) => $mask
-                                ->patternBlocks([
-                                    'money' => fn (Mask $mask) => $mask
-                                        ->numeric()
-                                        ->decimalPlaces(2)
-                                        ->decimalSeparator(',')
-                                        ->mapToDecimalSeparator([','])
-                                        ->signed(true)
-                                        ->normalizeZeros()
-                                        ->padFractionalZeros()
-                                        ->thousandsSeparator('.'),
-                                ])
-                                ->pattern('R$money')
-                                ->lazyPlaceholder(false)
-                            )
-                            ->reactive()
-                            ->afterStateUpdated(function (Model|Quote|null $record, $state) {
-                                if ($state) {
-                                    $record->freight_cost = Money::fromMonetary($state)->toMinor();
-                                    $record->save();
-                                }
-                            }),
-                    ])
-                    ->columnSpanFull(),
+                        Card::make()
+                            ->columns(3)
+                            ->schema([
+                                TextInput::make(Quote::EXPENSES)
+                                    ->label(Str::formatTitle(__('quote.expenses')))
+                                    ->default(0)
+                                    ->mask(fn (TextInput\Mask $mask) => $mask
+                                        ->patternBlocks([
+                                            'money' => fn (Mask $mask) => $mask
+                                                ->numeric()
+                                                ->decimalPlaces(2)
+                                                ->decimalSeparator(',')
+                                                ->mapToDecimalSeparator([','])
+                                                ->signed(true)
+                                                ->normalizeZeros()
+                                                ->padFractionalZeros()
+                                                ->thousandsSeparator('.'),
+                                        ])
+                                        ->pattern('money')
+                                        ->lazyPlaceholder(false)
+                                    ),
 
-                Textarea::make(Quote::COMMENTS)
-                    ->label(Str::formatTitle(__('quote.comments')))
-                    ->columnSpanFull()
-                    ->reactive()
-                    ->afterStateUpdated(function (Model|Quote|null $record, $state) {
-                        $record->comments = $state;
-                        $record->save();
-                    }),
-            ]);
+                                Select::make(Quote::FREIGHT_TYPE)
+                                    ->label(Str::formatTitle(__('quote.freight_type')))
+                                    ->options(fn () => FreightTypeEnum::toArray()),
+
+                                TextInput::make(Quote::FREIGHT_COST)
+                                    ->label(Str::formatTitle(__('quote.freight_cost')))
+                                    ->default(0)
+                                    ->mask(fn (TextInput\Mask $mask) => $mask
+                                        ->patternBlocks([
+                                            'money' => fn (Mask $mask) => $mask
+                                                ->numeric()
+                                                ->decimalPlaces(2)
+                                                ->decimalSeparator(',')
+                                                ->mapToDecimalSeparator([','])
+                                                ->signed(true)
+                                                ->normalizeZeros()
+                                                ->padFractionalZeros()
+                                                ->thousandsSeparator('.'),
+                                        ])
+                                        ->pattern('money')
+                                        ->lazyPlaceholder(false)
+                                    ),
+                            ]),
+
+                        Card::make()
+                            ->columns(1)
+                            ->schema([
+                                Textarea::make(Quote::COMMENTS)
+                                    ->label(Str::formatTitle(__('quote.comments')))
+                                    ->columnSpanFull()
+                                    ->reactive()
+                                    ->afterStateUpdated(function (Model|Quote|null $record, $state) {
+                                        $record->comments = $state;
+                                        $record->save();
+                                    }),
+                            ]),
+                    ]),
+
+                Group::make()
+                    ->columnSpan(['lg' => 1])
+                    ->visible(fn () => Auth::user()->hasAnyRole(Role::ROLE_ADMIN, Role::ROLE_SUPER_ADMIN))
+                    ->schema([
+                        Placeholder::make(Quote::PAYMENT_CONDITION_ID)
+                            ->label(Str::formatTitle(__('quote.payment_condition_id')))
+                            ->content(fn (Model|Quote $record) => $record->company->business_name),
+
+                        Placeholder::make(Quote::COMPANY_CODE_BRANCH)
+                            ->label(Str::formatTitle(__('quote.company_code_branch')))
+                            ->content(fn (Model|Quote $record) => $record->company()->where(Company::CODE_BRANCH, '=', $record->company_code_branch)->first()->branch),
+
+                        Placeholder::make(Quote::SUPPLIER_ID)
+                            ->label(Str::formatTitle(__('quote.supplier_id')))
+                            ->content(fn (Model|Quote $record) => $record->supplier->name),
+
+                        Placeholder::make(Quote::BUYER_ID)
+                            ->label(Str::formatTitle(__('quote.buyer_id')))
+                            ->content(fn (Model|Quote $record) => $record->buyer->name),
+
+                        Placeholder::make(Quote::BUDGET_ID)
+                            ->label(Str::formatTitle(__('quote.budget_id')))
+                            ->content(fn (Model|Quote $record) => $record->budget->budget_number),
+
+                        Placeholder::make(Quote::QUOTE_NUMBER)
+                            ->label(Str::formatTitle(__('quote.quote_number')))
+                            ->content(fn (Model|Quote $record) => $record->quote_number),
+
+                        Select::make(Quote::STATUS)
+                            ->label(Str::formatTitle(__('quote.status')))
+                            ->required()
+                            ->options(fn () => QuoteStatusEnum::toArray()),
+                    ]),
+            ])
+            ->columns(3);
     }
 
     public static function table(Table $table): Table

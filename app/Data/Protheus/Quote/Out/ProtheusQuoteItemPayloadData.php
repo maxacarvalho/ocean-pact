@@ -16,6 +16,8 @@ class ProtheusQuoteItemPayloadData extends Data
         public string $ITEM,
         public float $QUANTIDADE,
         public float $PRECO_UNITARIO,
+        public float $IPI,
+        public float $ICMS,
         #[WithCast(DateTimeInterfaceCast::class)]
         public DateTime $DATA_ENTREGA,
         public bool $INCLUIR_NA_COTACAO,

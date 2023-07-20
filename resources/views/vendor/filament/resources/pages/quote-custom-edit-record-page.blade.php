@@ -47,7 +47,7 @@
 
     <x-filament::hr />
 
-    <div>
+    {{--<div>
         <div class="text-base font-normal text-gray-900">{{ \App\Utils\Str::ucfirst(__('quote.total')) }}</div>
         <div class="mt-1 flex items-baseline justify-between md:block lg:flex">
             <div class="flex items-baseline text-2xl font-semibold">
@@ -56,7 +56,7 @@
         </div>
     </div>
 
-    <x-filament::hr />
+    <x-filament::hr />--}}
 
     <div class="rounded-md border border-warning-300 bg-warning-50 p-4">
         <div class="flex">

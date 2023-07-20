@@ -24,7 +24,7 @@ class PaymentConditionResource extends Resource
 {
     protected static ?string $model = PaymentCondition::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-collection';
+    protected static ?string $navigationIcon = 'far-credit-card';
 
     public static function getNavigationLabel(): string
     {

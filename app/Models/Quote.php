@@ -27,6 +27,7 @@ use Illuminate\Support\Carbon;
  * @property int                         $expenses
  * @property int                         $freight_cost
  * @property FreightTypeEnum|null        $freight_type
+ * @property int|null                    $currency_id
  * @property Carbon|null                 $created_at
  * @property Carbon|null                 $updated_at
  * // Relations
@@ -36,6 +37,7 @@ use Illuminate\Support\Carbon;
  * @property-read PaymentCondition       $paymentCondition
  * @property-read User|null              $buyer
  * @property-read QuoteItem[]|Collection $items
+ * @property-read Currency|null          $currency
  */
 class Quote extends Model
 {
@@ -52,11 +54,10 @@ class Quote extends Model
     public const VALID_UNTIL = 'valid_until';
     public const STATUS = 'status';
     public const COMMENTS = 'comments';
-    public const IPI = 'ipi';
-    public const ICMS = 'icms';
     public const EXPENSES = 'expenses';
     public const FREIGHT_COST = 'freight_cost';
     public const FREIGHT_TYPE = 'freight_type';
+    public const CURRENCY_ID = 'currency_id';
     public const CREATED_AT = 'created_at';
     public const UPDATED_AT = 'updated_at';
 
@@ -67,6 +68,7 @@ class Quote extends Model
     public const RELATION_PAYMENT_CONDITION = 'paymentCondition';
     public const RELATION_BUYER = 'buyer';
     public const RELATION_ITEMS = 'items';
+    public const RELATION_CURRENCY = 'currency';
 
     protected $table = self::TABLE_NAME;
     protected $guarded = [
@@ -113,6 +115,11 @@ class Quote extends Model
     public function items(): HasMany
     {
         return $this->hasMany(QuoteItem::class);
+    }
+
+    public function currency(): BelongsTo
+    {
+        return $this->belongsTo(Currency::class);
     }
 
     public function isResponded(): bool

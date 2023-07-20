@@ -13,6 +13,8 @@ return [
     'item' => 'item',
     'quantity' => 'quantidade',
     'unit_price' => 'preço unitário',
+    'ipi' => 'IPI',
+    'icms' => 'ICMS',
     'total_price' => 'preço total',
     'delivery_date' => 'data de entrega',
     'should_be_quoted' => 'aceito',
