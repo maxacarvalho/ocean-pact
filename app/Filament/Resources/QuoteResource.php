@@ -68,13 +68,12 @@ class QuoteResource extends Resource
         return $form
             ->schema([
                 Group::make()
-                    ->columnSpan(['lg' => 2])
                     ->columnSpan(function (Component $component) {
                         if (Auth::user()->hasAnyRole(Role::ROLE_ADMIN, Role::ROLE_SUPER_ADMIN)) {
-                            $component->columnSpanFull();
+                            $component->columnSpan(['lg' => 2]);
                         }
 
-                        $component->columnSpan(['lg' => 2]);
+                        $component->columnSpanFull();
                     })
                     ->schema([
                         Card::make()
