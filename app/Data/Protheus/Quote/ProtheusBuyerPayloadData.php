@@ -4,9 +4,10 @@ namespace App\Data\Protheus\Quote;
 
 use App\Models\Company;
 use App\Models\Quote;
+use Spatie\LaravelData\Data;
 use Spatie\LaravelData\Optional;
 
-class ProtheusBuyerPayloadData extends \Spatie\LaravelData\Data
+class ProtheusBuyerPayloadData extends Data
 {
     public function __construct(
         public string $CODIGO,

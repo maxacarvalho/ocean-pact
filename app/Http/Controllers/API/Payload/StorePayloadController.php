@@ -69,9 +69,7 @@ class StorePayloadController extends Controller
             ]);
 
             if ($integrationType->isProcessable() && $integrationType->isSynchronous()) {
-                return response()->json([
-                    'id' => $payloadModel->dispatchToProcessor(),
-                ], Response::HTTP_CREATED);
+                return response()->json($payloadModel->dispatchToProcessor(), Response::HTTP_CREATED);
             }
 
             if ($integrationType->isProcessable()) {

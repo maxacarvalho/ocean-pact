@@ -103,7 +103,7 @@ class Payload extends Model
         ]);
     }
 
-    public function dispatchToProcessor(): ?int
+    public function dispatchToProcessor(): ?array
     {
         if (is_null($this->integrationType->getProcessor())) {
             throw new RuntimeException('No processor defined for this integration type');
