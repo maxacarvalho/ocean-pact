@@ -168,7 +168,7 @@ class QuoteResource extends Resource
                     ->visible(fn () => Auth::user()->hasAnyRole(Role::ROLE_ADMIN, Role::ROLE_SUPER_ADMIN))
                     ->schema([
                         Placeholder::make(Quote::PAYMENT_CONDITION_ID)
-                            ->label(Str::formatTitle(__('quote.payment_condition_id')))
+                            ->label(Str::formatTitle(__('quote.company_code')))
                             ->content(fn (Model|Quote $record) => $record->company->business_name),
 
                         Placeholder::make(Quote::COMPANY_CODE_BRANCH)
