@@ -8,6 +8,7 @@ use App\Models\Budget;
 use App\Models\BuyerInvitation;
 use App\Models\Company;
 use App\Models\CompanyUser;
+use App\Models\Currency;
 use App\Models\PaymentCondition;
 use App\Models\Product;
 use App\Models\Quote;
@@ -24,12 +25,14 @@ use Throwable;
 
 class IncomingQuotePayloadProcessorJob extends PayloadProcessor
 {
-    public function handle(): ?int
+    public function handle(): array
     {
         if (! $this->getPayload()->isReady()) {
             $this->delete();
 
-            return null;
+            return [
+                'error' => 'Payload is not ready',
+            ];
         }
 
         $data = ProtheusQuotePayloadData::from($this->getPayload()->payload);
@@ -51,7 +54,9 @@ class IncomingQuotePayloadProcessorJob extends PayloadProcessor
 
             $this->delete();
 
-            return null;
+            return [
+                'error' => 'Company not found',
+            ];
         }
 
         try {
@@ -61,11 +66,13 @@ class IncomingQuotePayloadProcessorJob extends PayloadProcessor
 
             $budget = $this->findOrCreateBudget($data);
 
+            $currency = $this->findOrCreateCurrency($data);
+
             $paymentCondition = $this->findPaymentCondition($data);
 
             $codeToProductsMapping = $this->findOrCreateProducts($data);
 
-            $quote = $this->createQuote($budget, $supplier, $paymentCondition, $buyer, $data);
+            $quote = $this->createQuote($budget, $currency, $supplier, $paymentCondition, $buyer, $data);
 
             foreach ($data->ITENS as $item) {
                 $quote->items()->create([
@@ -85,18 +92,23 @@ class IncomingQuotePayloadProcessorJob extends PayloadProcessor
                 SupplierInvitation::TOKEN => Str::uuid(),
             ]);
 
-            return $quote->id;
+            return [
+                'id' => $quote->id,
+            ];
         } catch (Throwable $exception) {
             Log::error('IncomingQuotePayloadProcessorJob: could not process payload', [
                 'payload' => $this->getPayload()->payload,
                 'exception_message' => $exception->getMessage(),
             ]);
 
-            $this->getPayload()->markAsFailed($exception->getMessage());
+            $this->getPayload()->delete();
 
             $this->delete();
 
-            return null;
+            return [
+                'error' => 'Could not process payload',
+                'exception_message' => $exception->getMessage(),
+            ];
         }
     }
 
@@ -151,6 +163,7 @@ class IncomingQuotePayloadProcessorJob extends PayloadProcessor
 
     public function createQuote(
         Budget $budget,
+        Currency $currency,
         Supplier $supplier,
         PaymentCondition $paymentCondition,
         User $buyer,
@@ -165,6 +178,7 @@ class IncomingQuotePayloadProcessorJob extends PayloadProcessor
             Quote::QUOTE_NUMBER => $data->COTACAO,
             Quote::STATUS => QuoteStatusEnum::DRAFT(),
             Quote::COMMENTS => $data->OBSERVACAO_GERAL,
+            Quote::CURRENCY_ID => $currency->id,
         ]);
     }
 
@@ -242,5 +256,21 @@ class IncomingQuotePayloadProcessorJob extends PayloadProcessor
             ]);
 
         return $paymentCondition;
+    }
+
+    private function findOrCreateCurrency(ProtheusQuotePayloadData $data): Currency
+    {
+        /** @var Currency $currency */
+        $currency = Currency::query()
+            ->firstOrCreate([
+                Currency::COMPANY_CODE => $data->MOEDAS->EMPRESA,
+                Currency::PROTHEUS_CURRENCY_ID => $data->MOEDAS->MOEDA,
+                Currency::DESCRIPTION => $data->MOEDAS->DESCRICAO,
+                Currency::PROTHEUS_CODE => $data->MOEDAS->CODIGO,
+                Currency::PROTHEUS_ACRONYM => $data->MOEDAS->SIGLA,
+                Currency::ISO_CODE => $data->MOEDAS->SIGLA,
+            ]);
+
+        return $currency;
     }
 }

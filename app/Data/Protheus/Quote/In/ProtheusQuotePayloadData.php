@@ -3,6 +3,7 @@
 namespace App\Data\Protheus\Quote\In;
 
 use App\Data\Protheus\Quote\ProtheusBuyerPayloadData;
+use App\Data\Protheus\Quote\ProtheusCurrencyPayloadData;
 use App\Data\Protheus\Quote\ProtheusPaymentConditionData;
 use App\Data\Protheus\Quote\ProtheusProductPayloadData;
 use App\Data\Protheus\Quote\ProtheusSupplierPayloadData;
@@ -19,6 +20,7 @@ class ProtheusQuotePayloadData extends Data
         public string $SOLICITACAO_DE_COMPRAS,
         public string $COTACAO,
         public string|Optional|null $OBSERVACAO_GERAL,
+        public ProtheusCurrencyPayloadData $MOEDAS,
         public ProtheusSupplierPayloadData $FORNECEDOR,
         public ProtheusPaymentConditionData $COND_PAGTO,
         public ProtheusBuyerPayloadData $COMPRADOR,
