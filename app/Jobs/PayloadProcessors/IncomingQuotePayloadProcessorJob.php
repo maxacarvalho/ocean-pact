@@ -92,6 +92,8 @@ class IncomingQuotePayloadProcessorJob extends PayloadProcessor
                 SupplierInvitation::TOKEN => Str::uuid(),
             ]);
 
+            $quote->markAsPending();
+
             return [
                 'id' => $quote->id,
             ];
