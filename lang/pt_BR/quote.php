@@ -37,4 +37,6 @@ return [
     'CIF' => 'CIF',
     'FOB' => 'FOB',
     'total' => 'total',
+    'quote_marked_as_accepted' => 'cotação marcada como aceita',
+    'problem_marking_quote_as_accepted' => 'houve um problema ao marcar a cotação como aceita',
 ];
