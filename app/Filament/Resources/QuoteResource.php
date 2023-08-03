@@ -106,7 +106,7 @@ class QuoteResource extends Resource
                         Card::make()
                             ->columns(3)
                             ->schema([
-                                TextInput::make(Quote::EXPENSES)
+                                /*TextInput::make(Quote::EXPENSES)
                                     ->label(Str::formatTitle(__('quote.expenses')))
                                     ->default(0)
                                     ->mask(fn (TextInput\Mask $mask) => $mask
@@ -123,13 +123,13 @@ class QuoteResource extends Resource
                                         ])
                                         ->pattern('money')
                                         ->lazyPlaceholder(false)
-                                    ),
+                                    ),*/
 
                                 Select::make(Quote::FREIGHT_TYPE)
                                     ->label(Str::formatTitle(__('quote.freight_type')))
                                     ->options(fn () => FreightTypeEnum::toArray()),
 
-                                TextInput::make(Quote::FREIGHT_COST)
+                                /*TextInput::make(Quote::FREIGHT_COST)
                                     ->label(Str::formatTitle(__('quote.freight_cost')))
                                     ->default(0)
                                     ->mask(fn (TextInput\Mask $mask) => $mask
@@ -146,7 +146,7 @@ class QuoteResource extends Resource
                                         ])
                                         ->pattern('money')
                                         ->lazyPlaceholder(false)
-                                    ),
+                                    ),*/
                             ]),
 
                         Card::make()
