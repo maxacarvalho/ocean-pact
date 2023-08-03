@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\QuoteResource\RelationManagers;
 
+use App\Enums\QuoteItemStatusEnum;
 use App\Models\Product;
 use App\Models\Quote;
 use App\Models\QuoteItem;
@@ -136,15 +137,34 @@ class QuoteItemsRelationManager extends RelationManager
 
                 CurrencyInputColumn::make(QuoteItem::ICMS)
                     ->label(Str::formatTitle(__('quote_item.icms')))
-                    ->rules(['required']),
+                    ->rules([
+                        'required',
+                        function (string $attribute, mixed $value, Closure $fail) {
+                            if ((float) str_replace(',', '.', $value) > 100) {
+                                $fail(__('validation.max.numeric', ['max' => '100']));
+                            }
+                        },
+                    ])
+                    ->isDecimal()
+                    ->disabled(fn (Model|QuoteItem $record): bool => $record->cannotBeResponded()),
 
                 CurrencyInputColumn::make(QuoteItem::IPI)
                     ->label(Str::formatTitle(__('quote_item.ipi')))
-                    ->rules(['required']),
+                    ->rules([
+                        'required',
+                        function (string $attribute, mixed $value, Closure $fail) {
+                            if ((float) str_replace(',', '.', $value) > 100) {
+                                $fail(__('validation.max.numeric', ['max' => '100']));
+                            }
+                        },
+                    ])
+                    ->isDecimal()
+                    ->disabled(fn (Model|QuoteItem $record): bool => $record->cannotBeResponded()),
 
                 CurrencyInputColumn::make(QuoteItem::UNIT_PRICE)
                     ->label(Str::formatTitle(__('quote_item.unit_price')))
-                    ->rules(['required']),
+                    ->rules(['required'])
+                    ->disabled(fn (Model|QuoteItem $record): bool => $record->cannotBeResponded()),
 
                 /*TextColumn::make('total_price')
                     ->label(Str::formatTitle(__('quote_item.total_price')))
@@ -165,10 +185,17 @@ class QuoteItemsRelationManager extends RelationManager
                         return $record->delivery_date instanceof Carbon
                             ? $record->delivery_date->format('d/m/Y')
                             : '';
-                    }),
+                    })
+                    ->disabled(fn (Model|QuoteItem $record): bool => $record->cannotBeResponded()),
 
                 ToggleColumn::make(QuoteItem::SHOULD_BE_QUOTED)
-                    ->label(Str::formatTitle(__('quote_item.should_be_quoted'))),
+                    ->label(Str::formatTitle(__('quote_item.should_be_quoted')))
+                    ->disabled(fn (Model|QuoteItem $record): bool => $record->cannotBeResponded()),
+
+                TextColumn::make(QuoteItem::STATUS)
+                    ->label(Str::formatTitle(__('quote_item.status')))
+                    ->sortable()
+                    ->formatStateUsing(fn (?string $state) => QuoteItemStatusEnum::from($state)->label),
             ])
             ->filters([
                 //

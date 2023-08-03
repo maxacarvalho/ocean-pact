@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\QuoteResource\Pages;
 
+use App\Enums\QuoteItemStatusEnum;
 use App\Events\QuoteRespondedEvent;
 use App\Filament\Resources\QuoteResource;
 use App\Models\Quote;
@@ -42,6 +43,10 @@ class EditQuote extends EditRecord
         }
 
         $this->save(false);
+
+        $this->record->items()->update([
+            QuoteItem::STATUS => QuoteItemStatusEnum::RESPONDED(),
+        ]);
 
         $this->record->markAsResponded();
         QuoteRespondedEvent::dispatch($this->record->id);
