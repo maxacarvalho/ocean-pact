@@ -81,7 +81,7 @@ class EditQuote extends EditRecord
         }
     }
 
-    protected function mutateFormDataBeforeSave(array $data): array
+    /*protected function mutateFormDataBeforeSave(array $data): array
     {
         try {
             $data[Quote::EXPENSES] = Money::fromMonetary($data[Quote::EXPENSES])->toMinor();
@@ -92,15 +92,15 @@ class EditQuote extends EditRecord
         }
 
         return $data;
-    }
+    }*/
 
-    protected function mutateFormDataBeforeFill(array $data): array
+    /*protected function mutateFormDataBeforeFill(array $data): array
     {
         $data[Quote::EXPENSES] = Money::fromMinor($data[Quote::EXPENSES])->toDecimal();
         $data[Quote::FREIGHT_COST] = Money::fromMinor($data[Quote::FREIGHT_COST])->toDecimal();
 
         return $data;
-    }
+    }*/
 
     protected function getActions(): array
     {

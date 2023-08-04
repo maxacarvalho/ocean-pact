@@ -3,6 +3,7 @@
 namespace App\Utils;
 
 use Brick\Math\BigNumber;
+use Brick\Math\RoundingMode;
 use Brick\Money\Money as BrickMoney;
 use NumberFormatter;
 
@@ -22,8 +23,9 @@ class Money
         BigNumber|int|float|string $minorAmount,
     ): self {
         $brickMoney = BrickMoney::of(
-            $minorAmount,
-            config('app.currency')
+            amount: $minorAmount,
+            currency: config('app.currency'),
+            roundingMode: RoundingMode::UP
         );
 
         return self::make($brickMoney);
@@ -38,8 +40,9 @@ class Money
         BigNumber|int|float|string $minorAmount
     ): self {
         $brickMoney = BrickMoney::ofMinor(
-            $minorAmount,
-            config('app.currency')
+            minorAmount: $minorAmount,
+            currency: config('app.currency'),
+            roundingMode: RoundingMode::UP
         );
 
         return self::make($brickMoney);
@@ -55,7 +58,11 @@ class Money
             $value = $value.'.00';
         }
 
-        $money = BrickMoney::of($value, config('app.currency'));
+        $money = BrickMoney::of(
+            amount: $value,
+            currency: config('app.currency'),
+            roundingMode: RoundingMode::UP
+        );
 
         return self::make($money);
     }
