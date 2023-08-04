@@ -1,0 +1,16 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class() extends Migration
+{
+    public function up(): void
+    {
+        Schema::table('quote_items', function (Blueprint $table) {
+            $table->decimal('icms', 10, 2)->default(0)->change();
+            $table->decimal('ipi', 10, 2)->default(0)->change();
+        });
+    }
+};
