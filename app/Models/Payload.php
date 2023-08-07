@@ -55,7 +55,7 @@ class Payload extends Model
         self::STORED_AT => 'datetime',
         self::STORING_STATUS => PayloadStoringStatusEnum::class,
         self::PROCESSED_AT => 'datetime',
-        self::PROCESSING_STATUS => PayloadProcessingStatusEnum::class.':nullable',
+        self::PROCESSING_STATUS => PayloadProcessingStatusEnum::class,
     ];
 
     public function integrationType(): BelongsTo
@@ -70,35 +70,35 @@ class Payload extends Model
 
     public function isReady(): bool
     {
-        return $this->processing_status->equals(PayloadProcessingStatusEnum::READY());
+        return $this->processing_status === PayloadProcessingStatusEnum::READY;
     }
 
     public function isProcessing(): bool
     {
-        return $this->processing_status->equals(PayloadProcessingStatusEnum::PROCESSING());
+        return $this->processing_status === PayloadProcessingStatusEnum::PROCESSING;
     }
 
     public function isCollected(): bool
     {
-        return $this->processing_status->equals(PayloadProcessingStatusEnum::COLLECTED());
+        return $this->processing_status === PayloadProcessingStatusEnum::COLLECTED;
     }
 
     public function isFailed(): bool
     {
-        return $this->processing_status->equals(PayloadProcessingStatusEnum::FAILED());
+        return $this->processing_status === PayloadProcessingStatusEnum::FAILED;
     }
 
     public function markAsProcessing(): void
     {
         $this->update([
-            self::PROCESSING_STATUS => PayloadProcessingStatusEnum::PROCESSING(),
+            self::PROCESSING_STATUS => PayloadProcessingStatusEnum::PROCESSING,
         ]);
     }
 
     public function markAsDone(): void
     {
         $this->update([
-            self::PROCESSING_STATUS => PayloadProcessingStatusEnum::DONE(),
+            self::PROCESSING_STATUS => PayloadProcessingStatusEnum::DONE,
             self::PROCESSED_AT => now(),
         ]);
     }
@@ -128,7 +128,7 @@ class Payload extends Model
     public function markAsFailed(string $error): void
     {
         $this->update([
-            self::PROCESSING_STATUS => PayloadProcessingStatusEnum::FAILED(),
+            self::PROCESSING_STATUS => PayloadProcessingStatusEnum::FAILED,
             self::ERROR => $error,
         ]);
     }

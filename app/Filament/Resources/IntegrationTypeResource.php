@@ -15,13 +15,13 @@ use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
-use Filament\Resources\Form;
+use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Resources\Table;
 use Filament\Tables\Actions\DeleteBulkAction as TableDeleteBulkAction;
 use Filament\Tables\Actions\EditAction as TableEditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Table;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 
@@ -68,11 +68,11 @@ class IntegrationTypeResource extends Resource
                 Select::make(IntegrationType::TYPE)
                     ->label(Str::formatTitle(__('integration_type.type')))
                     ->required()
-                    ->options(fn () => IntegrationTypeEnum::toArray()),
+                    ->options(IntegrationTypeEnum::class),
 
                 Select::make(IntegrationType::HANDLING_TYPE)
                     ->label(Str::formatTitle(__('integration_type.handling_type')))
-                    ->options(fn () => IntegrationHandlingTypeEnum::toArray()),
+                    ->options(IntegrationHandlingTypeEnum::class),
 
                 TextInput::make(IntegrationType::TARGET_URL)
                     ->label(Str::formatTitle(__('integration_type.target_url')))
@@ -143,7 +143,6 @@ class IntegrationTypeResource extends Resource
 
                 TextColumn::make(IntegrationType::HANDLING_TYPE)
                     ->label(Str::formatTitle(__('integration_type.handling_type')))
-                    ->formatStateUsing(fn ($state) => null !== $state ? IntegrationHandlingTypeEnum::from($state)->label : '')
                     ->sortable()
                     ->searchable(),
 
@@ -159,7 +158,7 @@ class IntegrationTypeResource extends Resource
 
                 SelectFilter::make(IntegrationType::HANDLING_TYPE)
                     ->label(Str::formatTitle(__('integration_type.handling_type')))
-                    ->options(IntegrationHandlingTypeEnum::toArray()),
+                    ->options(IntegrationHandlingTypeEnum::class),
             ])
             ->actions([
                 TableEditAction::make(),

@@ -8,16 +8,15 @@ use App\Filament\Resources\PaymentConditionResource\Pages\ListPaymentConditions;
 use App\Models\Company;
 use App\Models\PaymentCondition;
 use App\Utils\Str;
-use Closure;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Filament\Resources\Form;
+use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Resources\Table;
 use Filament\Tables\Actions\DeleteBulkAction as TableDeleteBulkAction;
 use Filament\Tables\Actions\EditAction as TableEditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter as TableFilter;
+use Filament\Tables\Table;
 use Illuminate\Contracts\Database\Query\Builder;
 
 class PaymentConditionResource extends Resource
@@ -52,7 +51,7 @@ class PaymentConditionResource extends Resource
 
                 Select::make(PaymentCondition::COMPANY_CODE_BRANCH)
                     ->label(Str::formatTitle(__('payment_condition.company_code_branch')))
-                    ->options(function (Closure $get) {
+                    ->options(function (\Filament\Forms\Get $get) {
                         $companyCode = $get(PaymentCondition::COMPANY_CODE);
 
                         if (null === $companyCode) {
@@ -169,7 +168,7 @@ class PaymentConditionResource extends Resource
         ];
     }
 
-    protected static function getNavigationGroup(): ?string
+    public static function getNavigationGroup(): ?string
     {
         return Str::formatTitle(__('navigation.quotes'));
     }

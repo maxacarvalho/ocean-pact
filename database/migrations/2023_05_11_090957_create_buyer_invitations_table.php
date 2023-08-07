@@ -16,7 +16,7 @@ return new class extends Migration
                 ->comment('The ID of the user that received the invitation');
             $table->string(BuyerInvitation::TOKEN)->nullable();
             $table->dateTime(BuyerInvitation::REGISTERED_AT)->nullable();
-            $table->string(BuyerInvitation::STATUS)->default(InvitationStatusEnum::PENDING());
+            $table->string(BuyerInvitation::STATUS)->default(InvitationStatusEnum::PENDING);
             $table->timestamps();
         });
     }

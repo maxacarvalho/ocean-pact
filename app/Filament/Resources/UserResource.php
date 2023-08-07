@@ -11,16 +11,15 @@ use App\Models\Role;
 use App\Models\Supplier;
 use App\Models\User;
 use App\Utils\Str;
-use Closure;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Filament\Resources\Form;
+use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Resources\Table;
 use Filament\Tables\Actions\DeleteBulkAction as TableDeleteBulkAction;
 use Filament\Tables\Actions\EditAction as TableEditAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
 use STS\FilamentImpersonate\Impersonate;
 
@@ -79,7 +78,7 @@ class UserResource extends Resource
                         return "$record->code_branch - $record->branch";
                     })
                     ->preload()
-                    ->visible(function (string $context, Closure $get) {
+                    ->visible(function (string $context, \Filament\Forms\Get $get) {
                         if ('create' !== $context) {
                             return false;
                         }
@@ -98,7 +97,7 @@ class UserResource extends Resource
                 Select::make(User::SUPPLIER_ID)
                     ->label(Str::formatTitle(__('user.supplier_id')))
                     ->relationship(User::RELATION_SUPPLIER, Supplier::NAME)
-                    ->visible(function (Closure $get) {
+                    ->visible(function (\Filament\Forms\Get $get) {
                         return Role::query()
                             ->whereIn(Role::ID, $get(User::RELATION_ROLES))
                             ->where(Role::NAME, Role::ROLE_SELLER)

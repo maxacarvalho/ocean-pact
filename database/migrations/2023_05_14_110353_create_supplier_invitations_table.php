@@ -18,7 +18,7 @@ return new class extends Migration
             $table->unsignedBigInteger(SupplierInvitation::QUOTE_ID);
             $table->string(SupplierInvitation::TOKEN);
             $table->timestamp(SupplierInvitation::SENT_AT)->nullable();
-            $table->string(SupplierInvitation::STATUS)->default(InvitationStatusEnum::PENDING());
+            $table->string(SupplierInvitation::STATUS)->default(InvitationStatusEnum::PENDING);
             $table->timestamps();
 
             $table->foreign(SupplierInvitation::SUPPLIER_ID)

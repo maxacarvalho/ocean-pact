@@ -2,30 +2,33 @@
 
 namespace App\Models;
 
+use App\Casts\MoneyCast;
 use App\Enums\QuoteItemStatusEnum;
+use Brick\Money\Money;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 
 /**
- * @property int                 $id
- * @property int                 $quote_id
- * @property int                 $product_id
- * @property string              $description
- * @property string              $measurement_unit
- * @property string              $item
- * @property int                 $quantity
- * @property int                 $unit_price
- * @property int                 $ipi
- * @property int                 $icms
- * @property Carbon|null         $delivery_date
- * @property bool                $should_be_quoted
+ * @property int          $id
+ * @property int          $quote_id
+ * @property int          $product_id
+ * @property string       $description
+ * @property string       $measurement_unit
+ * @property string       $item
+ * @property int          $quantity
+ * @property Money          $unit_price
+ * @property string       $currency
+ * @property int          $ipi
+ * @property int          $icms
+ * @property Carbon|null  $delivery_date
+ * @property bool         $should_be_quoted
  * @property QuoteItemStatusEnum $status
- * @property string|null         $comments
- * @property Carbon|null         $created_at
- * @property Carbon|null         $updated_at
- * @property-read Quote          $quote
- * @property-read Product        $product
+ * @property string|null  $comments
+ * @property Carbon|null  $created_at
+ * @property Carbon|null  $updated_at
+ * @property-read Quote   $quote
+ * @property-read Product $product
  */
 class QuoteItem extends Model
 {
@@ -38,6 +41,7 @@ class QuoteItem extends Model
     public const ITEM = 'item';
     public const QUANTITY = 'quantity';
     public const UNIT_PRICE = 'unit_price';
+    public const CURRENCY = 'currency';
     public const IPI = 'ipi';
     public const ICMS = 'icms';
     public const DELIVERY_DATE = 'delivery_date';
@@ -56,6 +60,7 @@ class QuoteItem extends Model
         self::ID,
     ];
     protected $casts = [
+        self::UNIT_PRICE => MoneyCast::class,
         self::DELIVERY_DATE => 'date',
         self::SHOULD_BE_QUOTED => 'boolean',
         self::STATUS => QuoteItemStatusEnum::class,
@@ -73,10 +78,10 @@ class QuoteItem extends Model
 
     public function canBeResponded(): bool
     {
-        return $this->status->equals(
-            QuoteItemStatusEnum::PENDING(),
-            QuoteItemStatusEnum::RESPONDED()
-        );
+        return in_array($this->status, [
+            QuoteItemStatusEnum::PENDING,
+            QuoteItemStatusEnum::RESPONDED,
+        ]);
     }
 
     public function cannotBeResponded(): bool

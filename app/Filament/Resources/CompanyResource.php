@@ -5,15 +5,15 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\CompanyResource\Pages\CreateCompany;
 use App\Filament\Resources\CompanyResource\Pages\EditCompany;
 use App\Filament\Resources\CompanyResource\Pages\ListCompanies;
-use App\Forms\Components\CnpjCpf;
 use App\Models\Company;
 use App\Utils\Str;
 use Filament\Forms\Components\TextInput;
-use Filament\Resources\Form;
+use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Resources\Table;
+use Filament\Support\RawJs;
 use Filament\Tables\Actions\EditAction as TableEditAction;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Table;
 
 class CompanyResource extends Resource
 {
@@ -72,14 +72,17 @@ class CompanyResource extends Resource
                 TextInput::make(Company::FAX_NUMBER)
                     ->label(Str::formatTitle(__('company.fax_number'))),
 
-                CnpjCpf::make(Company::CNPJ_CPF)
+                TextInput::make(Company::CNPJ_CPF)
                     ->label(Str::formatTitle(__('company.cnpj_cpf')))
                     ->rule('min:14')
                     ->required()
                     ->unique(table: Company::TABLE_NAME, column: Company::CNPJ_CPF)
                     ->dehydrateStateUsing(function (string $state): string {
                         return preg_replace('/\D/', '', $state);
-                    }),
+                    })
+                    ->mask(RawJs::make(<<<'JS'
+                      $input.length >= 15 ? '99.999.999/9999-99' : '999.999.999-99'
+                    JS)),
 
                 TextInput::make(Company::STATE_INSCRIPTION)
                     ->label(Str::formatTitle(__('company.state_inscription'))),
@@ -105,7 +108,7 @@ class CompanyResource extends Resource
 
                 TextInput::make(Company::POSTAL_CODE)
                     ->label(Str::formatTitle(__('company.postal_code')))
-                    ->mask(fn (TextInput\Mask $mask) => $mask->pattern('00000-000')),
+                    ->mask('00000-000'),
 
                 TextInput::make(Company::CITY_CODE)
                     ->label(Str::formatTitle(__('company.city_code'))),

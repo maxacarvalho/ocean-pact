@@ -6,13 +6,13 @@ use App\Models\Company;
 use App\Models\Supplier;
 use App\Utils\Str;
 use Filament\Forms;
-use Filament\Resources\Form;
+use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
-use Filament\Resources\Table;
 use Filament\Tables;
 use Filament\Tables\Actions\AttachAction as TableAttachAction;
 use Filament\Tables\Actions\DetachAction as TableDetachAction;
 use Filament\Tables\Actions\DetachBulkAction as TableDetachBulkAction;
+use Filament\Tables\Table;
 
 class CompaniesRelationManager extends RelationManager
 {
@@ -20,7 +20,7 @@ class CompaniesRelationManager extends RelationManager
 
     protected static ?string $recordTitleAttribute = Company::CODE_CODE_BRANCH_AND_BRANCH;
 
-    public static function getModelLabel(): string
+    public static function getModelLabel(): ?string
     {
         return Str::formatTitle(__('company.company'));
     }
@@ -30,7 +30,7 @@ class CompaniesRelationManager extends RelationManager
         return Str::formatTitle(__('company.companies'));
     }
 
-    public static function form(Form $form): Form
+    public function form(Form $form): Form
     {
         return $form
             ->schema([
@@ -40,7 +40,7 @@ class CompaniesRelationManager extends RelationManager
             ]);
     }
 
-    public static function table(Table $table): Table
+    public function table(Table $table): Table
     {
         return $table
             ->columns([

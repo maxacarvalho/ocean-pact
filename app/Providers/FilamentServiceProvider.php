@@ -2,10 +2,9 @@
 
 namespace App\Providers;
 
-use Filament\PluginServiceProvider;
 use Spatie\LaravelPackageTools\Package;
 
-class FilamentServiceProvider extends PluginServiceProvider
+class FilamentServiceProvider extends \Spatie\LaravelPackageTools\PackageServiceProvider
 {
     public function configurePackage(Package $package): void
     {

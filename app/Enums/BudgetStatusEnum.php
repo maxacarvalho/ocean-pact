@@ -3,19 +3,18 @@
 namespace App\Enums;
 
 use App\Utils\Str;
-use Spatie\Enum\Laravel\Enum;
+use Filament\Support\Contracts\HasLabel;
 
-/**
- * @method static self OPEN()
- * @method static self CLOSED()
- */
-class BudgetStatusEnum extends Enum
+enum BudgetStatusEnum: string implements HasLabel
 {
-    protected static function labels(): array
+    case OPEN = 'OPEN';
+    case CLOSED = 'CLOSED';
+
+    public function getLabel(): string
     {
-        return [
+        return match ($this->value) {
             'OPEN' => Str::formatTitle(__('budget.open')),
             'CLOSED' => Str::formatTitle(__('budget.closed')),
-        ];
+        };
     }
 }

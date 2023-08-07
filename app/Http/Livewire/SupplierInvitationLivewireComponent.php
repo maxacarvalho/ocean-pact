@@ -48,7 +48,7 @@ class SupplierInvitationLivewireComponent extends Component implements HasForms
                 SupplierInvitation::RELATION_QUOTE,
             ])
             ->where(SupplierInvitation::TOKEN, '=', $token)
-            ->where(SupplierInvitation::STATUS, '=', InvitationStatusEnum::SENT())
+            ->where(SupplierInvitation::STATUS, '=', InvitationStatusEnum::SENT)
             ->firstOrFail();
 
         if (null === $this->invitation->supplier) {

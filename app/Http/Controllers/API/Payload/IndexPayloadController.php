@@ -16,7 +16,7 @@ class IndexPayloadController extends Controller
     {
         return PayloadData::collection(
             Payload::query()
-                ->where(Payload::PROCESSING_STATUS, '!=', PayloadProcessingStatusEnum::COLLECTED())
+                ->where(Payload::PROCESSING_STATUS, '!=', PayloadProcessingStatusEnum::COLLECTED)
                 ->orWhereNull(Payload::PROCESSING_STATUS)
                 ->get()
         );

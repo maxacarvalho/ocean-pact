@@ -10,7 +10,7 @@ class HighlightField extends Field
 
     public static function canHighlight(string $string): bool
     {
-        return ! (config('filament-simple-highlight-field.disable_highlighting_for_compact_files', true) && static::areLinesTooLongToBeHighlighted($string));
+        return true;
     }
 
     protected static function areLinesTooLongToBeHighlighted(string $string): bool

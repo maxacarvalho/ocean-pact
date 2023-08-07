@@ -15,7 +15,7 @@ return new class extends Migration
             $table->unsignedBigInteger(Payload::INTEGRATION_TYPE_ID)->index();
             $table->json(Payload::PAYLOAD);
             $table->timestamp(Payload::STORED_AT)->nullable()->index();
-            $table->string('stored_status')->default(PayloadStoringStatusEnum::STORED());
+            $table->string('stored_status')->default(PayloadStoringStatusEnum::STORED);
             $table->timestamp(Payload::PROCESSED_AT)->nullable()->index();
             $table->string('processed_status')->nullable();
             $table->timestamps();

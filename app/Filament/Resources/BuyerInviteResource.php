@@ -9,10 +9,10 @@ use App\Models\User;
 use App\Utils\Str;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
-use Filament\Resources\Form;
+use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Resources\Table;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Table;
 
 class BuyerInviteResource extends Resource
 {
@@ -50,8 +50,8 @@ class BuyerInviteResource extends Resource
                 Select::make('status')
                     ->label(Str::formatTitle(__('invitation.registered_at')))
                     ->required()
-                    ->options(fn () => InvitationStatusEnum::toArray())
-                    ->default(InvitationStatusEnum::PENDING()),
+                    ->options(InvitationStatusEnum::class)
+                    ->default(InvitationStatusEnum::PENDING),
             ]);
     }
 
@@ -63,8 +63,7 @@ class BuyerInviteResource extends Resource
                     ->label(Str::formatTitle(__('invitation.buyer_id'))),
 
                 TextColumn::make(BuyerInvitation::STATUS)
-                    ->label(Str::formatTitle(__('invitation.status')))
-                    ->formatStateUsing(fn (?string $state): ?string => $state !== null ? InvitationStatusEnum::from($state)->label : null),
+                    ->label(Str::formatTitle(__('invitation.status'))),
 
                 TextColumn::make(BuyerInvitation::SENT_AT)
                     ->label(Str::formatTitle(__('invitation.sent_at')))

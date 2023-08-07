@@ -2,14 +2,13 @@
 
 namespace App\Filament\Resources\PayloadResource\RelationManagers;
 
-use App\Enums\PayloadProcessingAttemptsStatusEnum;
 use App\Models\PayloadProcessingAttempt;
 use App\Utils\Str;
 use Filament\Forms\Components\TextInput;
-use Filament\Resources\Form;
+use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
-use Filament\Resources\Table;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Table;
 
 class ProcessingAttemptsRelationManager extends RelationManager
 {
@@ -23,7 +22,7 @@ class ProcessingAttemptsRelationManager extends RelationManager
         return Str::formatTitle(__('payload_processing_attempt.payload_processing_attempts'));
     }
 
-    public static function getModelLabel(): string
+    public static function getModelLabel(): ?string
     {
         return Str::formatTitle(__('payload_processing_attempt.payload_processing_attempt'));
     }
@@ -33,7 +32,7 @@ class ProcessingAttemptsRelationManager extends RelationManager
         return Str::formatTitle(__('payload_processing_attempt.payload_processing_attempts'));
     }
 
-    public static function form(Form $form): Form
+    public function form(Form $form): Form
     {
         return $form
             ->schema([
@@ -43,12 +42,11 @@ class ProcessingAttemptsRelationManager extends RelationManager
             ]);
     }
 
-    public static function table(Table $table): Table
+    public function table(Table $table): Table
     {
         return $table
             ->columns([
                 TextColumn::make(PayloadProcessingAttempt::STATUS)
-                    ->formatStateUsing(fn (?string $state): ?string => $state !== null ? PayloadProcessingAttemptsStatusEnum::from($state)->label : null)
                     ->label(Str::formatTitle(__('payload_processing_attempt.status'))),
                 TextColumn::make(PayloadProcessingAttempt::MESSAGE)
                     ->label(Str::formatTitle(__('payload_processing_attempt.message'))),

@@ -16,7 +16,7 @@ class ListQuotes extends ListRecords
 {
     protected static string $resource = QuoteResource::class;
 
-    protected function getActions(): array
+    protected function getHeaderActions(): array
     {
         return [
             // PageCreateAction::make(),

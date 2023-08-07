@@ -65,7 +65,7 @@ class CreateQuoteRespondedPayloadJob implements ShouldQueue
             Payload::PAYLOAD => $protheusPayloadData->toArray(),
             Payload::PAYLOAD_HASH => $protheusPayloadData->getHash(),
             Payload::STORED_AT => now(),
-            Payload::PROCESSING_STATUS => PayloadProcessingStatusEnum::READY(),
+            Payload::PROCESSING_STATUS => PayloadProcessingStatusEnum::READY,
         ]);
     }
 }

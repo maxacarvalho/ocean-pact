@@ -2,6 +2,7 @@
 
 namespace App\Rules;
 
+use App\Utils\Validators\Cpf;
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 
@@ -9,7 +10,7 @@ class CpfRule implements ValidationRule
 {
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        if ((new \App\Utils\Validators\Cpf)->validate($value) === false) {
+        if ((new Cpf)->validate($value) === false) {
             $fail('validation.cpf')->translate();
         }
     }

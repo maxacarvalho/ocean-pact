@@ -8,17 +8,16 @@ use App\Filament\Resources\ProductResource\Pages\ListProducts;
 use App\Models\Company;
 use App\Models\Product;
 use App\Utils\Str;
-use Closure;
 use Filament\Forms;
 use Filament\Forms\Components\Select;
-use Filament\Resources\Form;
+use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Resources\Table;
 use Filament\Tables\Actions\DeleteBulkAction as TableDeleteBulkAction;
 use Filament\Tables\Actions\EditAction as TableEditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter as TableFilter;
 use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Table;
 use Illuminate\Contracts\Database\Query\Builder;
 
 class ProductResource extends Resource
@@ -53,7 +52,7 @@ class ProductResource extends Resource
 
                 Select::make(Product::COMPANY_CODE_BRANCH)
                     ->label(Str::formatTitle(__('product.company_code_branch')))
-                    ->options(function (Closure $get) {
+                    ->options(function (\Filament\Forms\Get $get) {
                         $companyCode = $get(Product::COMPANY_CODE);
 
                         if (null === $companyCode) {
@@ -179,7 +178,7 @@ class ProductResource extends Resource
         ];
     }
 
-    protected static function getNavigationGroup(): ?string
+    public static function getNavigationGroup(): ?string
     {
         return Str::formatTitle(__('navigation.quotes'));
     }

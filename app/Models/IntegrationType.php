@@ -67,7 +67,7 @@ class IntegrationType extends Model
 
     protected $casts = [
         self::TYPE => IntegrationTypeEnum::class,
-        self::HANDLING_TYPE => IntegrationHandlingTypeEnum::class.':nullable',
+        self::HANDLING_TYPE => IntegrationHandlingTypeEnum::class,
         self::IS_VISIBLE => 'boolean',
         self::IS_ENABLED => 'boolean',
         self::IS_PROTECTED => 'boolean',

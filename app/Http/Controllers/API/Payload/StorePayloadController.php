@@ -38,7 +38,7 @@ class StorePayloadController extends Controller
 
                 $duplicatedPayloadExists = $integrationType
                     ->payloads()
-                    ->where(Payload::PROCESSING_STATUS, '!=', PayloadProcessingStatusEnum::FAILED())
+                    ->where(Payload::PROCESSING_STATUS, '!=', PayloadProcessingStatusEnum::FAILED)
                     ->where(Payload::PAYLOAD_HASH, '=', $payloadHash)
                     ->exists();
 
@@ -65,7 +65,7 @@ class StorePayloadController extends Controller
                 Payload::PAYLOAD => $payloadInput,
                 Payload::PAYLOAD_HASH => md5(json_encode($payloadInput, JSON_THROW_ON_ERROR)),
                 Payload::STORED_AT => now(),
-                Payload::PROCESSING_STATUS => PayloadProcessingStatusEnum::READY(),
+                Payload::PROCESSING_STATUS => PayloadProcessingStatusEnum::READY,
             ]);
 
             if ($integrationType->isProcessable() && $integrationType->isSynchronous()) {

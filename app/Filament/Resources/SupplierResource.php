@@ -11,11 +11,11 @@ use App\Rules\CnpjRule;
 use App\Utils\Str;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\TextInput;
-use Filament\Resources\Form;
+use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Resources\Table;
 use Filament\Tables\Actions\EditAction as TableEditAction;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Table;
 
 class SupplierResource extends Resource
 {
@@ -70,7 +70,7 @@ class SupplierResource extends Resource
                             ->required()
                             ->unique(table: Supplier::TABLE_NAME, column: Supplier::CNPJ_CPF)
                             ->rules([new CnpjRule()])
-                            ->mask(fn (TextInput\Mask $mask) => $mask->pattern('00.000.000/0000-00')),
+                            ->mask('00.000.000/0000-00'),
                     ]),
 
                 Grid::make()
@@ -137,7 +137,7 @@ class SupplierResource extends Resource
         ];
     }
 
-    protected static function getNavigationGroup(): ?string
+    public static function getNavigationGroup(): ?string
     {
         return Str::formatTitle(__('navigation.quotes'));
     }

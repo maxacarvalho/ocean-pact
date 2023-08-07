@@ -9,7 +9,7 @@ class EditBuyerInvite extends EditRecord
 {
     protected static string $resource = BuyerInviteResource::class;
 
-    protected function getActions(): array
+    protected function getHeaderActions(): array
     {
         return [];
     }

@@ -3,19 +3,18 @@
 namespace App\Enums;
 
 use App\Utils\Str;
-use Spatie\Enum\Laravel\Enum;
+use Filament\Support\Contracts\HasLabel;
 
-/**
- * @method static self CIF()
- * @method static self FOB()
- */
-class FreightTypeEnum extends Enum
+enum FreightTypeEnum: string implements HasLabel
 {
-    protected static function labels(): array
+    case CIF = 'CIF';
+    case FOB = 'FOB';
+
+    public function getLabel(): string
     {
-        return [
+        return match ($this->value) {
             'CIF' => Str::formatTitle(__('quote.CIF')),
             'FOB' => Str::formatTitle(__('quote.FOB')),
-        ];
+        };
     }
 }

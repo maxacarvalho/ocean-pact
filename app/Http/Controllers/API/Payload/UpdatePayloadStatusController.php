@@ -16,7 +16,7 @@ class UpdatePayloadStatusController extends Controller
 {
     public function __invoke(Payload $payload, UpdatePayloadStatusRequest $request): JsonResponse
     {
-        if ($payload->processing_status?->equals(PayloadProcessingStatusEnum::COLLECTED())) {
+        if ($payload->processing_status === PayloadProcessingStatusEnum::COLLECTED) {
             return response()->json([
                 'errors' => [
                     'status' => Response::HTTP_UNPROCESSABLE_ENTITY,
@@ -30,9 +30,9 @@ class UpdatePayloadStatusController extends Controller
         $processingAttempt = $payload->processingAttempts()->create($request->validated());
 
         $payload->update([
-            Payload::PROCESSING_STATUS => $processingAttempt->status->equals(PayloadProcessingAttemptsStatusEnum::SUCCESS())
-                ? PayloadProcessingStatusEnum::COLLECTED()
-                : PayloadProcessingStatusEnum::FAILED(),
+            Payload::PROCESSING_STATUS => $processingAttempt->status === PayloadProcessingAttemptsStatusEnum::SUCCESS
+                ? PayloadProcessingStatusEnum::COLLECTED
+                : PayloadProcessingStatusEnum::FAILED,
             Payload::PROCESSED_AT => now(),
         ]);
 
