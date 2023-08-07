@@ -13,7 +13,7 @@ class ListPaymentConditions extends ListRecords
 {
     protected static string $resource = PaymentConditionResource::class;
 
-    protected function getActions(): array
+    protected function getHeaderActions(): array
     {
         return [
             PageCreateAction::make(),

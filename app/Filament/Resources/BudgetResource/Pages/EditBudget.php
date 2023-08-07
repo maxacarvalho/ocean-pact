@@ -10,7 +10,7 @@ class EditBudget extends EditRecord
 {
     protected static string $resource = BudgetResource::class;
 
-    protected function getActions(): array
+    protected function getHeaderActions(): array
     {
         return [
             PageDeleteAction::make(),

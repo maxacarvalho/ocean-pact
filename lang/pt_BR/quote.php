@@ -37,4 +37,5 @@ return [
     'CIF' => 'CIF',
     'FOB' => 'FOB',
     'total' => 'total',
+    'cancel_edit_quote_label' => 'cancelar',
 ];

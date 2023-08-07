@@ -2,17 +2,16 @@
 
 namespace App\Filament\Resources;
 
-use App\Enums\InvitationStatusEnum;
 use App\Filament\Resources\SupplierInvitationResource\Pages;
 use App\Models\Supplier;
 use App\Models\SupplierInvitation;
 use App\Utils\Str;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
-use Filament\Resources\Form;
+use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Resources\Table;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Table;
 
 class SupplierInvitationResource extends Resource
 {
@@ -61,8 +60,7 @@ class SupplierInvitationResource extends Resource
                     ->dateTime('d/m/Y H:i:s'),
 
                 TextColumn::make(SupplierInvitation::STATUS)
-                    ->label(Str::formatTitle(__('invitation.status')))
-                    ->formatStateUsing(fn (?string $state): ?string => $state !== null ? InvitationStatusEnum::from($state)->label : null),
+                    ->label(Str::formatTitle(__('invitation.status'))),
             ]);
     }
 

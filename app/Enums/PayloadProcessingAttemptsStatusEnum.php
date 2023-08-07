@@ -3,19 +3,18 @@
 namespace App\Enums;
 
 use App\Utils\Str;
-use Spatie\Enum\Laravel\Enum;
+use Filament\Support\Contracts\HasLabel;
 
-/**
- * @method static self SUCCESS()
- * @method static self FAILED()
- */
-class PayloadProcessingAttemptsStatusEnum extends Enum
+enum PayloadProcessingAttemptsStatusEnum: string implements HasLabel
 {
-    protected static function labels(): array
+    case SUCCESS = 'SUCCESS';
+    case FAILED = 'FAILED';
+
+    public function getLabel(): string
     {
-        return [
+        return match ($this->value) {
             'SUCCESS' => Str::formatTitle(__('payload_processing_attempt.success')),
             'FAILED' => Str::formatTitle(__('payload_processing_attempt.failed')),
-        ];
+        };
     }
 }

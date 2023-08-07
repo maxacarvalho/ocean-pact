@@ -6,20 +6,19 @@ use App\Enums\IntegrationTypeFieldTypeEnum;
 use App\Models\IntegrationTypeField;
 use App\Rules\MultipleEmailsRule;
 use App\Utils\Str;
-use Closure;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
-use Filament\Resources\Form;
+use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
-use Filament\Resources\Table;
 use Filament\Tables\Actions\CreateAction as TableCreateAction;
 use Filament\Tables\Actions\DeleteAction as TableDeleteAction;
 use Filament\Tables\Actions\DeleteBulkAction as TableDeleteBulkAction;
 use Filament\Tables\Actions\EditAction as TableEditAction;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Table;
 use Illuminate\Support\HtmlString;
 
 class FieldsRelationManager extends RelationManager
@@ -33,7 +32,7 @@ class FieldsRelationManager extends RelationManager
         return Str::formatTitle(__('integration_type_field.integration_type_fields'));
     }
 
-    public static function getModelLabel(): string
+    public static function getModelLabel(): ?string
     {
         return Str::formatTitle(__('integration_type_field.integration_type_field'));
     }
@@ -43,7 +42,7 @@ class FieldsRelationManager extends RelationManager
         return Str::formatTitle(__('integration_type_field.integration_type_fields'));
     }
 
-    public static function form(Form $form): Form
+    public function form(Form $form): Form
     {
         return $form
             ->schema([
@@ -57,9 +56,9 @@ class FieldsRelationManager extends RelationManager
                             ->label(Str::formatTitle(__('integration_type_field.field_type')))
                             ->required()
                             ->reactive()
-                            ->options(IntegrationTypeFieldTypeEnum::toArray())
-                            ->afterStateUpdated(function (Closure $set, $state) {
-                                if (IntegrationTypeFieldTypeEnum::array()->value === $state) {
+                            ->options(IntegrationTypeFieldTypeEnum::class)
+                            ->afterStateUpdated(function (\Filament\Forms\Set $set, $state) {
+                                if (IntegrationTypeFieldTypeEnum::array === $state) {
                                     $set(IntegrationTypeField::FIELD_RULES.'.array', true);
                                 }
                             }),
@@ -74,7 +73,7 @@ class FieldsRelationManager extends RelationManager
                                     ->label(Str::formatTitle(__('integration_type_field.required')))
                                     ->default(true)
                                     ->reactive()
-                                    ->afterStateUpdated(function (Closure $set, $state) {
+                                    ->afterStateUpdated(function (\Filament\Forms\Set $set, $state) {
                                         $set(IntegrationTypeField::FIELD_RULES.'.nullable', ! $state);
                                     }),
 
@@ -113,17 +112,17 @@ class FieldsRelationManager extends RelationManager
                                     ->helperText(function () {
                                         return new HtmlString('<a href="https://www.php.net/manual/pt_BR/datetime.formats.php" target="_blank">'.Str::lcfirst(__('integration_type_field.date_format_helper_text')).'</a>');
                                     })
-                                    ->required(function (Closure $get) {
+                                    ->required(function (\Filament\Forms\Get $get) {
                                         $fieldType = $get(IntegrationTypeField::FIELD_TYPE);
 
                                         if (
                                             $fieldType instanceof IntegrationTypeFieldTypeEnum
-                                            && $fieldType->equals(IntegrationTypeFieldTypeEnum::date())
+                                            && $fieldType === IntegrationTypeFieldTypeEnum::date
                                         ) {
                                             return true;
                                         }
 
-                                        if ($fieldType === IntegrationTypeFieldTypeEnum::date()->value) {
+                                        if ($fieldType === IntegrationTypeFieldTypeEnum::date) {
                                             return true;
                                         }
 
@@ -158,7 +157,7 @@ class FieldsRelationManager extends RelationManager
             ->columns(1);
     }
 
-    public static function table(Table $table): Table
+    public function table(Table $table): Table
     {
         return $table
             ->columns([
@@ -188,22 +187,22 @@ class FieldsRelationManager extends RelationManager
 
         $fieldType = $data[IntegrationTypeField::FIELD_TYPE];
 
-        if ($fieldType === IntegrationTypeFieldTypeEnum::float()->value) {
+        if ($fieldType === IntegrationTypeFieldTypeEnum::float) {
             unset($data[IntegrationTypeField::FIELD_RULES]['numeric']);
             $data[IntegrationTypeField::FIELD_RULES] = ['numeric' => true] + $data[IntegrationTypeField::FIELD_RULES];
         }
 
-        if ($fieldType === IntegrationTypeFieldTypeEnum::integer()->value) {
+        if ($fieldType === IntegrationTypeFieldTypeEnum::integer) {
             unset($data[IntegrationTypeField::FIELD_RULES]['integer']);
             $data[IntegrationTypeField::FIELD_RULES] = ['integer' => true] + $data[IntegrationTypeField::FIELD_RULES];
         }
 
-        if ($fieldType === IntegrationTypeFieldTypeEnum::boolean()->value) {
+        if ($fieldType === IntegrationTypeFieldTypeEnum::boolean) {
             unset($data[IntegrationTypeField::FIELD_RULES]['boolean']);
             $data[IntegrationTypeField::FIELD_RULES] = ['boolean' => true] + $data[IntegrationTypeField::FIELD_RULES];
         }
 
-        if ($fieldType === IntegrationTypeFieldTypeEnum::string()->value) {
+        if ($fieldType === IntegrationTypeFieldTypeEnum::string) {
             unset($data[IntegrationTypeField::FIELD_RULES]['string']);
             $data[IntegrationTypeField::FIELD_RULES] = ['string' => true] + $data[IntegrationTypeField::FIELD_RULES];
         }

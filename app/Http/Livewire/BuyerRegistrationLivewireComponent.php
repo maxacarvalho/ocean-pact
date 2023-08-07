@@ -44,7 +44,7 @@ class BuyerRegistrationLivewireComponent extends Component implements HasForms
         $this->invitation = BuyerInvitation::query()
             ->with(BuyerInvitation::RELATION_BUYER)
             ->where(BuyerInvitation::TOKEN, '=', $token)
-            ->where(BuyerInvitation::STATUS, '=', InvitationStatusEnum::SENT())
+            ->where(BuyerInvitation::STATUS, '=', InvitationStatusEnum::SENT)
             ->firstOrFail();
 
         if (null === $this->invitation->buyer) {
@@ -83,7 +83,7 @@ class BuyerRegistrationLivewireComponent extends Component implements HasForms
         $user->save();
 
         $this->invitation->update([
-            BuyerInvitation::STATUS => InvitationStatusEnum::ACCEPTED(),
+            BuyerInvitation::STATUS => InvitationStatusEnum::ACCEPTED,
             BuyerInvitation::REGISTERED_AT => now(),
         ]);
 

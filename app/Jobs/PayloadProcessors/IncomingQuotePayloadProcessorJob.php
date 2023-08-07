@@ -182,7 +182,7 @@ class IncomingQuotePayloadProcessorJob extends PayloadProcessor
             Quote::PAYMENT_CONDITION_ID => $paymentCondition->id,
             Quote::BUYER_ID => $buyer->id,
             Quote::QUOTE_NUMBER => $data->COTACAO,
-            Quote::STATUS => QuoteStatusEnum::DRAFT(),
+            Quote::STATUS => QuoteStatusEnum::DRAFT,
             Quote::COMMENTS => $data->OBSERVACAO_GERAL,
             Quote::CURRENCY_ID => $currency->id,
         ]);

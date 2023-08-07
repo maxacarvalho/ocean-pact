@@ -5,8 +5,8 @@ namespace App\Http\Requests;
 use App\Enums\PayloadProcessingAttemptsStatusEnum;
 use App\Models\PayloadProcessingAttempt;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\Enum;
 use Spatie\Enum\Laravel\Http\Requests\TransformsEnums;
-use Spatie\Enum\Laravel\Rules\EnumRule;
 
 class UpdatePayloadStatusRequest extends FormRequest
 {
@@ -18,10 +18,10 @@ class UpdatePayloadStatusRequest extends FormRequest
             PayloadProcessingAttempt::STATUS => [
                 'required',
                 'string',
-                new EnumRule(PayloadProcessingAttemptsStatusEnum::class),
+                new Enum(PayloadProcessingAttemptsStatusEnum::class),
             ],
             PayloadProcessingAttempt::MESSAGE => [
-                'required_if:'.PayloadProcessingAttempt::STATUS.','.PayloadProcessingAttemptsStatusEnum::FAILED(),
+                'required_if:'.PayloadProcessingAttempt::STATUS.','.PayloadProcessingAttemptsStatusEnum::FAILED->value,
                 'string',
             ],
         ];

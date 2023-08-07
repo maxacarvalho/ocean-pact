@@ -1,3 +1,4 @@
+FROM node:20-alpine AS node
 FROM alpine:3.18
 
 # Arguments
@@ -48,6 +49,10 @@ RUN set -ex && \
      chown -R 1000:1000 /app/ && \
      find /app/ -type f -exec chmod 664 {} \; && \
      find /app/ -type d -exec chmod 775 {} \;
+
+COPY --from=node /usr/local/lib/node_modules /usr/local/lib/node_modules
+COPY --from=node /usr/local/bin/node /usr/local/bin/node
+RUN ln -s /usr/local/lib/node_modules/npm/bin/npm-cli.js /usr/local/bin/npm
 
 # Workdir
 WORKDIR /app

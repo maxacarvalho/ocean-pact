@@ -10,7 +10,7 @@ class EditCurrency extends EditRecord
 {
     protected static string $resource = CurrencyResource::class;
 
-    protected function getActions(): array
+    protected function getHeaderActions(): array
     {
         return [
             DeleteAction::make(),

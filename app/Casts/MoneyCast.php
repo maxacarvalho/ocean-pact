@@ -1,0 +1,56 @@
+<?php
+
+namespace App\Casts;
+
+use App\Models\QuoteItem;
+use Brick\Math\RoundingMode;
+use Brick\Money\Money;
+use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
+use Illuminate\Database\Eloquent\Model;
+use NumberFormatter;
+
+class MoneyCast implements CastsAttributes
+{
+    public function get(Model $model, string $key, mixed $value, array $attributes): string
+    {
+        $currency = $attributes[QuoteItem::CURRENCY];
+
+        if ('BRL' === $currency) {
+            $formatter = new NumberFormatter('pt_BR', NumberFormatter::DECIMAL);
+            $formatter->setSymbol(NumberFormatter::DECIMAL_SEPARATOR_SYMBOL, ',');
+            $formatter->setSymbol(NumberFormatter::GROUPING_SEPARATOR_SYMBOL, '.');
+        } else {
+            $formatter = new NumberFormatter('en_US', NumberFormatter::DECIMAL);
+            $formatter->setSymbol(NumberFormatter::DECIMAL_SEPARATOR_SYMBOL, '.');
+            $formatter->setSymbol(NumberFormatter::GROUPING_SEPARATOR_SYMBOL, ',');
+        }
+
+        $formatter->setAttribute(NumberFormatter::FRACTION_DIGITS, 2);
+
+        return Money::ofMinor(
+            minorAmount: $value,
+            currency: $currency,
+            roundingMode: RoundingMode::UP
+        )->formatWith($formatter);
+    }
+
+    public function set(Model $model, string $key, mixed $value, array $attributes): int
+    {
+        if ($value instanceof Money) {
+            return $value->getMinorAmount()->toInt();
+        }
+
+        $currency = $attributes[QuoteItem::CURRENCY];
+
+        $value = match ($currency) {
+            'BRL' => str_replace(',', '.', str_replace('.', '', $value)), // R$ 1.000,00 -> R$ 1000.00
+            default => str_replace('.', '', $value), // R$ 1000 -> R$ 1000.00
+        };
+
+        return Money::of(
+            amount: $value,
+            currency: $currency,
+            roundingMode: RoundingMode::UP
+        )->getMinorAmount()->toInt();
+    }
+}

@@ -9,7 +9,7 @@ class EditSupplierInvitation extends EditRecord
 {
     protected static string $resource = SupplierInvitationResource::class;
 
-    protected function getActions(): array
+    protected function getHeaderActions(): array
     {
         return [];
     }

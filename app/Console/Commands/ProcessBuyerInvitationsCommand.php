@@ -19,7 +19,7 @@ class ProcessBuyerInvitationsCommand extends Command
     {
         BuyerInvitation::query()
             ->with(BuyerInvitation::RELATION_BUYER)
-            ->where(BuyerInvitation::STATUS, '=', InvitationStatusEnum::PENDING())
+            ->where(BuyerInvitation::STATUS, '=', InvitationStatusEnum::PENDING)
             ->each(function (BuyerInvitation $invitation) {
                 $user = $invitation->buyer;
                 $url = URL::temporarySignedRoute(
@@ -32,7 +32,7 @@ class ProcessBuyerInvitationsCommand extends Command
 
                 $invitation->update([
                     BuyerInvitation::SENT_AT => now(),
-                    BuyerInvitation::STATUS => InvitationStatusEnum::SENT(),
+                    BuyerInvitation::STATUS => InvitationStatusEnum::SENT,
                 ]);
             });
     }

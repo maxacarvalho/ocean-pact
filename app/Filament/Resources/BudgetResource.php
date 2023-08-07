@@ -9,17 +9,16 @@ use App\Filament\Resources\BudgetResource\Pages\ListBudgets;
 use App\Models\Budget;
 use App\Models\Company;
 use App\Utils\Str;
-use Closure;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Filament\Resources\Form;
+use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Resources\Table;
 use Filament\Tables\Actions\DeleteBulkAction as TableDeleteBulkAction;
 use Filament\Tables\Actions\EditAction as TableEditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter as TableFilter;
 use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Table;
 use Illuminate\Contracts\Database\Query\Builder;
 
 class BudgetResource extends Resource
@@ -54,7 +53,7 @@ class BudgetResource extends Resource
 
                 Select::make(Budget::COMPANY_CODE_BRANCH)
                     ->label(Str::formatTitle(__('budget.company_code_branch')))
-                    ->options(function (Closure $get) {
+                    ->options(function (\Filament\Forms\Get $get) {
                         $companyCode = $get(Budget::COMPANY_CODE);
 
                         if (null === $companyCode) {
@@ -74,7 +73,7 @@ class BudgetResource extends Resource
                 Select::make(Budget::STATUS)
                     ->label(Str::formatTitle(__('budget.status')))
                     ->required()
-                    ->options(BudgetStatusEnum::toArray()),
+                    ->options(BudgetStatusEnum::class),
             ]);
     }
 
@@ -126,8 +125,7 @@ class BudgetResource extends Resource
 
                 TextColumn::make(Budget::STATUS)
                     ->label(Str::formatTitle(__('budget.status')))
-                    ->sortable()
-                    ->formatStateUsing(fn (?string $state): ?string => $state !== null ? BudgetStatusEnum::from($state)->label : null),
+                    ->sortable(),
             ])
             ->filters([
                 TableFilter::make(Budget::COMPANY_CODE)
@@ -146,7 +144,7 @@ class BudgetResource extends Resource
 
                 SelectFilter::make(Budget::STATUS)
                     ->label(Str::formatTitle(__('budget.status')))
-                    ->options(fn () => BudgetStatusEnum::toArray()),
+                    ->options(BudgetStatusEnum::class),
             ])
             ->actions([
                 TableEditAction::make(),
@@ -172,7 +170,7 @@ class BudgetResource extends Resource
         ];
     }
 
-    protected static function getNavigationGroup(): ?string
+    public static function getNavigationGroup(): ?string
     {
         return Str::formatTitle(__('navigation.quotes'));
     }
