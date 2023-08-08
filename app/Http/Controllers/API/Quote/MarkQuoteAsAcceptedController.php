@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\API\Quote;
 
-use App\Enums\QuoteStatusEnum;
+use App\Enums\QuoteItemStatusEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\MarkQuoteAsAcceptedRequest;
 use App\Models\Quote;
@@ -33,14 +33,16 @@ class MarkQuoteAsAcceptedController extends Controller
             $quote->items()
                 ->whereIn(QuoteItem::ITEM, $items)
                 ->update([
-                    QuoteItem::STATUS => QuoteStatusEnum::ACCEPTED(),
+                    QuoteItem::STATUS => QuoteItemStatusEnum::ACCEPTED(),
                 ]);
+
+            $quote->markAsAnalyzed();
 
             QuoteItem::query()
                 ->whereIn(QuoteItem::QUOTE_ID, $quotesExceptTheOneBeingAccepted)
                 ->whereIn(QuoteItem::ITEM, $items)
                 ->update([
-                    QuoteItem::STATUS => QuoteStatusEnum::REJECTED(),
+                    QuoteItem::STATUS => QuoteItemStatusEnum::REJECTED(),
                 ]);
 
             DB::commit();

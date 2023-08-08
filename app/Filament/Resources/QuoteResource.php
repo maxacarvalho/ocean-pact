@@ -194,7 +194,7 @@ class QuoteResource extends Resource
                         Select::make(Quote::STATUS)
                             ->label(Str::formatTitle(__('quote.status')))
                             ->required()
-                            ->options(fn () => QuoteStatusEnum::toArray()),
+                            ->options(fn () => collect(QuoteStatusEnum::toArray())->except('DRAFT')->toArray()),
                     ]),
             ])
             ->columns(3);
@@ -290,7 +290,7 @@ class QuoteResource extends Resource
 
                 SelectFilter::make(Quote::STATUS)
                     ->label(Str::formatTitle(__('quote.status')))
-                    ->options(fn () => QuoteStatusEnum::toArray()),
+                    ->options(fn () => collect(QuoteStatusEnum::toArray())->except('DRAFT')->toArray()),
 
                 SelectFilter::make(Quote::SUPPLIER_ID)
                     ->label(Str::formatTitle(__('quote.supplier')))

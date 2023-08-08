@@ -9,8 +9,7 @@ use Spatie\Enum\Laravel\Enum;
  * @method static self DRAFT()
  * @method static self PENDING()
  * @method static self RESPONDED()
- * @method static self ACCEPTED()
- * @method static self REJECTED()
+ * @method static self ANALYZED()
  */
 class QuoteStatusEnum extends Enum
 {
@@ -20,8 +19,7 @@ class QuoteStatusEnum extends Enum
             'DRAFT' => Str::formatTitle(__('quote.draft')),
             'PENDING' => Str::formatTitle(__('quote.pending')),
             'RESPONDED' => Str::formatTitle(__('quote.responded')),
-            'ACCEPTED' => Str::formatTitle(__('quote.accepted')),
-            'REJECTED' => Str::formatTitle(__('quote.rejected')),
+            'ANALYZED' => Str::formatTitle(__('quote.analyzed')),
         ];
     }
 }
