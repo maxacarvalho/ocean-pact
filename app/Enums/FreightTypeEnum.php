@@ -7,6 +7,8 @@ use Filament\Support\Contracts\HasLabel;
 
 enum FreightTypeEnum: string implements HasLabel
 {
+    use EnumHelperTrait;
+
     case CIF = 'CIF';
     case FOB = 'FOB';
 

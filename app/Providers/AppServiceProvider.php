@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use Filament\Support\Assets\Css;
 use Filament\Support\Assets\Js;
 use Filament\Support\Facades\FilamentAsset;
 use Illuminate\Database\Eloquent\Model;
@@ -22,5 +23,10 @@ class AppServiceProvider extends ServiceProvider
                 Js::make('clarity.js', asset('js/clarity.js')),
             ]);
         }
+
+        FilamentAsset::register([
+            Css::make('prism.css', asset('vendor/prism.css'))->loadedOnRequest(),
+            Js::make('prism.js', asset('vendor/prism.js'))->loadedOnRequest(),
+        ]);
     }
 }

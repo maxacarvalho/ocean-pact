@@ -7,6 +7,8 @@ use Filament\Support\Contracts\HasLabel;
 
 enum BudgetStatusEnum: string implements HasLabel
 {
+    use EnumHelperTrait;
+
     case OPEN = 'OPEN';
     case CLOSED = 'CLOSED';
 

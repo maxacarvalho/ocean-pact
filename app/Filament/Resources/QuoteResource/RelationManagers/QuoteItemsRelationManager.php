@@ -2,7 +2,6 @@
 
 namespace App\Filament\Resources\QuoteResource\RelationManagers;
 
-use App\Enums\QuoteItemStatusEnum;
 use App\Models\Product;
 use App\Models\Quote;
 use App\Models\QuoteItem;

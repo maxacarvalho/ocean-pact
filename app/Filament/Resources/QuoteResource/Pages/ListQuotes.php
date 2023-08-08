@@ -54,7 +54,7 @@ class ListQuotes extends ListRecords
                 Quote::TABLE_NAME.'.'.Quote::CREATED_AT,
                 Quote::TABLE_NAME.'.'.Quote::UPDATED_AT,
             ])
-            ->where(Quote::TABLE_NAME.'.'.Quote::STATUS, '!=', QuoteStatusEnum::DRAFT())
+            ->where(Quote::TABLE_NAME.'.'.Quote::STATUS, '!=', QuoteStatusEnum::DRAFT)
             ->addSelect([
                 'company_name' => fn (DbQueryBuilder $query) => $query->select(Company::BUSINESS_NAME)
                     ->from(Company::TABLE_NAME)

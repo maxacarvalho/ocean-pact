@@ -3,23 +3,24 @@
 namespace App\Enums;
 
 use App\Utils\Str;
-use Spatie\Enum\Laravel\Enum;
+use Filament\Support\Contracts\HasLabel;
 
-/**
- * @method static self PENDING()
- * @method static self RESPONDED()
- * @method static self ACCEPTED()
- * @method static self REJECTED()
- */
-class QuoteItemStatusEnum extends Enum
+enum QuoteItemStatusEnum: string implements HasLabel
 {
-    protected static function labels(): array
+    use EnumHelperTrait;
+
+    case PENDING = 'PENDING';
+    case RESPONDED = 'RESPONDED';
+    case ACCEPTED = 'ACCEPTED';
+    case REJECTED = 'REJECTED';
+
+    public function getLabel(): string
     {
-        return [
+        return match ($this->value) {
             'PENDING' => Str::formatTitle(__('quote_item.pending')),
             'RESPONDED' => Str::formatTitle(__('quote_item.responded')),
             'ACCEPTED' => Str::formatTitle(__('quote_item.accepted')),
             'REJECTED' => Str::formatTitle(__('quote_item.rejected')),
-        ];
+        };
     }
 }

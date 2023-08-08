@@ -7,6 +7,8 @@ use Filament\Support\Contracts\HasLabel;
 
 enum IntegrationTypeFieldTypeEnum: string implements HasLabel
 {
+    use EnumHelperTrait;
+
     case date = 'date';
     case float = 'float';
     case integer = 'integer';

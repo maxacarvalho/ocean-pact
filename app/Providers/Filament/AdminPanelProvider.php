@@ -33,6 +33,8 @@ class AdminPanelProvider extends PanelProvider
             ->colors([
                 'primary' => Color::Amber,
             ])
+            ->sidebarCollapsibleOnDesktop()
+            ->maxContentWidth('full')
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([
@@ -61,9 +63,7 @@ class AdminPanelProvider extends PanelProvider
             ->plugins([
                 BreezyCore::make()
                     ->myProfile(
-                        shouldRegisterUserMenu: false, // Sets the 'account' link in the panel User Menu (default = true),
-                        shouldRegisterNavigation: false, // Adds a main navigation item for the My Profile page (default = false)
-                        hasAvatars: false // enables the avatar upload form component. (default = false)
+                        shouldRegisterUserMenu: false, // Sets the 'account' link in the panel User Menu (default = true)
                     )
                     ->enableSanctumTokens(),
                 FilamentShieldPlugin::make(),

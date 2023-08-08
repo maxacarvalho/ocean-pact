@@ -7,6 +7,8 @@ use Filament\Support\Contracts\HasLabel;
 
 enum PayloadStoringStatusEnum: string implements HasLabel
 {
+    use EnumHelperTrait;
+
     case STORED = 'STORED';
     case FAILED = 'FAILED';
 
