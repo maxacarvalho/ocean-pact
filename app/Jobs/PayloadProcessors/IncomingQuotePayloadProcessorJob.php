@@ -92,6 +92,8 @@ class IncomingQuotePayloadProcessorJob extends PayloadProcessor
                 SupplierInvitation::TOKEN => Str::uuid(),
             ]);
 
+            $quote->markAsPending();
+
             return [
                 'id' => $quote->id,
             ];
@@ -139,6 +141,10 @@ class IncomingQuotePayloadProcessorJob extends PayloadProcessor
             ]);
 
             return $buyer;
+        }
+
+        if (false === $buyer->hasRole(Role::ROLE_BUYER)) {
+            $buyer->assignRole(Role::ROLE_BUYER);
         }
 
         $companyIsAssociated = $buyer

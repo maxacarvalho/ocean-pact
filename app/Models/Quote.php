@@ -127,15 +127,34 @@ class Quote extends Model
         return $this->status->equals(QuoteStatusEnum::RESPONDED());
     }
 
+    public function isAnalyzed(): bool
+    {
+        return $this->status->equals(QuoteStatusEnum::ANALYZED());
+    }
+
     public function canBeResponded(): bool
     {
-        return ! $this->status->equals(QuoteStatusEnum::RESPONDED());
+        return $this->status->equals(QuoteStatusEnum::DRAFT()) || $this->status->equals(QuoteStatusEnum::PENDING());
+    }
+
+    public function markAsPending(): void
+    {
+        $this->update([
+            self::STATUS => QuoteStatusEnum::PENDING(),
+        ]);
     }
 
     public function markAsResponded(): void
     {
         $this->update([
             self::STATUS => QuoteStatusEnum::RESPONDED(),
+        ]);
+    }
+
+    public function markAsAnalyzed(): void
+    {
+        $this->update([
+            self::STATUS => QuoteStatusEnum::ANALYZED(),
         ]);
     }
 }

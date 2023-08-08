@@ -57,4 +57,11 @@ class Budget extends Model
     {
         return $this->hasMany(Quote::class);
     }
+
+    public function markAsClosed(): void
+    {
+        $this->update([
+            self::STATUS => BudgetStatusEnum::CLOSED(),
+        ]);
+    }
 }

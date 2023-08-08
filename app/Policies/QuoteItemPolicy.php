@@ -18,7 +18,7 @@ class QuoteItemPolicy
     public function view(User $user, QuoteItem $quoteItem): bool
     {
         return ($user->can('view_quote::item') || $user->can('view_quote_item') || $user->can('view_quote'))
-            && $quoteItem->quote->isResponded();
+            && ($quoteItem->quote->isResponded() || $quoteItem->quote->isAnalyzed());
     }
 
     public function create(User $user): bool
