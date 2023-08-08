@@ -30,7 +30,7 @@ return [
     'draft' => 'rascunho',
     'pending' => 'pendente',
     'responded' => 'respondida',
-    'accepted' => 'selecionada',
+    'analyzed' => 'analisada',
     'rejected' => 'não selecionada',
     'quote_is_not_ready_to_be_sent' => 'a cotação não está pronta para ser enviada.',
     'please_fill_the_unit_price_and_delivery_date_for_all_items' => 'por favor, preencha o preço unitário e a data de entrega para todos os itens.',

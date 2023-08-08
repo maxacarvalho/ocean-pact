@@ -2,11 +2,11 @@
 
 namespace App\Filament\Resources\QuoteResource\Pages;
 
+use App\Enums\QuoteStatusEnum;
 use App\Filament\Resources\QuoteResource;
 use App\Models\Company;
 use App\Models\Quote;
 use App\Models\User;
-use Filament\Pages\Actions\CreateAction as PageCreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\Builder as DbQueryBuilder;
@@ -54,6 +54,7 @@ class ListQuotes extends ListRecords
                 Quote::TABLE_NAME.'.'.Quote::CREATED_AT,
                 Quote::TABLE_NAME.'.'.Quote::UPDATED_AT,
             ])
+            ->where(Quote::TABLE_NAME.'.'.Quote::STATUS, '!=', QuoteStatusEnum::DRAFT())
             ->addSelect([
                 'company_name' => fn (DbQueryBuilder $query) => $query->select(Company::BUSINESS_NAME)
                     ->from(Company::TABLE_NAME)

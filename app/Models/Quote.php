@@ -127,9 +127,9 @@ class Quote extends Model
         return $this->status->equals(QuoteStatusEnum::RESPONDED());
     }
 
-    public function isRejected(): bool
+    public function isAnalyzed(): bool
     {
-        return $this->status->equals(QuoteStatusEnum::REJECTED());
+        return $this->status->equals(QuoteStatusEnum::ANALYZED());
     }
 
     public function canBeResponded(): bool
@@ -151,10 +151,10 @@ class Quote extends Model
         ]);
     }
 
-    public function markAsAccepted(): void
+    public function markAsAnalyzed(): void
     {
         $this->update([
-            self::STATUS => QuoteStatusEnum::ACCEPTED(),
+            self::STATUS => QuoteStatusEnum::ANALYZED(),
         ]);
     }
 }
