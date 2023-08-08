@@ -4,7 +4,6 @@ namespace App\Filament\Resources;
 
 use App\Enums\PayloadProcessingStatusEnum;
 use App\Enums\PayloadStoringStatusEnum;
-use App\Filament\Plugins\FilamentSimpleHighlightField\HighlightField;
 use App\Filament\Resources\PayloadResource\Pages\EditPayload;
 use App\Filament\Resources\PayloadResource\Pages\ListPayloads;
 use App\Filament\Resources\PayloadResource\Pages\ViewPayload;
@@ -15,6 +14,7 @@ use App\Utils\Str;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\ViewField;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables\Actions\DeleteBulkAction as TableDeleteBulkAction;
@@ -69,10 +69,9 @@ class PayloadResource extends Resource
                     ->columnSpanFull()
                     ->hiddenOn(['view', 'edit']),
 
-                HighlightField::make(Payload::PAYLOAD)
+                ViewField::make(Payload::PAYLOAD)
                     ->label(Str::formatTitle(__('payload.payload')))
-                    ->required()
-                    ->json()
+                    ->view('filament-forms::components.prism')
                     ->columnSpanFull()
                     ->hiddenOn(['create']),
             ]);

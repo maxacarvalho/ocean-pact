@@ -7,6 +7,8 @@ use Filament\Support\Contracts\HasLabel;
 
 enum IntegrationHandlingTypeEnum: string implements HasLabel
 {
+    use EnumHelperTrait;
+
     case SEND = 'SEND';
     case STORE = 'STORE';
     case STORE_AND_SEND = 'STORE_AND_SEND';

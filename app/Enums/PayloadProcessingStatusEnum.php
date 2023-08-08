@@ -7,6 +7,8 @@ use Filament\Support\Contracts\HasLabel;
 
 enum PayloadProcessingStatusEnum: string implements HasLabel
 {
+    use EnumHelperTrait;
+
     case READY = 'READY';
     case PROCESSING = 'PROCESSING';
     case COLLECTED = 'COLLECTED';

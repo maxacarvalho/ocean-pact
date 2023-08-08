@@ -7,6 +7,8 @@ use Filament\Support\Contracts\HasLabel;
 
 enum InvitationStatusEnum: string implements HasLabel
 {
+    use EnumHelperTrait;
+
     case PENDING = 'PENDING';
     case SENT = 'SENT';
     case ACCEPTED = 'ACCEPTED';

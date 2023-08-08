@@ -7,6 +7,8 @@ use Filament\Support\Contracts\HasLabel;
 
 enum QuoteStatusEnum: string implements HasLabel
 {
+    use EnumHelperTrait;
+
     case DRAFT = 'DRAFT';
     case PENDING = 'PENDING';
     case RESPONDED = 'RESPONDED';
