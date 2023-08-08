@@ -19,7 +19,7 @@ class QuotePolicy
     {
         if ($user->isSeller()) {
             return $quote->supplier_id === $user->supplier_id
-                && $user->can('view_quote') && $quote->isResponded();
+                && $user->can('view_quote') && ($quote->isResponded() || $quote->isAnalyzed());
         }
 
         return $user->can('view_quote') && $quote->isResponded();
