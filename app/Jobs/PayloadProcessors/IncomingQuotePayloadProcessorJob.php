@@ -143,6 +143,10 @@ class IncomingQuotePayloadProcessorJob extends PayloadProcessor
             return $buyer;
         }
 
+        if (false === $buyer->hasRole(Role::ROLE_BUYER)) {
+            $buyer->assignRole(Role::ROLE_BUYER);
+        }
+
         $companyIsAssociated = $buyer
             ->companies()
             ->where(function (Builder $query) use ($data) {
