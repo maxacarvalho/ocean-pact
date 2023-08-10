@@ -26,7 +26,7 @@ class ProcessSupplierInvitationsCommand extends Command
                 $quote = $invitation->quote;
 
                 $url = URL::signedRoute(
-                    'filament.auth.login',
+                    'filament.admin.auth.login',
                     ['token' => $invitation->token]
                 );
 

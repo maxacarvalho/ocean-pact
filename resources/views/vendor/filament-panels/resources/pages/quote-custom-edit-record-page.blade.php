@@ -11,11 +11,6 @@
         wire:submit="save"
     >
         {{ $this->form }}
-
-        {{--<x-filament::form.actions
-            :actions="$this->getCachedFormActions()"
-            :full-width="$this->hasFullWidthFormActions()"
-        />--}}
     </x-filament-panels::form>
     @endcapture
 
@@ -76,14 +71,4 @@
         :actions="[$this->sendQuote, $this->cancelEditQuote]"
         :full-width="$this->hasFullWidthFormActions()"
     />
-
-    {{--<x-filament::button
-        color="secondary"
-        :dark-mode="filament()->hasDarkMode()"
-        tag="button"
-        type="a"
-        wire:click="cancel"
-    >
-        {{ __('filament-panels::resources/pages/edit-record.form.actions.cancel.label') }}
-    </x-filament::button>--}}
 </x-filament-panels::page>

@@ -51,4 +51,12 @@ class BuyerInvitation extends Model
             User::ID
         );
     }
+
+    public function markAsAccepted(): void
+    {
+        $this->update([
+            BuyerInvitation::STATUS => InvitationStatusEnum::ACCEPTED,
+            BuyerInvitation::REGISTERED_AT => now(),
+        ]);
+    }
 }

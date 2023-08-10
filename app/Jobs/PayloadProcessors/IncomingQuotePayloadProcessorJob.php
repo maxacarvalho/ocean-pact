@@ -81,6 +81,7 @@ class IncomingQuotePayloadProcessorJob extends PayloadProcessor
                     QuoteItem::MEASUREMENT_UNIT => $item->UNIDADE_MEDIDA,
                     QuoteItem::ITEM => $item->ITEM,
                     QuoteItem::QUANTITY => $item->QUANTIDADE,
+                    QuoteItem::CURRENCY => $currency->iso_code,
                     QuoteItem::UNIT_PRICE => $item->PRECO_UNITARIO,
                     QuoteItem::COMMENTS => $item->OBS,
                 ]);
@@ -99,8 +100,8 @@ class IncomingQuotePayloadProcessorJob extends PayloadProcessor
             ];
         } catch (Throwable $exception) {
             Log::error('IncomingQuotePayloadProcessorJob: could not process payload', [
-                'payload' => $this->getPayload()->payload,
                 'exception_message' => $exception->getMessage(),
+                'payload' => $this->getPayload()->payload,
             ]);
 
             $this->getPayload()->delete();

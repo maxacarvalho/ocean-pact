@@ -122,7 +122,7 @@ return [
     'prohibited_if' => 'O campo :attribute é proibido quando :other for :value.',
     'prohibited_unless' => 'O campo :attribute é proibido exceto quando :other for :values.',
     'prohibits' => 'O campo :attribute proíbe :other de estar presente.',
-    'same' => 'Os campos :attribute e :other devem corresponder.',
+    'same' => 'Os campos :attribute e :other devem ser iguais.',
     'size' => [
         'numeric' => 'O campo :attribute deve ser :size.',
         'file' => 'O campo :attribute deve ser :size kilobytes.',
