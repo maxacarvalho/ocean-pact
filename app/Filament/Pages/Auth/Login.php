@@ -1,19 +1,12 @@
 <?php
 
-namespace App\Http\Livewire\Auth;
+namespace App\Filament\Pages\Auth;
 
-use JeffGreco13\FilamentBreezy\Http\Livewire\Auth\Login as BreezyLogin;
+use Filament\Pages\Auth\Login as BaseLoginPage;
 
-class Login extends BreezyLogin
+class Login extends BaseLoginPage
 {
-    public ?string $token;
-
-    public function boot(): void
-    {
-        parent::boot();
-
-        $this->token = null;
-    }
+    public ?string $token = null;
 
     public function mount(): void
     {

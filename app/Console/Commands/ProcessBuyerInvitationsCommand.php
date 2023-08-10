@@ -23,7 +23,7 @@ class ProcessBuyerInvitationsCommand extends Command
             ->each(function (BuyerInvitation $invitation) {
                 $user = $invitation->buyer;
                 $url = URL::temporarySignedRoute(
-                    'buyer-registration',
+                    'filament.admin.buyer-registration',
                     now()->addDays(5),
                     ['token' => $invitation->token]
                 );

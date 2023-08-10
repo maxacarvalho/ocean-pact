@@ -5,7 +5,9 @@ namespace App\Providers;
 use Filament\Support\Assets\Css;
 use Filament\Support\Assets\Js;
 use Filament\Support\Facades\FilamentAsset;
+use Filament\Support\Facades\FilamentView;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -28,5 +30,10 @@ class AppServiceProvider extends ServiceProvider
             Css::make('prism.css', asset('vendor/prism.css'))->loadedOnRequest(),
             Js::make('prism.js', asset('vendor/prism.js'))->loadedOnRequest(),
         ]);
+
+        FilamentView::registerRenderHook(
+            'panels::body.start',
+            fn (): string => Blade::render('<x-filament-impersonate::banner/>'),
+        );
     }
 }

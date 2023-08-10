@@ -10,25 +10,25 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 
 /**
- * @property int          $id
- * @property int          $quote_id
- * @property int          $product_id
- * @property string       $description
- * @property string       $measurement_unit
- * @property string       $item
- * @property int          $quantity
- * @property Money          $unit_price
- * @property string       $currency
- * @property int          $ipi
- * @property int          $icms
- * @property Carbon|null  $delivery_date
- * @property bool         $should_be_quoted
+ * @property int                 $id
+ * @property int                 $quote_id
+ * @property int                 $product_id
+ * @property string              $description
+ * @property string              $measurement_unit
+ * @property string              $item
+ * @property int                 $quantity
+ * @property Money               $unit_price
+ * @property string              $currency
+ * @property int                 $ipi
+ * @property int                 $icms
+ * @property Carbon|null         $delivery_date
+ * @property bool                $should_be_quoted
  * @property QuoteItemStatusEnum $status
- * @property string|null  $comments
- * @property Carbon|null  $created_at
- * @property Carbon|null  $updated_at
- * @property-read Quote   $quote
- * @property-read Product $product
+ * @property string|null         $comments
+ * @property Carbon|null         $created_at
+ * @property Carbon|null         $updated_at
+ * @property-read Quote          $quote
+ * @property-read Product        $product
  */
 class QuoteItem extends Model
 {
