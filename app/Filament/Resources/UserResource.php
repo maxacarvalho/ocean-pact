@@ -120,15 +120,17 @@ class UserResource extends Resource
 
                 IconColumn::make('buyer')
                     ->label(Str::formatTitle(__('user.is_buyer')))
-                    ->options([
-                        'heroicon-o-check-circle' => fn ($state, Model|User $record): bool => $record->isBuyer(),
-                    ]),
+                    ->alignCenter()
+                    ->color('success')
+                    ->getStateUsing(fn (Model|User $record): bool => $record->isBuyer())
+                    ->icon(fn (bool $state): string => $state ? 'heroicon-o-check-circle' : ''),
 
                 IconColumn::make('seller')
                     ->label(Str::formatTitle(__('user.is_seller')))
-                    ->options([
-                        'heroicon-o-check-circle' => fn ($state, Model|User $record): bool => $record->isSeller(),
-                    ]),
+                    ->alignCenter()
+                    ->color('success')
+                    ->getStateUsing(fn (Model|User $record): bool => $record->isSeller())
+                    ->icon(fn (bool $state): string => $state ? 'heroicon-o-check-circle' : ''),
             ])
             ->filters([
                 //
