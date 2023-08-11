@@ -22,7 +22,7 @@ class QuotePolicy
                 && $user->can('view_quote') && ($quote->isResponded() || $quote->isAnalyzed());
         }
 
-        return $user->can('view_quote') && $quote->isResponded();
+        return $user->can('view_quote') && ($quote->isResponded() || $quote->isAnalyzed());
     }
 
     public function create(User $user): bool
