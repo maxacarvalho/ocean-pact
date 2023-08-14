@@ -35,5 +35,10 @@ class AppServiceProvider extends ServiceProvider
             'panels::body.start',
             fn (): string => Blade::render('<x-filament-impersonate::banner/>'),
         );
+
+        FilamentView::registerRenderHook(
+            'panels::user-menu.before',
+            fn (): string => Blade::render('<livewire:locale-switcher/>'),
+        );
     }
 }

@@ -7,5 +7,5 @@
 {{$button}}
 </x-mail::button>
 
-Portal do Fornecedor OceanPact
+@lang('Supplier Portal', ['company_name' => 'OceanPact'])
 </x-mail::message>
