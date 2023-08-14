@@ -9,5 +9,5 @@
 
 **{{$quote}}**
 
-Portal do Fornecedor {{ $company_name  }}
+@lang('Supplier Portal', ['company_name' => $company_name])
 </x-mail::message>

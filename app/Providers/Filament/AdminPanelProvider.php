@@ -3,6 +3,7 @@
 namespace App\Providers\Filament;
 
 use App\Filament\Pages\Auth\Login;
+use App\Http\Middleware\SetLocaleMiddleware;
 use App\Livewire\BuyerRegistration;
 use App\Livewire\SupplierRegistration;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
@@ -58,6 +59,7 @@ class AdminPanelProvider extends PanelProvider
                 VerifyCsrfToken::class,
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
+                SetLocaleMiddleware::class,
                 DispatchServingFilamentEvent::class,
             ])
             ->authMiddleware([

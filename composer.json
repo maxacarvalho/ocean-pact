@@ -24,6 +24,7 @@
         "laravel/tinker": "^2.7",
         "livewire/livewire": "^3.0@beta",
         "logtail/monolog-logtail": "^3.0",
+        "outhebox/blade-flags": "^1.2",
         "owenvoke/blade-fontawesome": "^2.3",
         "php-http/message-factory": "^1.1",
         "sentry/sentry-laravel": "^3.2",
