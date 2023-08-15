@@ -5,6 +5,7 @@ namespace App\Data\Protheus\Quote\Out;
 use App\Data\Protheus\Quote\In\ProtheusQuoteItemPayloadData;
 use App\Data\Protheus\Quote\ProtheusBuyerPayloadData;
 use App\Data\Protheus\Quote\ProtheusSupplierPayloadData;
+use App\Enums\FreightTypeEnum;
 use App\Models\Quote;
 use App\Models\QuoteItem;
 use DateTime;
@@ -26,7 +27,7 @@ class ProtheusQuotePayloadData extends Data
         public ?DateTime $DATA_LIMITE_RESPOSTA,
         public string|null|Optional $OBSERVACAO_GERAL,
         public string $DESPESAS,
-        public ?string $TIPO_FRETE,
+        public ?FreightTypeEnum $TIPO_FRETE,
         public string $VALOR_FRETE,
         public ?string $MODEDA,
         public ProtheusSupplierPayloadData $FORNECEDOR,
