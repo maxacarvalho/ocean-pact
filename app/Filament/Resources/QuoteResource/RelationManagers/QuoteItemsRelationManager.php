@@ -96,7 +96,8 @@ class QuoteItemsRelationManager extends RelationManager
                                 }
 
                                 return $state;
-                            }),
+                            })
+                            ->dehydrateStateUsing(fn ($state) => (float) str_replace(',', '.', $state)),
 
                         TextInput::make(QuoteItem::ICMS)
                             ->label(Str::formatTitle(__('quote_item.icms')))
@@ -117,7 +118,8 @@ class QuoteItemsRelationManager extends RelationManager
                                 }
 
                                 return $state;
-                            }),
+                            })
+                            ->dehydrateStateUsing(fn ($state) => (float) str_replace(',', '.', $state)),
 
                         TextInput::make(QuoteItem::UNIT_PRICE)
                             ->label(Str::formatTitle(__('quote_item.unit_price')))
@@ -175,6 +177,15 @@ class QuoteItemsRelationManager extends RelationManager
                     ->state(function (Model|QuoteItem $record) {
                         return number_format($record->icms, 2, ',', '.');
                     })
+                    ->updateStateUsing(function (string $state, Model|QuoteItem $record): string {
+                        $asFloat = (float) str_replace(',', '.', $state);
+
+                        $record->update([
+                            QuoteItem::ICMS => $asFloat,
+                        ]);
+
+                        return number_format($asFloat, 2, ',', '.');
+                    })
                     ->mask(function (Model|Quote $record) {
                         if ('BRL' === $record->currency) {
                             return RawJs::make('$money($input, \',\', \'.\')');
@@ -190,6 +201,15 @@ class QuoteItemsRelationManager extends RelationManager
                     ->rules(['required'])
                     ->state(function (Model|QuoteItem $record) {
                         return number_format($record->ipi, 2, ',', '.');
+                    })
+                    ->updateStateUsing(function (string $state, Model|QuoteItem $record): string {
+                        $asFloat = (float) str_replace(',', '.', $state);
+
+                        $record->update([
+                            QuoteItem::IPI => $asFloat,
+                        ]);
+
+                        return number_format($asFloat, 2, ',', '.');
                     })
                     ->mask(function (Model|Quote $record) {
                         if ('BRL' === $record->currency) {
