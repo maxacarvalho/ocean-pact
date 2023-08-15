@@ -215,11 +215,18 @@ class QuoteItemsRelationManager extends RelationManager
 
                 MaskedInputColumn::make(QuoteItem::DELIVERY_DATE)
                     ->label(Str::formatTitle(__('quote_item.delivery_date')))
-                    ->rules(['required'])
+                    ->rules(['required', 'date_format:d/m/Y'])
                     ->state(function (Model|QuoteItem $record): ?string {
                         return $record->delivery_date instanceof Carbon
                             ? $record->delivery_date->format('d/m/Y')
                             : null;
+                    })
+                    ->updateStateUsing(function (string $state, Model|QuoteItem $record): string {
+                        $record->update([
+                            QuoteItem::DELIVERY_DATE => Carbon::createFromFormat('d/m/Y', $state),
+                        ]);
+
+                        return $state;
                     })
                     ->mask('99/99/9999')
                     ->disabled(fn (Model|QuoteItem $record): bool => $record->cannotBeResponded()),
