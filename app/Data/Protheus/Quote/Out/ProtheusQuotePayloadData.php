@@ -7,7 +7,6 @@ use App\Data\Protheus\Quote\ProtheusBuyerPayloadData;
 use App\Data\Protheus\Quote\ProtheusSupplierPayloadData;
 use App\Models\Quote;
 use App\Models\QuoteItem;
-use App\Utils\Money;
 use DateTime;
 use Spatie\LaravelData\Attributes\DataCollectionOf;
 use Spatie\LaravelData\Attributes\WithCast;
@@ -47,9 +46,9 @@ class ProtheusQuotePayloadData extends Data
             COTACAO: $quote->quote_number,
             DATA_LIMITE_RESPOSTA: $quote->valid_until ?? $quote->updated_at,
             OBSERVACAO_GERAL: $quote->comments,
-            DESPESAS: (string) Money::fromMinor($quote->expenses)->getBrickMoney()->getAmount(),
+            DESPESAS: '0',
             TIPO_FRETE: $quote->freight_type,
-            VALOR_FRETE: (string) Money::fromMinor($quote->freight_cost)->getBrickMoney()->getAmount(),
+            VALOR_FRETE: '0',
             MODEDA: null !== $quote->currency ? $quote->currency->protheus_acronym : null,
             FORNECEDOR: ProtheusSupplierPayloadData::fromQuote($quote),
             COND_PAGTO: $quote->paymentCondition->code,

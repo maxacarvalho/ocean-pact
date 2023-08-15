@@ -4,7 +4,6 @@ namespace App\Data\Protheus\Quote\In;
 
 use App\Data\Protheus\Quote\ProtheusProductPayloadData;
 use App\Models\QuoteItem;
-use App\Utils\Money;
 use Spatie\LaravelData\Data;
 use Spatie\LaravelData\Optional;
 
@@ -32,7 +31,7 @@ class ProtheusQuoteItemPayloadData extends Data
             UNIDADE_MEDIDA: $quoteItem->measurement_unit,
             ITEM: $quoteItem->item,
             QUANTIDADE: $quoteItem->quantity,
-            PRECO_UNITARIO: (string) Money::fromMinor($quoteItem->unit_price)->getBrickMoney()->getAmount(),
+            PRECO_UNITARIO: $quoteItem->unit_price,
             IPI: number_format($quoteItem->ipi, 2, ',', '.'),
             ICMS: number_format($quoteItem->icms, 2, ',', '.'),
             DATA_ENTREGA: $quoteItem->delivery_date?->format('Y-m-d'),
