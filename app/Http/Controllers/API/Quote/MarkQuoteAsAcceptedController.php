@@ -33,7 +33,7 @@ class MarkQuoteAsAcceptedController extends Controller
             $quote->items()
                 ->whereIn(QuoteItem::ITEM, $items)
                 ->update([
-                    QuoteItem::STATUS => QuoteItemStatusEnum::ACCEPTED(),
+                    QuoteItem::STATUS => QuoteItemStatusEnum::ACCEPTED,
                 ]);
 
             $quote->markAsAnalyzed();
@@ -42,7 +42,7 @@ class MarkQuoteAsAcceptedController extends Controller
                 ->whereIn(QuoteItem::QUOTE_ID, $quotesExceptTheOneBeingAccepted)
                 ->whereIn(QuoteItem::ITEM, $items)
                 ->update([
-                    QuoteItem::STATUS => QuoteItemStatusEnum::REJECTED(),
+                    QuoteItem::STATUS => QuoteItemStatusEnum::REJECTED,
                 ]);
 
             DB::commit();
