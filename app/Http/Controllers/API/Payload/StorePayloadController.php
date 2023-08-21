@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API\Payload;
 use App\Enums\PayloadProcessingStatusEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePayloadRequest;
+use App\Jobs\PayloadProcessors\ForwardPayloadProcessorJob;
 use App\Models\IntegrationType;
 use App\Models\Payload;
 use App\Utils\Str;
@@ -74,6 +75,10 @@ class StorePayloadController extends Controller
 
             if ($integrationType->isProcessable()) {
                 $payloadModel->dispatchToProcessor();
+            }
+
+            if ($integrationType->isForwardable()) {
+                ForwardPayloadProcessorJob::dispatch($payloadModel->id);
             }
         } catch (JsonException $e) {
             Log::error('StorePayloadController: Unable to store payloadInput', [

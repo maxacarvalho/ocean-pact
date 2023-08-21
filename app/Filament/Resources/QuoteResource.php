@@ -18,11 +18,11 @@ use App\Models\Role;
 use App\Models\Supplier;
 use App\Models\User;
 use App\Utils\Str;
-use Filament\Forms\Components\Card;
 use Filament\Forms\Components\Component;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Group;
 use Filament\Forms\Components\Placeholder;
+use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Form;
@@ -74,7 +74,7 @@ class QuoteResource extends Resource
                         $component->columnSpanFull();
                     })
                     ->schema([
-                        Card::make()
+                        Section::make()
                             ->columns(3)
                             ->schema([
                                 Select::make(Quote::CURRENCY_ID)
@@ -113,7 +113,7 @@ class QuoteResource extends Resource
                                     ->hiddenOn('create'),
                             ]),
 
-                        Card::make()
+                        Section::make()
                             ->columns(3)
                             ->schema([
                                 /*TextInput::make(Quote::EXPENSES)
@@ -135,7 +135,7 @@ class QuoteResource extends Resource
                                     JS)),*/
                             ]),
 
-                        Card::make()
+                        Section::make()
                             ->columns(1)
                             ->schema([
                                 Textarea::make(Quote::COMMENTS)

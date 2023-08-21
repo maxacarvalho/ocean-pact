@@ -11,4 +11,5 @@ return [
             'flag' => 'br',
         ],
     ],
+    'temp_access_token' => env('OCEAN_PACT_TEMP_ACCESS_TOKEN'),
 ];

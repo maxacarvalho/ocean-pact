@@ -5,6 +5,7 @@ use App\Http\Controllers\API\Payload\StorePayloadController;
 use App\Http\Controllers\API\Payload\UpdatePayloadStatusController;
 use App\Http\Controllers\API\Quote\ListAnsweredQuotesController;
 use App\Http\Controllers\API\Quote\MarkQuoteAsAcceptedController;
+use App\Http\Controllers\API\Quote\StoreAndProcessPurchaseRequestController;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Route;
@@ -28,6 +29,8 @@ Route::middleware('auth:sanctum')->group(static function (Router $router) {
     $router->name('cotacoes.')->prefix('cotacoes')->group(static function (Router $router) {
         $router->get('respondidas', ListAnsweredQuotesController::class)->name('respondidas');
         $router->put('{quote}/aceita', MarkQuoteAsAcceptedController::class)->name('marca-como-aceita');
+        $router->post('store-and-process-purchase-request', StoreAndProcessPurchaseRequestController::class)
+            ->name('store-and-process-purchase-request');
     });
 
     $router->name('payload.')->prefix('payload')->group(static function (Router $router) {
