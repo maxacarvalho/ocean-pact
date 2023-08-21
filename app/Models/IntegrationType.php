@@ -117,4 +117,9 @@ class IntegrationType extends Model
     {
         return $this->processor;
     }
+
+    public function isForwardable(): bool
+    {
+        return $this->handling_type->equals(IntegrationHandlingTypeEnum::SEND, IntegrationHandlingTypeEnum::STORE_AND_SEND);
+    }
 }
