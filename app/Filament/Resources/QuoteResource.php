@@ -13,28 +13,26 @@ use App\Models\Company;
 use App\Models\Currency;
 use App\Models\PaymentCondition;
 use App\Models\Quote;
+use App\Models\QuoteItem;
 use App\Models\Role;
 use App\Models\Supplier;
 use App\Models\User;
 use App\Utils\Str;
-use Closure;
-use Filament\Forms\Components\Card;
 use Filament\Forms\Components\Component;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Group;
 use Filament\Forms\Components\Placeholder;
+use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\TextInput\Mask;
-use Filament\Resources\Form;
+use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Resources\Table;
 use Filament\Tables\Actions\EditAction as TableEditAction;
 use Filament\Tables\Actions\ViewAction as TableViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter as TableFilter;
 use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Table;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
@@ -76,18 +74,30 @@ class QuoteResource extends Resource
                         $component->columnSpanFull();
                     })
                     ->schema([
-                        Card::make()
+                        Section::make()
                             ->columns(3)
                             ->schema([
                                 Select::make(Quote::CURRENCY_ID)
                                     ->label(Str::formatTitle(__('quote.currency_id')))
                                     ->required()
-                                    ->relationship(Quote::RELATION_CURRENCY, Currency::DESCRIPTION),
+                                    ->relationship(Quote::RELATION_CURRENCY, Currency::DESCRIPTION)
+                                    ->live()
+                                    ->afterStateUpdated(function (?int $state, ?int $old, Model|Quote $record) {
+                                        if (! $state) {
+                                            return;
+                                        }
+
+                                        /** @var Currency $currency */
+                                        $currency = Currency::query()->findOrFail($state);
+                                        $record->items()->update([
+                                            QuoteItem::CURRENCY => $currency->iso_code,
+                                        ]);
+                                    }),
 
                                 Select::make(Quote::PAYMENT_CONDITION_ID)
                                     ->label(Str::formatTitle(__('quote.payment_condition_id')))
                                     ->required()
-                                    ->options(function (Closure $get) {
+                                    ->options(function (\Filament\Forms\Get $get) {
                                         $companyCode = $get(Quote::COMPANY_CODE);
 
                                         return PaymentCondition::query()
@@ -103,53 +113,29 @@ class QuoteResource extends Resource
                                     ->hiddenOn('create'),
                             ]),
 
-                        Card::make()
+                        Section::make()
                             ->columns(3)
                             ->schema([
                                 /*TextInput::make(Quote::EXPENSES)
                                     ->label(Str::formatTitle(__('quote.expenses')))
                                     ->default(0)
-                                    ->mask(fn (TextInput\Mask $mask) => $mask
-                                        ->patternBlocks([
-                                            'money' => fn (Mask $mask) => $mask
-                                                ->numeric()
-                                                ->decimalPlaces(2)
-                                                ->decimalSeparator(',')
-                                                ->mapToDecimalSeparator([','])
-                                                ->signed(true)
-                                                ->normalizeZeros()
-                                                ->padFractionalZeros()
-                                                ->thousandsSeparator('.'),
-                                        ])
-                                        ->pattern('money')
-                                        ->lazyPlaceholder(false)
-                                    ),*/
+                                    ->mask(RawJs::make(<<<'JS'
+                                      $money($input, ',', '.', 2)
+                                    JS)),*/
 
                                 Select::make(Quote::FREIGHT_TYPE)
                                     ->label(Str::formatTitle(__('quote.freight_type')))
-                                    ->options(fn () => FreightTypeEnum::toArray()),
+                                    ->options(FreightTypeEnum::class),
 
                                 /*TextInput::make(Quote::FREIGHT_COST)
                                     ->label(Str::formatTitle(__('quote.freight_cost')))
                                     ->default(0)
-                                    ->mask(fn (TextInput\Mask $mask) => $mask
-                                        ->patternBlocks([
-                                            'money' => fn (Mask $mask) => $mask
-                                                ->numeric()
-                                                ->decimalPlaces(2)
-                                                ->decimalSeparator(',')
-                                                ->mapToDecimalSeparator([','])
-                                                ->signed(true)
-                                                ->normalizeZeros()
-                                                ->padFractionalZeros()
-                                                ->thousandsSeparator('.'),
-                                        ])
-                                        ->pattern('money')
-                                        ->lazyPlaceholder(false)
-                                    ),*/
+                                    ->mask(RawJs::make(<<<'JS'
+                                      $money($input, ',', '.', 2)
+                                    JS)),*/
                             ]),
 
-                        Card::make()
+                        Section::make()
                             ->columns(1)
                             ->schema([
                                 Textarea::make(Quote::COMMENTS)
@@ -194,7 +180,7 @@ class QuoteResource extends Resource
                         Select::make(Quote::STATUS)
                             ->label(Str::formatTitle(__('quote.status')))
                             ->required()
-                            ->options(fn () => collect(QuoteStatusEnum::toArray())->except('DRAFT')->toArray()),
+                            ->options(QuoteStatusEnum::class),
                     ]),
             ])
             ->columns(3);
@@ -260,8 +246,7 @@ class QuoteResource extends Resource
 
                 TextColumn::make(Quote::STATUS)
                     ->label(Str::formatTitle(__('quote.status')))
-                    ->sortable()
-                    ->formatStateUsing(fn (?string $state) => QuoteStatusEnum::from($state)->label),
+                    ->sortable(),
 
                 TextColumn::make(Quote::CREATED_AT)
                     ->label(Str::formatTitle(__('quote.created_at')))
@@ -290,7 +275,7 @@ class QuoteResource extends Resource
 
                 SelectFilter::make(Quote::STATUS)
                     ->label(Str::formatTitle(__('quote.status')))
-                    ->options(fn () => collect(QuoteStatusEnum::toArray())->except('DRAFT')->toArray()),
+                    ->options(QuoteStatusEnum::class),
 
                 SelectFilter::make(Quote::SUPPLIER_ID)
                     ->label(Str::formatTitle(__('quote.supplier')))
@@ -326,7 +311,7 @@ class QuoteResource extends Resource
         ];
     }
 
-    protected static function getNavigationGroup(): ?string
+    public static function getNavigationGroup(): ?string
     {
         return Str::formatTitle(__('navigation.quotes'));
     }

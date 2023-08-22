@@ -2,34 +2,33 @@
 
 namespace App\Filament\Resources\QuoteResource\RelationManagers;
 
-use App\Enums\QuoteItemStatusEnum;
 use App\Models\Product;
 use App\Models\Quote;
 use App\Models\QuoteItem;
-use App\Tables\Columns\CurrencyInputColumn;
-use App\Tables\Columns\DateInputColumn;
-use App\Utils\Money;
+use App\Rules\PercentageMaxValueRule;
+use App\Tables\Columns\MaskedInputColumn;
 use App\Utils\Str;
-use Closure;
-use Exception;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\TextInput\Mask;
-use Filament\Resources\Form;
+use Filament\Forms\Form;
+use Filament\Forms\Get;
 use Filament\Resources\RelationManagers\RelationManager;
-use Filament\Resources\Table;
+use Filament\Support\RawJs;
 use Filament\Tables\Actions\EditAction as TableEditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ToggleColumn;
-use Illuminate\Database\Eloquent\Builder;
+use Filament\Tables\Table;
+use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Carbon;
 
+/**
+ * @property Quote $ownerRecord
+ */
 class QuoteItemsRelationManager extends RelationManager
 {
     protected static string $relationship = Quote::RELATION_ITEMS;
@@ -41,7 +40,7 @@ class QuoteItemsRelationManager extends RelationManager
         return Str::formatTitle(__('quote_item.quote_items'));
     }
 
-    public static function getModelLabel(): string
+    public static function getModelLabel(): ?string
     {
         return Str::formatTitle(__('quote_item.quote_item'));
     }
@@ -51,7 +50,7 @@ class QuoteItemsRelationManager extends RelationManager
         return Str::formatTitle(__('quote_item.quote_items'));
     }
 
-    public static function form(Form $form): Form
+    public function form(Form $form): Form
     {
         return $form
             ->schema([
@@ -78,30 +77,66 @@ class QuoteItemsRelationManager extends RelationManager
 
                 Grid::make(3)
                     ->schema([
+                        TextInput::make(QuoteItem::IPI)
+                            ->label(Str::formatTitle(__('quote_item.ipi')))
+                            ->mask(function (Model|Quote $record) {
+                                if ('BRL' === $record->currency) {
+                                    return RawJs::make('$money($input, \',\', \'.\')');
+                                }
+
+                                return RawJs::make('$money($input)');
+                            })
+                            ->required(fn (Get $get) => $get(QuoteItem::SHOULD_BE_QUOTED))
+                            ->rules([
+                                new PercentageMaxValueRule(100),
+                            ])
+                            ->formatStateUsing(function (string $state, Model|Quote $record) {
+                                if ('BRL' === $record->currency) {
+                                    return str_replace('.', ',', $state);
+                                }
+
+                                return $state;
+                            })
+                            ->dehydrateStateUsing(fn ($state) => (float) str_replace(',', '.', $state)),
+
+                        TextInput::make(QuoteItem::ICMS)
+                            ->label(Str::formatTitle(__('quote_item.icms')))
+                            ->required(fn (Get $get) => $get(QuoteItem::SHOULD_BE_QUOTED))
+                            ->mask(function (Model|Quote $record) {
+                                if ('BRL' === $record->currency) {
+                                    return RawJs::make('$money($input, \',\', \'.\')');
+                                }
+
+                                return RawJs::make('$money($input)');
+                            })
+                            ->rules([
+                                new PercentageMaxValueRule(100),
+                            ])
+                            ->formatStateUsing(function (string $state, Model|Quote $record) {
+                                if ('BRL' === $record->currency) {
+                                    return str_replace('.', ',', $state);
+                                }
+
+                                return $state;
+                            })
+                            ->dehydrateStateUsing(fn ($state) => (float) str_replace(',', '.', $state)),
+
                         TextInput::make(QuoteItem::UNIT_PRICE)
                             ->label(Str::formatTitle(__('quote_item.unit_price')))
-                            ->required(fn (Closure $get) => $get(QuoteItem::SHOULD_BE_QUOTED))
+                            ->required(fn (Get $get) => $get(QuoteItem::SHOULD_BE_QUOTED))
                             ->default(0)
-                            ->mask(fn (TextInput\Mask $mask) => $mask
-                                ->patternBlocks([
-                                    'money' => fn (Mask $mask) => $mask
-                                        ->numeric()
-                                        ->decimalPlaces(2)
-                                        ->decimalSeparator(',')
-                                        ->mapToDecimalSeparator([','])
-                                        ->signed(true)
-                                        ->normalizeZeros()
-                                        ->padFractionalZeros()
-                                        ->thousandsSeparator('.'),
-                                ])
-                                ->pattern('money')
-                                ->lazyPlaceholder(false)
-                            ),
+                            ->mask(function (Model|Quote $record) {
+                                if ('BRL' === $record->currency) {
+                                    return RawJs::make('$money($input, \',\', \'.\')');
+                                }
+
+                                return RawJs::make('$money($input)');
+                            }),
 
                         DatePicker::make(QuoteItem::DELIVERY_DATE)
                             ->label(Str::formatTitle(__('quote_item.delivery_date')))
                             ->displayFormat('d/m/Y')
-                            ->required(fn (Closure $get) => $get(QuoteItem::SHOULD_BE_QUOTED)),
+                            ->required(fn (Get $get) => $get(QuoteItem::SHOULD_BE_QUOTED)),
                     ])
                     ->columnSpanFull(),
 
@@ -116,9 +151,10 @@ class QuoteItemsRelationManager extends RelationManager
             ]);
     }
 
-    public static function table(Table $table): Table
+    public function table(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(fn (Builder $query) => $query->with(QuoteItem::RELATION_QUOTE))
             ->columns([
                 TextColumn::make(QuoteItem::ITEM)
                     ->label(Str::formatTitle(__('quote_item.item'))),
@@ -135,57 +171,84 @@ class QuoteItemsRelationManager extends RelationManager
                 TextColumn::make(QuoteItem::QUANTITY)
                     ->label(Str::formatTitle(__('quote_item.quantity'))),
 
-                CurrencyInputColumn::make(QuoteItem::ICMS)
+                MaskedInputColumn::make(QuoteItem::ICMS)
                     ->label(Str::formatTitle(__('quote_item.icms')))
-                    ->rules([
-                        'required',
-                        function (string $attribute, mixed $value, Closure $fail) {
-                            if ((float) str_replace(',', '.', $value) > 100) {
-                                $fail(__('validation.max.numeric', ['max' => '100']));
-                            }
-                        },
-                    ])
-                    ->isDecimal()
+                    ->rules(['required'])
+                    ->state(function (Model|QuoteItem $record) {
+                        return number_format($record->icms, 2, ',', '.');
+                    })
+                    ->updateStateUsing(function (string $state, Model|QuoteItem $record): string {
+                        $asFloat = (float) str_replace(',', '.', $state);
+
+                        $record->update([
+                            QuoteItem::ICMS => $asFloat,
+                        ]);
+
+                        return number_format($asFloat, 2, ',', '.');
+                    })
+                    ->mask(function (Model|Quote $record) {
+                        if ('BRL' === $record->currency) {
+                            return RawJs::make('$money($input, \',\', \'.\')');
+                        }
+
+                        return RawJs::make('$money($input)');
+                    })
+                    ->extraAttributes(['class' => 'w-32'])
                     ->disabled(fn (Model|QuoteItem $record): bool => $record->cannotBeResponded()),
 
-                CurrencyInputColumn::make(QuoteItem::IPI)
+                MaskedInputColumn::make(QuoteItem::IPI)
                     ->label(Str::formatTitle(__('quote_item.ipi')))
-                    ->rules([
-                        'required',
-                        function (string $attribute, mixed $value, Closure $fail) {
-                            if ((float) str_replace(',', '.', $value) > 100) {
-                                $fail(__('validation.max.numeric', ['max' => '100']));
-                            }
-                        },
-                    ])
-                    ->isDecimal()
+                    ->rules(['required'])
+                    ->state(function (Model|QuoteItem $record) {
+                        return number_format($record->ipi, 2, ',', '.');
+                    })
+                    ->updateStateUsing(function (string $state, Model|QuoteItem $record): string {
+                        $asFloat = (float) str_replace(',', '.', $state);
+
+                        $record->update([
+                            QuoteItem::IPI => $asFloat,
+                        ]);
+
+                        return number_format($asFloat, 2, ',', '.');
+                    })
+                    ->mask(function (Model|Quote $record) {
+                        if ('BRL' === $record->currency) {
+                            return RawJs::make('$money($input, \',\', \'.\')');
+                        }
+
+                        return RawJs::make('$money($input)');
+                    })
+                    ->extraAttributes(['class' => 'w-32'])
                     ->disabled(fn (Model|QuoteItem $record): bool => $record->cannotBeResponded()),
 
-                CurrencyInputColumn::make(QuoteItem::UNIT_PRICE)
+                MaskedInputColumn::make(QuoteItem::UNIT_PRICE)
                     ->label(Str::formatTitle(__('quote_item.unit_price')))
                     ->rules(['required'])
+                    ->mask(function (Model|Quote $record) {
+                        if ('BRL' === $record->currency) {
+                            return RawJs::make('$money($input, \',\', \'.\')');
+                        }
+
+                        return RawJs::make('$money($input)');
+                    })
                     ->disabled(fn (Model|QuoteItem $record): bool => $record->cannotBeResponded()),
 
-                /*TextColumn::make('total_price')
-                    ->label(Str::formatTitle(__('quote_item.total_price')))
-                    ->getStateUsing(function (Model|QuoteItem $record): ?string {
-                        try {
-                            $totalPrice = $record->quantity * $record->unit_price;
-
-                            return Money::fromMinor($totalPrice)->toCurrency();
-                        } catch (Exception $exception) {
-                            return null;
-                        }
-                    }),*/
-
-                DateInputColumn::make(QuoteItem::DELIVERY_DATE)
+                MaskedInputColumn::make(QuoteItem::DELIVERY_DATE)
                     ->label(Str::formatTitle(__('quote_item.delivery_date')))
                     ->rules(['required', 'date_format:d/m/Y'])
-                    ->getStateUsing(function (Model|QuoteItem $record): ?string {
+                    ->state(function (Model|QuoteItem $record): ?string {
                         return $record->delivery_date instanceof Carbon
                             ? $record->delivery_date->format('d/m/Y')
-                            : '';
+                            : null;
                     })
+                    ->updateStateUsing(function (string $state, Model|QuoteItem $record): string {
+                        $record->update([
+                            QuoteItem::DELIVERY_DATE => Carbon::createFromFormat('d/m/Y', $state),
+                        ]);
+
+                        return $state;
+                    })
+                    ->mask('99/99/9999')
                     ->disabled(fn (Model|QuoteItem $record): bool => $record->cannotBeResponded()),
 
                 ToggleColumn::make(QuoteItem::SHOULD_BE_QUOTED)
@@ -194,8 +257,7 @@ class QuoteItemsRelationManager extends RelationManager
 
                 TextColumn::make(QuoteItem::STATUS)
                     ->label(Str::formatTitle(__('quote_item.status')))
-                    ->sortable()
-                    ->formatStateUsing(fn (?string $state) => QuoteItemStatusEnum::from($state)->label),
+                    ->sortable(),
             ])
             ->filters([
                 //
@@ -204,29 +266,10 @@ class QuoteItemsRelationManager extends RelationManager
                 //
             ])
             ->actions([
-                TableEditAction::make()
-                    ->mutateRecordDataUsing(function (array $data) {
-                        $data[QuoteItem::UNIT_PRICE] = Money::fromMinor($data[QuoteItem::UNIT_PRICE])->toDecimal();
-
-                        return $data;
-                    })
-                    ->mutateFormDataUsing(function (array $data) {
-                        try {
-                            $data[QuoteItem::UNIT_PRICE] = Money::fromMonetary($data[QuoteItem::UNIT_PRICE])->toMinor();
-                        } catch (Exception $exception) {
-                            unset($data[QuoteItem::UNIT_PRICE]);
-                        }
-
-                        return $data;
-                    }),
+                TableEditAction::make(),
             ])
             ->bulkActions([
                 //
             ]);
-    }
-
-    protected function getTableQuery(): Builder|Relation
-    {
-        return parent::getTableQuery()->with(QuoteItem::RELATION_QUOTE);
     }
 }

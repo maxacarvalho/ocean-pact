@@ -4,7 +4,6 @@ namespace App\Filament\Resources;
 
 use App\Enums\PayloadProcessingStatusEnum;
 use App\Enums\PayloadStoringStatusEnum;
-use App\Filament\Plugins\FilamentSimpleHighlightField\HighlightField;
 use App\Filament\Resources\PayloadResource\Pages\EditPayload;
 use App\Filament\Resources\PayloadResource\Pages\ListPayloads;
 use App\Filament\Resources\PayloadResource\Pages\ViewPayload;
@@ -15,14 +14,15 @@ use App\Utils\Str;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
-use Filament\Resources\Form;
+use Filament\Forms\Components\ViewField;
+use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Resources\Table;
 use Filament\Tables\Actions\DeleteBulkAction as TableDeleteBulkAction;
 use Filament\Tables\Actions\ViewAction as TableViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter as TableFilter;
 use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Table;
 use Illuminate\Contracts\Database\Query\Builder;
 use Illuminate\Support\Carbon;
 
@@ -30,7 +30,7 @@ class PayloadResource extends Resource
 {
     protected static ?string $model = Payload::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-mail';
+    protected static ?string $navigationIcon = 'heroicon-o-envelope';
 
     public static function getNavigationLabel(): string
     {
@@ -60,7 +60,7 @@ class PayloadResource extends Resource
                 Select::make(Payload::PROCESSING_STATUS)
                     ->label(Str::formatTitle(__('payload.processed_status')))
                     ->required()
-                    ->options(fn () => PayloadProcessingStatusEnum::toArray()),
+                    ->options(PayloadProcessingStatusEnum::class),
 
                 Textarea::make(Payload::PAYLOAD)
                     ->label(Str::formatTitle(__('payload.payload')))
@@ -69,10 +69,9 @@ class PayloadResource extends Resource
                     ->columnSpanFull()
                     ->hiddenOn(['view', 'edit']),
 
-                HighlightField::make(Payload::PAYLOAD)
+                ViewField::make(Payload::PAYLOAD)
                     ->label(Str::formatTitle(__('payload.payload')))
-                    ->required()
-                    ->json()
+                    ->view('filament-forms::components.prism')
                     ->columnSpanFull()
                     ->hiddenOn(['create']),
             ]);
@@ -90,16 +89,14 @@ class PayloadResource extends Resource
                     ->dateTime('d/m/Y H:i:s'),
 
                 TextColumn::make(Payload::STORING_STATUS)
-                    ->label(Str::formatTitle(__('payload.stored_status')))
-                    ->formatStateUsing(fn (string $state): string => PayloadStoringStatusEnum::from($state)->label),
+                    ->label(Str::formatTitle(__('payload.stored_status'))),
 
                 TextColumn::make(Payload::PROCESSED_AT)
                     ->label(Str::formatTitle(__('payload.processed_at')))
                     ->dateTime('d/m/Y H:i:s'),
 
                 TextColumn::make(Payload::PROCESSING_STATUS)
-                    ->label(Str::formatTitle(__('payload.processed_status')))
-                    ->formatStateUsing(fn (?string $state): ?string => $state !== null ? PayloadProcessingStatusEnum::from($state)->label : null),
+                    ->label(Str::formatTitle(__('payload.processed_status'))),
 
                 TextColumn::make('processing_attempts_count')
                     ->label(Str::formatTitle(__('payload.attempts_count')))
@@ -117,22 +114,28 @@ class PayloadResource extends Resource
                         $stored_at_until = $data['stored_at_until'];
 
                         if ($stored_at_from !== null && $stored_at_until !== null) {
-                            return Str::ucfirst(__('payload.received_between', [
-                                'from' => Carbon::parse($stored_at_from)->toFormattedDateString(),
-                                'until' => Carbon::parse($stored_at_until)->toFormattedDateString(),
-                            ]));
+                            return Str::ucfirst(
+                                __('payload.received_between', [
+                                    'from' => Carbon::parse($stored_at_from)->toFormattedDateString(),
+                                    'until' => Carbon::parse($stored_at_until)->toFormattedDateString(),
+                                ])
+                            );
                         }
 
                         if (null !== $stored_at_from) {
-                            return Str::ucfirst(__('payload.received_from', [
-                                'date' => Carbon::parse($stored_at_from)->toFormattedDateString(),
-                            ]));
+                            return Str::ucfirst(
+                                __('payload.received_from', [
+                                    'date' => Carbon::parse($stored_at_from)->toFormattedDateString(),
+                                ])
+                            );
                         }
 
                         if (null !== $stored_at_until) {
-                            return Str::ucfirst(__('payload.received_until', [
-                                'date' => Carbon::parse($stored_at_until)->toFormattedDateString(),
-                            ]));
+                            return Str::ucfirst(
+                                __('payload.received_until', [
+                                    'date' => Carbon::parse($stored_at_until)->toFormattedDateString(),
+                                ])
+                            );
                         }
 
                         return null;
@@ -161,11 +164,11 @@ class PayloadResource extends Resource
 
                 SelectFilter::make(Payload::STORING_STATUS)
                     ->label(Str::formatTitle(__('payload.stored_status')))
-                    ->options(fn () => PayloadStoringStatusEnum::toArray()),
+                    ->options(PayloadStoringStatusEnum::class),
 
                 SelectFilter::make(Payload::PROCESSING_STATUS)
                     ->label(Str::formatTitle(__('payload.processed_status')))
-                    ->options(fn () => PayloadProcessingStatusEnum::toArray()),
+                    ->options(PayloadProcessingStatusEnum::class),
             ])
             ->actions([
                 TableViewAction::make(),

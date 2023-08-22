@@ -5,9 +5,9 @@ namespace App\Data\Protheus\Quote\Out;
 use App\Data\Protheus\Quote\In\ProtheusQuoteItemPayloadData;
 use App\Data\Protheus\Quote\ProtheusBuyerPayloadData;
 use App\Data\Protheus\Quote\ProtheusSupplierPayloadData;
+use App\Enums\FreightTypeEnum;
 use App\Models\Quote;
 use App\Models\QuoteItem;
-use App\Utils\Money;
 use DateTime;
 use Spatie\LaravelData\Attributes\DataCollectionOf;
 use Spatie\LaravelData\Attributes\WithCast;
@@ -27,7 +27,7 @@ class ProtheusQuotePayloadData extends Data
         public ?DateTime $DATA_LIMITE_RESPOSTA,
         public string|null|Optional $OBSERVACAO_GERAL,
         public string $DESPESAS,
-        public ?string $TIPO_FRETE,
+        public ?FreightTypeEnum $TIPO_FRETE,
         public string $VALOR_FRETE,
         public ?string $MODEDA,
         public ProtheusSupplierPayloadData $FORNECEDOR,
@@ -47,9 +47,9 @@ class ProtheusQuotePayloadData extends Data
             COTACAO: $quote->quote_number,
             DATA_LIMITE_RESPOSTA: $quote->valid_until ?? $quote->updated_at,
             OBSERVACAO_GERAL: $quote->comments,
-            DESPESAS: (string) Money::fromMinor($quote->expenses)->getBrickMoney()->getAmount(),
+            DESPESAS: '0',
             TIPO_FRETE: $quote->freight_type,
-            VALOR_FRETE: (string) Money::fromMinor($quote->freight_cost)->getBrickMoney()->getAmount(),
+            VALOR_FRETE: '0',
             MODEDA: null !== $quote->currency ? $quote->currency->protheus_acronym : null,
             FORNECEDOR: ProtheusSupplierPayloadData::fromQuote($quote),
             COND_PAGTO: $quote->paymentCondition->code,

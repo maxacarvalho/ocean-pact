@@ -1,17 +1,18 @@
-<x-register-card action="submit">
-    <div class="w-full flex justify-center">
-        <x-filament::brand />
-    </div>
+<x-filament-panels::page.simple>
+    @if (filament()->hasLogin())
+        <x-slot name="subheading">
+            {{ __('filament-panels::pages/auth/register.actions.login.before') }}
 
-    <div>
-        <h2 class="font-bold tracking-tight text-center text-2xl">
-            {{ \App\Utils\Str::title(__('invitation.finish_registration')) }}
-        </h2>
-    </div>
+            {{ $this->loginAction }}
+        </x-slot>
+    @endif
 
-    {{ $this->form }}
+    <x-filament-panels::form wire:submit="register">
+        {{ $this->form }}
 
-    <x-filament::button type="submit" class="w-full" form="register">
-        {{ \App\Utils\Str::title(__('invitation.finish_registration')) }}
-    </x-filament::button>
-</x-register-card>
+        <x-filament-panels::form.actions
+            :actions="$this->getCachedFormActions()"
+            :full-width="$this->hasFullWidthFormActions()"
+        />
+    </x-filament-panels::form>
+</x-filament-panels::page.simple>

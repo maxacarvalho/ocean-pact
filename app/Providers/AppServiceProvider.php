@@ -2,8 +2,12 @@
 
 namespace App\Providers;
 
-use Filament\Facades\Filament;
+use Filament\Support\Assets\Css;
+use Filament\Support\Assets\Js;
+use Filament\Support\Facades\FilamentAsset;
+use Filament\Support\Facades\FilamentView;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -17,17 +21,24 @@ class AppServiceProvider extends ServiceProvider
         Model::shouldBeStrict();
 
         if ($this->app->environment('production')) {
-            Filament::registerScripts([
-                asset('js/clarity.js'),
+            FilamentAsset::register([
+                Js::make('clarity.js', asset('js/clarity.js')),
             ]);
         }
 
-        Filament::registerScripts([
-            'https://cdn.jsdelivr.net/npm/@alpinejs/mask@3.x.x/dist/cdn.min.js',
-        ], true);
+        FilamentAsset::register([
+            Css::make('prism.css', asset('vendor/prism.css'))->loadedOnRequest(),
+            Js::make('prism.js', asset('vendor/prism.js'))->loadedOnRequest(),
+        ]);
 
-        Filament::serving(function () {
-            Filament::registerViteTheme('resources/css/app.css');
-        });
+        FilamentView::registerRenderHook(
+            'panels::body.start',
+            fn (): string => Blade::render('<x-filament-impersonate::banner/>'),
+        );
+
+        FilamentView::registerRenderHook(
+            'panels::user-menu.before',
+            fn (): string => Blade::render('<livewire:locale-switcher/>'),
+        );
     }
 }

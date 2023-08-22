@@ -31,7 +31,7 @@ return new class extends Migration
                         ->where(
                             Payload::TABLE_NAME.'.'.Payload::PROCESSING_STATUS,
                             '!=',
-                            PayloadProcessingStatusEnum::COLLECTED()
+                            PayloadProcessingStatusEnum::COLLECTED
                         )
                         ->orWhereNull(Payload::TABLE_NAME.'.'.Payload::PROCESSING_STATUS);
                 })

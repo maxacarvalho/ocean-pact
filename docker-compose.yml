@@ -13,7 +13,9 @@ services:
             - "$PWD/public:/app/public"
         tty: true
         networks:
-            - oceanpact-net
+            oceanpact-net:
+                aliases:
+                    - oceanpact.test
 
     app:
         image: oceanpact/app

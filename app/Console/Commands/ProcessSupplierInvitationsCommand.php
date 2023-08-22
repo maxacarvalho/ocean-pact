@@ -20,13 +20,13 @@ class ProcessSupplierInvitationsCommand extends Command
     {
         SupplierInvitation::query()
             ->with(SupplierInvitation::RELATION_SUPPLIER, SupplierInvitation::RELATION_QUOTE.'.'.Quote::RELATION_COMPANY)
-            ->where(SupplierInvitation::STATUS, '=', InvitationStatusEnum::PENDING())
+            ->where(SupplierInvitation::STATUS, '=', InvitationStatusEnum::PENDING)
             ->each(function (SupplierInvitation $invitation) {
                 $supplier = $invitation->supplier;
                 $quote = $invitation->quote;
 
                 $url = URL::signedRoute(
-                    'filament.auth.login',
+                    'filament.admin.auth.login',
                     ['token' => $invitation->token]
                 );
 
@@ -47,7 +47,7 @@ class ProcessSupplierInvitationsCommand extends Command
 
                 $invitation->update([
                     SupplierInvitation::SENT_AT => now(),
-                    SupplierInvitation::STATUS => InvitationStatusEnum::SENT(),
+                    SupplierInvitation::STATUS => InvitationStatusEnum::SENT,
                 ]);
             });
     }

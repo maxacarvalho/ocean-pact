@@ -1,0 +1,26 @@
+<?php
+
+return [
+    'payload' => 'payload',
+    'payloads' => 'payloads',
+    'stored_at' => 'stored at',
+    'stored_status' => 'stored status',
+    'processed_at' => 'processed at',
+    'processed_status' => 'processed status',
+    'ready' => 'ready',
+    'collected' => 'collected',
+    'done' => 'done',
+    'processing' => 'processing',
+    'stored' => 'stored',
+    'failed' => 'failed',
+    'payload_already_collected' => 'payload already collected',
+    'payload_already_collected_detail' => 'payload id `:payload_id` already collected',
+    'attempts_count' => 'attempt count',
+    'stored_at_from' => 'received from',
+    'stored_at_until' => 'received until',
+    'received' => 'received',
+    'received_between' => 'received between :from and :until',
+    'received_from' => 'received from :date',
+    'received_until' => 'received until :date',
+    'payload_is_duplicated' => 'duplicate payload',
+];

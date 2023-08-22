@@ -10,7 +10,7 @@ class EditPaymentCondition extends EditRecord
 {
     protected static string $resource = PaymentConditionResource::class;
 
-    protected function getActions(): array
+    protected function getHeaderActions(): array
     {
         return [
             PageDeleteAction::make(),

@@ -61,7 +61,7 @@ class Budget extends Model
     public function markAsClosed(): void
     {
         $this->update([
-            self::STATUS => BudgetStatusEnum::CLOSED(),
+            self::STATUS => BudgetStatusEnum::CLOSED,
         ]);
     }
 }

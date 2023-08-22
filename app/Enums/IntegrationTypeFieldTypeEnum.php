@@ -3,26 +3,28 @@
 namespace App\Enums;
 
 use App\Utils\Str;
+use Filament\Support\Contracts\HasLabel;
 
-/**
- * @method static self date()
- * @method static self float()
- * @method static self integer()
- * @method static self boolean()
- * @method static self string()
- * @method static self array()
- */
-class IntegrationTypeFieldTypeEnum extends \Spatie\Enum\Laravel\Enum
+enum IntegrationTypeFieldTypeEnum: string implements HasLabel
 {
-    protected static function labels(): array
+    use EnumHelperTrait;
+
+    case date = 'date';
+    case float = 'float';
+    case integer = 'integer';
+    case boolean = 'boolean';
+    case string = 'string';
+    case array = 'array';
+
+    public function getLabel(): string
     {
-        return [
+        return match ($this->value) {
             'string' => Str::formatTitle(__('integration_type_field.string')),
             'integer' => Str::formatTitle(__('integration_type_field.integer')),
             'float' => Str::formatTitle(__('integration_type_field.float')),
             'boolean' => Str::formatTitle(__('integration_type_field.boolean')),
             'date' => Str::formatTitle(__('integration_type_field.date')),
             'array' => Str::formatTitle(__('integration_type_field.array')),
-        ];
+        };
     }
 }

@@ -11,14 +11,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table(Payload::TABLE_NAME, static function (Blueprint $table) {
-            $table->string(Payload::STORING_STATUS)->default(PayloadStoringStatusEnum::STORED());
+            $table->string(Payload::STORING_STATUS)->default(PayloadStoringStatusEnum::STORED);
             $table->string(Payload::PROCESSING_STATUS)->nullable();
         });
 
         Payload::query()->each(static function (Payload $payload) {
             $payload->update([
-                Payload::STORING_STATUS => $payload->stored_status,
-                Payload::PROCESSING_STATUS => $payload->processed_status,
+                Payload::STORING_STATUS => $payload->storing_status,
+                Payload::PROCESSING_STATUS => $payload->processing_status,
             ]);
         });
 

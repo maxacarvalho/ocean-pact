@@ -2,16 +2,13 @@
 
 namespace App\Filament\Resources\QuoteResource\Pages;
 
-use App\Enums\QuoteItemStatusEnum;
 use App\Events\QuoteRespondedEvent;
 use App\Filament\Resources\QuoteResource;
 use App\Models\Quote;
 use App\Models\QuoteItem;
-use App\Utils\Money;
-use Brick\Math\Exception\NumberFormatException;
-use Brick\Math\RoundingMode;
+use App\Utils\Str;
+use Filament\Actions\Action;
 use Filament\Resources\Pages\EditRecord;
-use Throwable;
 
 /**
  * @property Quote $record
@@ -22,63 +19,45 @@ class EditQuote extends EditRecord
 
     protected static string $resource = QuoteResource::class;
 
-    protected static string $view = 'filament::resources.pages.quote-custom-edit-record-page';
+    protected static string $view = 'filament-panels::resources.pages.quote-custom-edit-record-page';
 
-    public function sendQuote(): void
+    public function sendQuote(): Action
     {
-        $this->validate();
+        return Action::make('sendQuote')
+            ->label(Str::formatTitle(__('quote.form_save_action_label')))
+            ->requiresConfirmation()
+            ->modalDescription(__('quote.form_save_action_confirmation'))
+            ->action(function () {
+                $this->validate();
+                $items = $this->record->items->firstWhere(function (QuoteItem $item) {
+                    if (! $item->should_be_quoted) {
+                        return false;
+                    }
 
-        $items = $this->record->items->firstWhere(function (QuoteItem $item) {
-            if (! $item->should_be_quoted) {
-                return false;
-            }
+                    return $item->should_be_quoted && ($item->unit_price <= 0 || $item->delivery_date === null);
+                });
 
-            return $item->should_be_quoted && ($item->unit_price <= 0 || $item->delivery_date === null);
-        });
+                if ($items) {
+                    $this->missingItemsUnitPriceOrDeliveryDate = true;
 
-        if ($items) {
-            $this->missingItemsUnitPriceOrDeliveryDate = true;
+                    return;
+                }
 
-            return;
-        }
+                $this->save(false);
 
-        $this->save(false);
+                $this->record->markAsResponded();
+                QuoteRespondedEvent::dispatch($this->record->id);
 
-        $this->record->items()->update([
-            QuoteItem::STATUS => QuoteItemStatusEnum::RESPONDED(),
-        ]);
-
-        $this->record->markAsResponded();
-        QuoteRespondedEvent::dispatch($this->record->id);
-
-        $this->redirect(static::getResource()::getUrl());
+                $this->redirect(static::getResource()::getUrl());
+            });
     }
 
-    public function cancel(): void
+    public function cancelEditQuote(): Action
     {
-        $this->redirect(static::getResource()::getUrl());
-    }
-
-    public function getTotal(): string
-    {
-        try {
-            $this->record->load(Quote::RELATION_ITEMS);
-
-            $sum = (int) $this->record->items->reduce(function (float $carry, QuoteItem $item) {
-                return $carry + ($item->unit_price * $item->quantity);
-            }, 0);
-            $subtotal = Money::fromMinor($sum);
-            $tax = Money::fromMinor($this->record->ipi);
-            $taxAmount = $subtotal->getBrickMoney()->multipliedBy(
-                $tax->getBrickMoney()->getAmount()->toFloat() / 100,
-                RoundingMode::UP
-            );
-            $total = $subtotal->getBrickMoney()->plus($taxAmount);
-
-            return $total->formatTo(config('app.locale'));
-        } catch (Throwable $e) {
-            return '0,00';
-        }
+        return Action::make('cancel')
+            ->label(Str::ucfirst(__('quote.cancel_edit_quote_label')))
+            ->url(QuoteResource::getUrl())
+            ->color('gray');
     }
 
     /*protected function mutateFormDataBeforeSave(array $data): array
@@ -102,7 +81,7 @@ class EditQuote extends EditRecord
         return $data;
     }*/
 
-    protected function getActions(): array
+    protected function getHeaderActions(): array
     {
         return [
             // PageDeleteAction::make(),

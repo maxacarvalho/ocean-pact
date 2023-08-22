@@ -77,7 +77,7 @@ class Quote extends Model
     protected $casts = [
         self::STATUS => QuoteStatusEnum::class,
         self::VALID_UNTIL => 'date',
-        self::FREIGHT_TYPE => FreightTypeEnum::class.':nullable',
+        self::FREIGHT_TYPE => FreightTypeEnum::class,
     ];
 
     public function budget(): BelongsTo
@@ -124,37 +124,37 @@ class Quote extends Model
 
     public function isResponded(): bool
     {
-        return $this->status->equals(QuoteStatusEnum::RESPONDED());
+        return $this->status === QuoteStatusEnum::RESPONDED;
     }
 
     public function isAnalyzed(): bool
     {
-        return $this->status->equals(QuoteStatusEnum::ANALYZED());
+        return $this->status === QuoteStatusEnum::ANALYZED;
     }
 
     public function canBeResponded(): bool
     {
-        return $this->status->equals(QuoteStatusEnum::DRAFT()) || $this->status->equals(QuoteStatusEnum::PENDING());
+        return $this->status === QuoteStatusEnum::PENDING;
     }
 
     public function markAsPending(): void
     {
         $this->update([
-            self::STATUS => QuoteStatusEnum::PENDING(),
+            self::STATUS => QuoteStatusEnum::PENDING,
         ]);
     }
 
     public function markAsResponded(): void
     {
         $this->update([
-            self::STATUS => QuoteStatusEnum::RESPONDED(),
+            self::STATUS => QuoteStatusEnum::RESPONDED,
         ]);
     }
 
     public function markAsAnalyzed(): void
     {
         $this->update([
-            self::STATUS => QuoteStatusEnum::ANALYZED(),
+            self::STATUS => QuoteStatusEnum::ANALYZED,
         ]);
     }
 }

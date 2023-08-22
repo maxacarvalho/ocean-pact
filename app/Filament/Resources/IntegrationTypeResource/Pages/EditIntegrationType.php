@@ -10,7 +10,7 @@ class EditIntegrationType extends EditRecord
 {
     protected static string $resource = IntegrationTypeResource::class;
 
-    protected function getActions(): array
+    protected function getHeaderActions(): array
     {
         return [
             PageDeleteAction::make(),

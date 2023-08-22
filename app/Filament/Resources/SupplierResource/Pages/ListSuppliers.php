@@ -10,7 +10,7 @@ class ListSuppliers extends ListRecords
 {
     protected static string $resource = SupplierResource::class;
 
-    protected function getActions(): array
+    protected function getHeaderActions(): array
     {
         return [
             PageCreateAction::make(),

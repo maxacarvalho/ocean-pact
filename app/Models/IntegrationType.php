@@ -67,7 +67,7 @@ class IntegrationType extends Model
 
     protected $casts = [
         self::TYPE => IntegrationTypeEnum::class,
-        self::HANDLING_TYPE => IntegrationHandlingTypeEnum::class.':nullable',
+        self::HANDLING_TYPE => IntegrationHandlingTypeEnum::class,
         self::IS_VISIBLE => 'boolean',
         self::IS_ENABLED => 'boolean',
         self::IS_PROTECTED => 'boolean',
@@ -116,5 +116,10 @@ class IntegrationType extends Model
     public function getProcessor(): ?string
     {
         return $this->processor;
+    }
+
+    public function isForwardable(): bool
+    {
+        return $this->handling_type->equals(IntegrationHandlingTypeEnum::SEND, IntegrationHandlingTypeEnum::STORE_AND_SEND);
     }
 }
