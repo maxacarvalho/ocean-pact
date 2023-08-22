@@ -6,12 +6,9 @@ use App\Enums\PayloadProcessingAttemptsStatusEnum;
 use App\Models\PayloadProcessingAttempt;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;
-use Spatie\Enum\Laravel\Http\Requests\TransformsEnums;
 
 class UpdatePayloadStatusRequest extends FormRequest
 {
-    use TransformsEnums;
-
     public function rules(): array
     {
         return [
@@ -24,13 +21,6 @@ class UpdatePayloadStatusRequest extends FormRequest
                 'required_if:'.PayloadProcessingAttempt::STATUS.','.PayloadProcessingAttemptsStatusEnum::FAILED->value,
                 'string',
             ],
-        ];
-    }
-
-    public function enums(): array
-    {
-        return [
-            PayloadProcessingAttempt::STATUS => PayloadProcessingAttemptsStatusEnum::class,
         ];
     }
 }
