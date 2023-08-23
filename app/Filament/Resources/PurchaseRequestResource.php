@@ -12,6 +12,8 @@ use Filament\Resources\Resource;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class PurchaseRequestResource extends Resource
@@ -38,6 +40,20 @@ class PurchaseRequestResource extends Resource
     public static function getNavigationGroup(): ?string
     {
         return Str::formatTitle(__('navigation.quotes'));
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        /** @var Builder|PurchaseRequest $query */
+        $query = parent::getEloquentQuery();
+
+        if (Auth::user()->isSeller()) {
+            return $query->whereHas(PurchaseRequest::RELATION_QUOTE, function (Builder $query) {
+                $query->where(Quote::SUPPLIER_ID, Auth::user()->supplier_id);
+            });
+        }
+
+        return parent::getEloquentQuery();
     }
 
     public static function table(Table $table): Table
