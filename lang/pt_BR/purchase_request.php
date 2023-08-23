@@ -3,7 +3,7 @@
 return [
     'id' => 'ID',
     'quote_id' => 'cotação',
-    'purchase_request_number' => 'número da solicitação de compra',
+    'purchase_request_number' => 'número do pedido de compra',
     'sent_at' => 'enviado em',
     'viewed_at' => 'visualizado em',
     'file' => 'arquivo',
