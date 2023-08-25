@@ -21,6 +21,7 @@ services:
         image: oceanpact/app
         build: docker/php
         volumes:
+            - "${HOME}/.ssh:/home/php/.ssh"
             - "$PWD:/app"
         working_dir: /app
         tty: true
