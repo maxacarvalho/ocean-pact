@@ -16,7 +16,9 @@ ENV COMPOSER_MEMORY_LIMIT="3G"
 ENV LANG="pt_BR.UTF-8" \
     LANGUAGE="pt_BR:br" \
     LC_ALL="pt_BR.UTF-8" \
-    TZ="America/Sao_Paulo"
+    TZ="America/Sao_Paulo" \
+    SSH_AUTH_SOCK=/tmp/ssh-agent/ssh-agent.sock \
+    GIT_SSH_COMMAND="ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o LogLevel=ERROR"
 
 # Create a user and group used to launch processes
 RUN addgroup -g $GROUP_GID -S $GROUP_NAME && \
@@ -25,7 +27,7 @@ RUN addgroup -g $GROUP_GID -S $GROUP_NAME && \
 # Install softwares
 RUN set -ex \
     apk update -qq && \
-    apk add tzdata ca-certificates argon2-dev libsodium-dev openssl-dev curl git patch $PHP_EXTENSIONS && \
+    apk add tzdata ca-certificates argon2-dev libsodium-dev openssl-dev curl git patch openssh $PHP_EXTENSIONS && \
     ln -snf /usr/bin/php82 /usr/bin/php && \
     curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer \
     rm -rf /var/lib/{apt,dpkg,cache,log}/ /tmp/* /var/tmp/*
