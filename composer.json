@@ -22,6 +22,7 @@
         "lab404/laravel-impersonate": "^1.7",
         "laravel/framework": "^10.0",
         "laravel/sanctum": "^3.0",
+        "laravel/telescope": "^4.16",
         "laravel/tinker": "^2.7",
         "livewire/livewire": "^3.0@beta",
         "logtail/monolog-logtail": "^3.0",
@@ -68,7 +69,8 @@
         ],
         "post-update-cmd": [
             "@php artisan vendor:publish --tag=laravel-assets --ansi --force",
-            "@php artisan filament:upgrade"
+            "@php artisan filament:upgrade",
+            "@php artisan vendor:publish --tag=laravel-assets --ansi --force"
         ],
         "post-root-package-install": [
             "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
