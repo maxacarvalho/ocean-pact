@@ -38,6 +38,8 @@ use Illuminate\Support\Carbon;
  * @property-read User|null              $buyer
  * @property-read QuoteItem[]|Collection $items
  * @property-read Currency|null          $currency
+ * // Virtual
+ * @property-read int                    $count
  */
 class Quote extends Model
 {
