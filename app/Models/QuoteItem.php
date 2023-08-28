@@ -25,8 +25,11 @@ use Illuminate\Support\Carbon;
  * @property bool                $should_be_quoted
  * @property QuoteItemStatusEnum $status
  * @property string|null         $comments
+ * @property string|null         $seller_image
+ * @property string|null         $buyer_image
  * @property Carbon|null         $created_at
  * @property Carbon|null         $updated_at
+ * // Relations
  * @property-read Quote          $quote
  * @property-read Product        $product
  */
@@ -48,6 +51,8 @@ class QuoteItem extends Model
     public const SHOULD_BE_QUOTED = 'should_be_quoted';
     public const STATUS = 'status';
     public const COMMENTS = 'comments';
+    public const SELLER_IMAGE = 'seller_image';
+    public const BUYER_IMAGE = 'buyer_image';
     public const CREATED_AT = 'created_at';
     public const UPDATED_AT = 'updated_at';
 

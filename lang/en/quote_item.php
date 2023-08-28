@@ -29,4 +29,6 @@ return [
     'status' => 'status',
     'items_marked_as_accepted' => 'items marked as accepted',
     'problem_marking_quote_items_as_accepted' => 'problem marking quote items as accepted',
+    'seller_image' => 'seller image',
+    'buyer_image' => 'buyer image',
 ];

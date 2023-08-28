@@ -3,10 +3,10 @@
 namespace App\Filament\Resources\BudgetResource\Pages;
 
 use App\Filament\Resources\BudgetResource;
+use App\Filament\Resources\Pages\ListRecords;
 use App\Models\Budget;
 use App\Models\Company;
-use Filament\Pages\Actions\CreateAction as PageCreateAction;
-use Filament\Resources\Pages\ListRecords;
+use Filament\Actions\CreateAction;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\Builder as DbQueryBuilder;
 
@@ -17,7 +17,7 @@ class ListBudgets extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            PageCreateAction::make(),
+            CreateAction::class,
         ];
     }
 

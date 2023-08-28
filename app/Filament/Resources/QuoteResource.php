@@ -8,6 +8,7 @@ use App\Filament\Resources\QuoteResource\Pages\EditQuote;
 use App\Filament\Resources\QuoteResource\Pages\ListQuotes;
 use App\Filament\Resources\QuoteResource\Pages\ViewQuote;
 use App\Filament\Resources\QuoteResource\RelationManagers\QuoteItemsRelationManager;
+use App\Filament\Resources\QuoteResource\Widgets\QuotesOverviewWidget;
 use App\Models\Budget;
 use App\Models\Company;
 use App\Models\Currency;
@@ -35,6 +36,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 
 /**
@@ -59,6 +61,13 @@ class QuoteResource extends Resource
     public static function getPluralModelLabel(): string
     {
         return Str::formatTitle(__('quote.quotes'));
+    }
+
+    public static function getWidgets(): array
+    {
+        return [
+            QuotesOverviewWidget::class,
+        ];
     }
 
     public static function form(Form $form): Form
@@ -284,6 +293,41 @@ class QuoteResource extends Resource
                 SelectFilter::make(Quote::BUDGET_ID)
                     ->label(Str::formatTitle(__('quote.buyer')))
                     ->relationship(Quote::RELATION_BUYER, User::NAME),
+
+                TableFilter::make('created_at')
+                    ->label(Str::formatTitle(__('quote.created_at')))
+                    ->indicateUsing(function (array $data): array {
+                        $indicators = [];
+
+                        if ($data['created_from'] ?? null) {
+                            $indicators['created_from'] = Str::ucfirst(__('quote.created_from', ['date' => Carbon::parse($data['created_from'])->format('d/m/Y')]));
+                        }
+
+                        if ($data['created_until'] ?? null) {
+                            $indicators[''] = Str::ucfirst(__('quote.created_until', ['date' => Carbon::parse($data['created_until'])->format('d/m/Y')]));
+                        }
+
+                        return $indicators;
+                    })
+                    ->form([
+                        DatePicker::make('created_from')
+                            ->label(Str::formatTitle(__('quote.created_at')))
+                            ->displayFormat('d/m/Y'),
+                        DatePicker::make('created_until')
+                            ->label(Str::formatTitle(__('quote.created_at')))
+                            ->displayFormat('d/m/Y'),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['created_from'],
+                                fn (Builder $query, string $date): Builder => $query->whereDate(Quote::CREATED_AT, '>=', $date)
+                            )
+                            ->when(
+                                $data['created_until'],
+                                fn (Builder $query, string $date): Builder => $query->whereDate(Quote::CREATED_AT, '<=', $date)
+                            );
+                    }),
             ])
             ->actions([
                 TableEditAction::make(),

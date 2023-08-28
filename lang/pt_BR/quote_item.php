@@ -29,4 +29,6 @@ return [
     'status' => 'status',
     'items_marked_as_accepted' => 'itens marcados como aceitos',
     'problem_marking_quote_items_as_accepted' => 'houve um problema ao marcar os itens como aceitos',
+    'seller_image' => 'imagem do vendedor',
+    'buyer_image' => 'imagem do comprador',
 ];
