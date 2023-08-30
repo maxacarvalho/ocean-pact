@@ -353,7 +353,7 @@ class QuoteItemsRelationManager extends RelationManager
                         if (
                             null !== $record->seller_image
                             &&
-                            (null === $data[QuoteItem::SELLER_IMAGE] || $record->seller_image !== $data[QuoteItem::SELLER_IMAGE])
+                            (isset($data[QuoteItem::SELLER_IMAGE]) && (null === $data[QuoteItem::SELLER_IMAGE] || $record->seller_image !== $data[QuoteItem::SELLER_IMAGE]))
                         ) {
                             Storage::disk('s3')->delete($record->seller_image);
                         }
@@ -361,7 +361,7 @@ class QuoteItemsRelationManager extends RelationManager
                         if (
                             null !== $record->buyer_image
                             &&
-                            (null === $data[QuoteItem::BUYER_IMAGE] || $record->buyer_image !== $data[QuoteItem::BUYER_IMAGE])
+                            (isset($data[QuoteItem::BUYER_IMAGE]) && (null === $data[QuoteItem::BUYER_IMAGE] || $record->buyer_image !== $data[QuoteItem::BUYER_IMAGE]))
                         ) {
                             Storage::disk('s3')->delete($record->buyer_image);
                         }
