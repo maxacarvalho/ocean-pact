@@ -8,7 +8,9 @@ use App\Models\Quote;
 use App\Models\QuoteItem;
 use App\Utils\Str;
 use Filament\Actions\Action;
+use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
+use Illuminate\Support\Facades\Log;
 
 /**
  * @property Quote $record
@@ -21,35 +23,45 @@ class EditQuote extends EditRecord
 
     protected static string $view = 'filament-panels::resources.pages.quote-custom-edit-record-page';
 
+    protected function afterValidate(): void
+    {
+        $items = $this->record->items->firstWhere(function (QuoteItem $item) {
+            if (! $item->should_be_quoted) {
+                return false;
+            }
+
+            return $item->should_be_quoted && ($item->unit_price <= 0 || $item->delivery_date === null);
+        });
+
+        if ($items) {
+            $this->missingItemsUnitPriceOrDeliveryDate = true;
+
+            Notification::make()
+                ->danger()
+                ->title(Str::ucfirst(__('quote.please_fill_the_unit_price_and_delivery_date_for_all_items')))
+                ->icon('far-circle-exclamation')
+                ->color('danger')
+                ->persistent()
+                ->send();
+
+            $this->halt();
+        }
+    }
+
+    protected function afterSave(): void
+    {
+        Log::debug('afterSave');
+
+        $this->record->markAsResponded();
+
+        QuoteRespondedEvent::dispatch($this->record->id);
+    }
+
     public function sendQuote(): Action
     {
         return Action::make('sendQuote')
             ->label(Str::formatTitle(__('quote.form_save_action_label')))
-            ->requiresConfirmation()
-            ->modalDescription(__('quote.form_save_action_confirmation'))
-            ->action(function () {
-                $this->validate();
-                $items = $this->record->items->firstWhere(function (QuoteItem $item) {
-                    if (! $item->should_be_quoted) {
-                        return false;
-                    }
-
-                    return $item->should_be_quoted && ($item->unit_price <= 0 || $item->delivery_date === null);
-                });
-
-                if ($items) {
-                    $this->missingItemsUnitPriceOrDeliveryDate = true;
-
-                    return;
-                }
-
-                $this->save(false);
-
-                $this->record->markAsResponded();
-                QuoteRespondedEvent::dispatch($this->record->id);
-
-                $this->redirect(static::getResource()::getUrl());
-            });
+            ->action('save');
     }
 
     public function cancelEditQuote(): Action

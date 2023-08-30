@@ -39,4 +39,6 @@ return [
     'total' => 'total',
     'cancel_edit_quote_label' => 'cancelar',
     'all' => 'todas',
+    'created_from' => 'criado de: :date',
+    'created_until' => 'criado até: :date',
 ];

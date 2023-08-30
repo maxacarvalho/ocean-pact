@@ -8,8 +8,10 @@ use App\Models\QuoteItem;
 use App\Rules\PercentageMaxValueRule;
 use App\Tables\Columns\MaskedInputColumn;
 use App\Utils\Str;
+use Filament\Forms\Components\BaseFileUpload;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Textarea;
@@ -19,12 +21,17 @@ use Filament\Forms\Get;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Support\RawJs;
 use Filament\Tables\Actions\EditAction as TableEditAction;
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Table;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+use League\Flysystem\UnableToCheckFileExistence;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
 /**
  * @property Quote $ownerRecord
@@ -66,6 +73,52 @@ class QuoteItemsRelationManager extends RelationManager
                     ->label(Str::formatTitle(__('quote_item.description')))
                     ->content(fn (Model|QuoteItem $record) => $record->description)
                     ->columnSpanFull(),
+
+                FileUpload::make(QuoteItem::SELLER_IMAGE)
+                    ->label(Str::formatTitle(__('quote_item.seller_image')))
+                    ->hidden(Auth::user()->isBuyer())
+                    ->disk('s3')
+                    ->visibility('private')
+                    ->downloadable()
+                    ->image()
+                    ->saveUploadedFileUsing(static function (BaseFileUpload $component, TemporaryUploadedFile $file, QuoteItem $record) {
+                        try {
+                            if (! $file->exists()) {
+                                return null;
+                            }
+                        } catch (UnableToCheckFileExistence $exception) {
+                            return null;
+                        }
+
+                        return $file->storeAs(
+                            "quotes/{$record->quote_id}/quote_items/{$record->id}/seller_image",
+                            $component->getUploadedFileNameForStorage($file),
+                            $component->getDiskName(),
+                        );
+                    }),
+
+                FileUpload::make(QuoteItem::BUYER_IMAGE)
+                    ->label(Str::formatTitle(__('quote_item.buyer_image')))
+                    ->hidden(Auth::user()->isSeller())
+                    ->disk('s3')
+                    ->visibility('private')
+                    ->downloadable()
+                    ->image()
+                    ->saveUploadedFileUsing(static function (BaseFileUpload $component, TemporaryUploadedFile $file, QuoteItem $record) {
+                        try {
+                            if (! $file->exists()) {
+                                return null;
+                            }
+                        } catch (UnableToCheckFileExistence $exception) {
+                            return null;
+                        }
+
+                        return $file->storeAs(
+                            "quotes/{$record->quote_id}/quote_items/{$record->id}/buyer_image",
+                            $component->getUploadedFileNameForStorage($file),
+                            $component->getDiskName(),
+                        );
+                    }),
 
                 Placeholder::make(QuoteItem::MEASUREMENT_UNIT)
                     ->label(Str::formatTitle(__('quote_item.measurement_unit')))
@@ -155,6 +208,7 @@ class QuoteItemsRelationManager extends RelationManager
     {
         return $table
             ->modifyQueryUsing(fn (Builder $query) => $query->with(QuoteItem::RELATION_QUOTE))
+            ->recordAction(null)
             ->columns([
                 TextColumn::make(QuoteItem::ITEM)
                     ->label(Str::formatTitle(__('quote_item.item'))),
@@ -164,6 +218,34 @@ class QuoteItemsRelationManager extends RelationManager
 
                 TextColumn::make(QuoteItem::DESCRIPTION)
                     ->label(Str::formatTitle(__('quote_item.description'))),
+
+                ImageColumn::make(QuoteItem::SELLER_IMAGE)
+                    ->label(Str::formatTitle(__('quote_item.seller_image')))
+                    ->alignCenter()
+                    ->disk('s3')
+                    ->visibility('private')
+                    ->url(function (QuoteItem $record) {
+                        if ($record->seller_image) {
+                            return Storage::disk('s3')->temporaryUrl($record->seller_image, now()->addMinutes(5));
+                        }
+
+                        return null;
+                    })
+                    ->openUrlInNewTab(),
+
+                ImageColumn::make(QuoteItem::BUYER_IMAGE)
+                    ->label(Str::formatTitle(__('quote_item.buyer_image')))
+                    ->alignCenter()
+                    ->disk('s3')
+                    ->visibility('private')
+                    ->url(function (QuoteItem $record) {
+                        if ($record->buyer_image) {
+                            return Storage::disk('s3')->temporaryUrl($record->buyer_image, now()->addMinutes(5));
+                        }
+
+                        return null;
+                    })
+                    ->openUrlInNewTab(),
 
                 TextColumn::make(QuoteItem::MEASUREMENT_UNIT)
                     ->label(Str::formatTitle(__('quote_item.measurement_unit'))),
@@ -266,7 +348,28 @@ class QuoteItemsRelationManager extends RelationManager
                 //
             ])
             ->actions([
-                TableEditAction::make(),
+                TableEditAction::make()
+                    ->using(function (QuoteItem $record, array $data) {
+                        if (
+                            null !== $record->seller_image
+                            &&
+                            (null === $data[QuoteItem::SELLER_IMAGE] || $record->seller_image !== $data[QuoteItem::SELLER_IMAGE])
+                        ) {
+                            Storage::disk('s3')->delete($record->seller_image);
+                        }
+
+                        if (
+                            null !== $record->buyer_image
+                            &&
+                            (null === $data[QuoteItem::BUYER_IMAGE] || $record->buyer_image !== $data[QuoteItem::BUYER_IMAGE])
+                        ) {
+                            Storage::disk('s3')->delete($record->buyer_image);
+                        }
+
+                        $record->update($data);
+
+                        return $record;
+                    }),
             ])
             ->bulkActions([
                 //

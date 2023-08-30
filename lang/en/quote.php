@@ -39,4 +39,6 @@ return [
     'total' => 'total',
     'cancel_edit_quote_label' => 'cancel',
     'all' => 'all',
+    'created_from' => 'created from: :date',
+    'created_until' => 'created until: :date',
 ];

@@ -6,12 +6,12 @@
     ])
 >
     @capture($form)
-    <x-filament-panels::form
-        :wire:key="$this->getId() . '.forms.' . $this->getFormStatePath()"
-        wire:submit="save"
-    >
-        {{ $this->form }}
-    </x-filament-panels::form>
+        <x-filament-panels::form
+            :wire:key="$this->getId() . '.forms.' . $this->getFormStatePath()"
+            wire:submit="save"
+        >
+            {{ $this->form }}
+        </x-filament-panels::form>
     @endcapture
 
     @php
