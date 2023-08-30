@@ -7,8 +7,10 @@ use App\Mail\QuoteCreatedMail;
 use App\Models\Quote;
 use App\Models\SupplierInvitation;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\Validator;
 
 class ProcessSupplierInvitationsCommand extends Command
 {
@@ -35,6 +37,16 @@ class ProcessSupplierInvitationsCommand extends Command
                 })->toArray();
 
                 foreach ($addresses as $address) {
+                    if (! $this->isEmailValid($address)) {
+                        Log::info('Invalid email address', [
+                            'address' => $address,
+                            'supplier' => $supplier->id,
+                            'quote' => $quote->id,
+                        ]);
+
+                        continue;
+                    }
+
                     Mail::to($address)->send(
                         new QuoteCreatedMail(
                             $supplier->name,
@@ -50,5 +62,14 @@ class ProcessSupplierInvitationsCommand extends Command
                     SupplierInvitation::STATUS => InvitationStatusEnum::SENT,
                 ]);
             });
+    }
+
+    private function isEmailValid(string $email): bool
+    {
+        $validator = Validator::make(['email' => $email], [
+            'email' => 'required|email',
+        ]);
+
+        return $validator->passes();
     }
 }

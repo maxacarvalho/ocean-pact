@@ -12,7 +12,9 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Validator;
 
 class PurchaseRequestReceivedJob implements ShouldQueue
 {
@@ -38,6 +40,16 @@ class PurchaseRequestReceivedJob implements ShouldQueue
         $url = PurchaseRequestResource::getUrl();
 
         foreach ($addresses as $address) {
+            if (! $this->isEmailValid($address)) {
+                Log::info('Invalid email address', [
+                    'address' => $address,
+                    'supplier' => $supplier->id,
+                    'quote' => $quote->id,
+                ]);
+
+                continue;
+            }
+
             Mail::to($address)->send(
                 new PurchaseRequestGeneratedMail(
                     supplier_name: $supplier->name,
@@ -47,6 +59,15 @@ class PurchaseRequestReceivedJob implements ShouldQueue
                 )
             );
         }
+    }
+
+    private function isEmailValid(string $email): bool
+    {
+        $validator = Validator::make(['email' => $email], [
+            'email' => 'required|email',
+        ]);
+
+        return $validator->passes();
     }
 
     private function createPurchaseRequest(): PurchaseRequest
