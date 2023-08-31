@@ -17,7 +17,10 @@ class PercentageMaxValueRule implements ValidationRule
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
         if ((float) str_replace(',', '.', $value) > $this->size) {
-            $fail('validation.max.numeric', ['attribute' => $attribute, 'max' => $this->size])->translate();
+            $fail('validation.max.numeric')->translate([
+                'attribute' => $attribute,
+                'max' => $this->size,
+            ]);
         }
     }
 }
