@@ -4,7 +4,7 @@ namespace App\Filament\Resources\IntegrationTypeResource\Pages;
 
 use App\Filament\Resources\IntegrationTypeResource;
 use App\Models\IntegrationType;
-use Filament\Pages\Actions\CreateAction as PageCreateAction;
+use Filament\Actions\CreateAction as PageCreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;

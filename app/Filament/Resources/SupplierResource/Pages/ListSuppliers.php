@@ -3,7 +3,7 @@
 namespace App\Filament\Resources\SupplierResource\Pages;
 
 use App\Filament\Resources\SupplierResource;
-use Filament\Pages\Actions\CreateAction as PageCreateAction;
+use Filament\Actions\CreateAction as PageCreateAction;
 use Filament\Resources\Pages\ListRecords;
 
 class ListSuppliers extends ListRecords

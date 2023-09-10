@@ -5,7 +5,7 @@ namespace App\Filament\Resources\PaymentConditionResource\Pages;
 use App\Filament\Resources\PaymentConditionResource;
 use App\Models\Company;
 use App\Models\PaymentCondition;
-use Filament\Pages\Actions\CreateAction as PageCreateAction;
+use Filament\Actions\CreateAction as PageCreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Illuminate\Database\Query\Builder;
 

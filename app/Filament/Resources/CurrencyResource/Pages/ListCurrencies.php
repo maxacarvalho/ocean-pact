@@ -3,7 +3,7 @@
 namespace App\Filament\Resources\CurrencyResource\Pages;
 
 use App\Filament\Resources\CurrencyResource;
-use Filament\Pages\Actions\CreateAction;
+use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 
 class ListCurrencies extends ListRecords

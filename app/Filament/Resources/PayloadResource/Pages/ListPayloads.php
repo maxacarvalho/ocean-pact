@@ -3,7 +3,7 @@
 namespace App\Filament\Resources\PayloadResource\Pages;
 
 use App\Filament\Resources\PayloadResource;
-use Filament\Pages\Actions\CreateAction as PageCreateAction;
+use Filament\Actions\CreateAction as PageCreateAction;
 use Filament\Resources\Pages\ListRecords;
 
 class ListPayloads extends ListRecords
