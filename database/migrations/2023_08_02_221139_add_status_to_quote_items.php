@@ -15,7 +15,7 @@ return new class() extends Migration
         });
 
         QuoteItem::query()->each(function (QuoteItem $quoteItem) {
-            if ($quoteItem->unit_price > 0 && $quoteItem->delivery_date !== null) {
+            if ($quoteItem->unit_price > 0 && null !== $quoteItem->delivery_date) {
                 $quoteItem->status = QuoteItemStatusEnum::RESPONDED;
                 $quoteItem->save();
             }

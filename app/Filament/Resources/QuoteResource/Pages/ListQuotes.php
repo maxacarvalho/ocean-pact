@@ -3,7 +3,6 @@
 namespace App\Filament\Resources\QuoteResource\Pages;
 
 use App\Enums\QuoteStatusEnum;
-use App\Filament\Resources\Pages\ListRecords;
 use App\Filament\Resources\QuoteResource;
 use App\Filament\Resources\QuoteResource\Widgets\QuotesOverviewWidget;
 use App\Models\Company;
@@ -12,6 +11,7 @@ use App\Models\Role;
 use App\Models\User;
 use App\Utils\Str;
 use Filament\Pages\Concerns\ExposesTableToWidgets;
+use Filament\Resources\Pages\ListRecords;
 use Filament\Resources\Pages\ListRecords\Tab;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\Builder as DbQueryBuilder;

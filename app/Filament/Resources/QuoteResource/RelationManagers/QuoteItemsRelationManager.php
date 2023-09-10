@@ -208,7 +208,6 @@ class QuoteItemsRelationManager extends RelationManager
     {
         return $table
             ->modifyQueryUsing(fn (Builder $query) => $query->with(QuoteItem::RELATION_QUOTE))
-            ->recordAction(null)
             ->columns([
                 TextColumn::make(QuoteItem::ITEM)
                     ->label(Str::formatTitle(__('quote_item.item'))),

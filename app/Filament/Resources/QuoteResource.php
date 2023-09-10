@@ -150,7 +150,7 @@ class QuoteResource extends Resource
                                 Textarea::make(Quote::COMMENTS)
                                     ->label(Str::formatTitle(__('quote.comments')))
                                     ->columnSpanFull()
-                                    ->reactive()
+                                    ->live()
                                     ->afterStateUpdated(function (Model|Quote|null $record, $state) {
                                         $record->comments = $state;
                                         $record->save();

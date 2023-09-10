@@ -3,7 +3,7 @@
 namespace App\Filament\Resources\CompanyResource\Pages;
 
 use App\Filament\Resources\CompanyResource;
-use Filament\Pages\Actions\DeleteAction as PageDeleteAction;
+use Filament\Actions\DeleteAction as PageDeleteAction;
 use Filament\Resources\Pages\EditRecord;
 
 class EditCompany extends EditRecord

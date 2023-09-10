@@ -3,7 +3,7 @@
 namespace App\Filament\Resources\BudgetResource\Pages;
 
 use App\Filament\Resources\BudgetResource;
-use Filament\Pages\Actions\DeleteAction as PageDeleteAction;
+use Filament\Actions\DeleteAction as PageDeleteAction;
 use Filament\Resources\Pages\EditRecord;
 
 class EditBudget extends EditRecord

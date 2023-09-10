@@ -10,7 +10,7 @@ use App\Utils\Str;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * @property Quote $record
@@ -25,36 +25,38 @@ class EditQuote extends EditRecord
 
     protected function afterValidate(): void
     {
-        $items = $this->record->items->firstWhere(function (QuoteItem $item) {
-            if (! $item->should_be_quoted) {
-                return false;
+        if (Auth::user()->isSeller()) {
+            $items = $this->record->items->firstWhere(function (QuoteItem $item) {
+                if (! $item->should_be_quoted) {
+                    return false;
+                }
+
+                return $item->should_be_quoted && ($item->unit_price <= 0 || $item->delivery_date === null);
+            });
+
+            if ($items) {
+                $this->missingItemsUnitPriceOrDeliveryDate = true;
+
+                Notification::make()
+                    ->danger()
+                    ->title(Str::ucfirst(__('quote.please_fill_the_unit_price_and_delivery_date_for_all_items')))
+                    ->icon('far-circle-exclamation')
+                    ->color('danger')
+                    ->persistent()
+                    ->send();
+
+                $this->halt();
             }
-
-            return $item->should_be_quoted && ($item->unit_price <= 0 || $item->delivery_date === null);
-        });
-
-        if ($items) {
-            $this->missingItemsUnitPriceOrDeliveryDate = true;
-
-            Notification::make()
-                ->danger()
-                ->title(Str::ucfirst(__('quote.please_fill_the_unit_price_and_delivery_date_for_all_items')))
-                ->icon('far-circle-exclamation')
-                ->color('danger')
-                ->persistent()
-                ->send();
-
-            $this->halt();
         }
     }
 
     protected function afterSave(): void
     {
-        Log::debug('afterSave');
+        if (Auth::user()->isSeller()) {
+            $this->record->markAsResponded();
 
-        $this->record->markAsResponded();
-
-        QuoteRespondedEvent::dispatch($this->record->id);
+            QuoteRespondedEvent::dispatch($this->record->id);
+        }
     }
 
     public function sendQuote(): Action
