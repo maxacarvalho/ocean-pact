@@ -5,31 +5,13 @@ namespace App\Filament\Resources\PaymentConditionResource\Pages;
 use App\Filament\Resources\PaymentConditionResource;
 use App\Models\Company;
 use App\Models\PaymentCondition;
-use Filament\Pages\Actions\CreateAction as PageCreateAction;
+use Filament\Actions\CreateAction as PageCreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Illuminate\Database\Query\Builder;
 
 class ListPaymentConditions extends ListRecords
 {
     protected static string $resource = PaymentConditionResource::class;
-
-    public function boot()
-    {
-        if ($this->tableFilters) {
-            $this->replaceNullValues($this->tableFilters);
-        }
-    }
-
-    protected function replaceNullValues(array &$data): void
-    {
-        foreach ($data as &$value) {
-            if (is_array($value)) {
-                $this->replaceNullValues($value);
-            } elseif ($value === 'null') {
-                $value = null;
-            }
-        }
-    }
 
     protected function getHeaderActions(): array
     {

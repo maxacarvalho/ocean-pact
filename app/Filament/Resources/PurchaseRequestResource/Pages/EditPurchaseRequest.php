@@ -3,7 +3,7 @@
 namespace App\Filament\Resources\PurchaseRequestResource\Pages;
 
 use App\Filament\Resources\PurchaseRequestResource;
-use Filament\Pages\Actions\DeleteAction;
+use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
 
 class EditPurchaseRequest extends EditRecord

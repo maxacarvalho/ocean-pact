@@ -1,0 +1,44 @@
+name: Create Release Pull Request
+
+on:
+  workflow_dispatch:
+
+jobs:
+  create-release-pr:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Set PR title and get commit list
+        run: |
+          git fetch origin main:main
+          export TZ="America/Sao_Paulo"
+          echo "RELEASE_TITLE=:rocket: Portal de Cotações Release $(date +%F\ %R)" >> $GITHUB_ENV
+          {
+            echo 'RELEASE_BODY<<LISTEOF'
+            printf '%s\n\n%s\n' "## Alterações" "$(git log main..staging --pretty=format:'- %s' --abbrev-commit --no-merges || true)"
+            echo ''
+            echo LISTEOF
+          } >> "$GITHUB_ENV"
+
+      - name: Create Pull Request
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          PR_BODY="${RELEASE_BODY}"
+          if [[ -z "$PR_BODY" ]]; then
+            echo "No new commits, skipping PR creation"
+            exit 0
+          fi
+
+          echo "RELEASE_LINK=$(gh pr create --title "${RELEASE_TITLE}" --body "${RELEASE_BODY}" --base main --head staging --repo maxacarvalho/ocean-pact)" >> $GITHUB_ENV
+
+      - name: Trigger auto merge
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          gh pr merge $RELEASE_LINK --merge --auto

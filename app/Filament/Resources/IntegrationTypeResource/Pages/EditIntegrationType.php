@@ -3,7 +3,7 @@
 namespace App\Filament\Resources\IntegrationTypeResource\Pages;
 
 use App\Filament\Resources\IntegrationTypeResource;
-use Filament\Pages\Actions\DeleteAction as PageDeleteAction;
+use Filament\Actions\DeleteAction as PageDeleteAction;
 use Filament\Resources\Pages\EditRecord;
 
 class EditIntegrationType extends EditRecord
