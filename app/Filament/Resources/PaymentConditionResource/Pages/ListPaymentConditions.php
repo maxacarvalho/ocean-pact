@@ -13,24 +13,6 @@ class ListPaymentConditions extends ListRecords
 {
     protected static string $resource = PaymentConditionResource::class;
 
-    public function boot()
-    {
-        if ($this->tableFilters) {
-            $this->replaceNullValues($this->tableFilters);
-        }
-    }
-
-    protected function replaceNullValues(array &$data): void
-    {
-        foreach ($data as &$value) {
-            if (is_array($value)) {
-                $this->replaceNullValues($value);
-            } elseif ($value === 'null') {
-                $value = null;
-            }
-        }
-    }
-
     protected function getHeaderActions(): array
     {
         return [
