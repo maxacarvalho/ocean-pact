@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\IntegrationType;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -9,15 +8,15 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table(IntegrationType::TABLE_NAME, function (Blueprint $table) {
-            $table->string(IntegrationType::TARGET_URL)->nullable()->change();
+        Schema::table('integration_types', function (Blueprint $table) {
+            $table->string('target_url')->nullable()->change();
 
-            $table->boolean(IntegrationType::IS_VISIBLE)->default(true)->after(IntegrationType::TARGET_URL);
-            $table->boolean(IntegrationType::IS_ENABLED)->default(true)->after(IntegrationType::IS_VISIBLE);
-            $table->boolean(IntegrationType::IS_PROTECTED)->default(false)->after(IntegrationType::IS_ENABLED);
-            $table->boolean(IntegrationType::IS_SYNCHRONOUS)->default(false)->after(IntegrationType::IS_PROTECTED);
-            $table->string(IntegrationType::ALLOWS_DUPLICATES)->default(false)->after(IntegrationType::IS_SYNCHRONOUS);
-            $table->string(IntegrationType::PROCESSOR)->nullable()->after(IntegrationType::IS_SYNCHRONOUS);
+            $table->boolean('is_visible')->default(true)->after('target_url');
+            $table->boolean('is_enabled')->default(true)->after('is_visible');
+            $table->boolean('is_protected')->default(false)->after('is_enabled');
+            $table->boolean('is_synchronous')->default(false)->after('is_protected');
+            $table->string('allows_duplicates')->default(false)->after('is_synchronous');
+            $table->string('processor')->nullable()->after('is_synchronous');
         });
     }
 };

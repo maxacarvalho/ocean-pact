@@ -1,7 +1,5 @@
 <?php
 
-use App\Models\Company;
-use App\Models\Supplier;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -10,20 +8,20 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table(Supplier::TABLE_NAME, function (Blueprint $table) {
-            $table->string(Supplier::COMPANY_CODE, 10)->index()->after(Supplier::ID);
-            $table->string(Supplier::COMPANY_CODE_BRANCH, 10)->nullable()->index()->after(Supplier::COMPANY_CODE);
+        Schema::table('suppliers', function (Blueprint $table) {
+            $table->string('company_code', 10)->index()->after('id');
+            $table->string('company_code_branch', 10)->nullable()->index()->after('company_code');
 
-            $table->foreign(Supplier::COMPANY_CODE)
-                ->references(Company::CODE)
-                ->on(Company::TABLE_NAME)
+            $table->foreign('company_code')
+                ->references('code')
+                ->on('companies')
                 ->cascadeOnDelete();
         });
     }
 
     public function down(): void
     {
-        Schema::table(Supplier::TABLE_NAME, function (Blueprint $table) {
+        Schema::table('suppliers', function (Blueprint $table) {
             //
         });
     }
