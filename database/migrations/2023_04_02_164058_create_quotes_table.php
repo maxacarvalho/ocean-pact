@@ -1,11 +1,5 @@
 <?php
 
-use App\Models\Budget;
-use App\Models\Company;
-use App\Models\PaymentCondition;
-use App\Models\Quote;
-use App\Models\Supplier;
-use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -14,44 +8,44 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create(Quote::TABLE_NAME, function (Blueprint $table) {
+        Schema::create('quotes', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('company_id')->nullable();
-            $table->unsignedBigInteger(Quote::SUPPLIER_ID);
-            $table->unsignedBigInteger(Quote::PAYMENT_CONDITION_ID);
-            $table->unsignedBigInteger(Quote::BUYER_ID)->nullable();
-            $table->unsignedBigInteger(Quote::BUDGET_ID);
-            $table->string(Quote::QUOTE_NUMBER);
-            $table->date(Quote::VALID_UNTIL)->nullable();
-            $table->text(Quote::COMMENTS)->nullable();
+            $table->unsignedBigInteger('supplier_id');
+            $table->unsignedBigInteger('payment_condition_id');
+            $table->unsignedBigInteger('buyer_id')->nullable();
+            $table->unsignedBigInteger('budget_id');
+            $table->string('quote_number');
+            $table->date('valid_until')->nullable();
+            $table->text('comments')->nullable();
             $table->timestamps();
 
             $table->foreign('company_id')
-                ->references(Company::ID)
-                ->on(Company::TABLE_NAME)
+                ->references('id')
+                ->on('companies')
                 ->nullOnDelete();
 
-            $table->foreign(Quote::SUPPLIER_ID)
-                ->references(Supplier::ID)
-                ->on(Supplier::TABLE_NAME);
+            $table->foreign('supplier_id')
+                ->references('id')
+                ->on('suppliers');
 
-            $table->foreign(Quote::PAYMENT_CONDITION_ID)
-                ->references(PaymentCondition::ID)
-                ->on(PaymentCondition::TABLE_NAME);
+            $table->foreign('payment_condition_id')
+                ->references('id')
+                ->on('payment_conditions');
 
-            $table->foreign(Quote::BUYER_ID)
-                ->references(User::ID)
-                ->on(User::TABLE_NAME)
+            $table->foreign('buyer_id')
+                ->references('id')
+                ->on('users')
                 ->nullOnDelete();
 
-            $table->foreign(Quote::BUDGET_ID)
-                ->references(Budget::ID)
-                ->on(Budget::TABLE_NAME);
+            $table->foreign('budget_id')
+                ->references('id')
+                ->on('budgets');
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists(Quote::TABLE_NAME);
+        Schema::dropIfExists('quotes');
     }
 };

@@ -1,8 +1,5 @@
 <?php
 
-use App\Models\Product;
-use App\Models\Quote;
-use App\Models\QuoteItem;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -11,32 +8,32 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create(QuoteItem::TABLE_NAME, function (Blueprint $table) {
+        Schema::create('quote_items', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger(QuoteItem::QUOTE_ID);
-            $table->unsignedBigInteger(QuoteItem::PRODUCT_ID);
-            $table->string(QuoteItem::DESCRIPTION);
-            $table->string(QuoteItem::MEASUREMENT_UNIT);
-            $table->string(QuoteItem::ITEM);
-            $table->integer(QuoteItem::QUANTITY);
-            $table->integer(QuoteItem::UNIT_PRICE);
-            $table->boolean(QuoteItem::SHOULD_BE_QUOTED)->default(true);
-            $table->string(QuoteItem::COMMENTS)->nullable();
+            $table->unsignedBigInteger('quote_id');
+            $table->unsignedBigInteger('product_id');
+            $table->string('description');
+            $table->string('measurement_unit');
+            $table->string('item');
+            $table->integer('quantity');
+            $table->integer('unit_price');
+            $table->boolean('should_be_quoted')->default(true);
+            $table->string('comments')->nullable();
             $table->timestamps();
 
-            $table->foreign(QuoteItem::QUOTE_ID)
-                ->references(Quote::ID)
-                ->on(Quote::TABLE_NAME)
+            $table->foreign('quote_id')
+                ->references('id')
+                ->on('quotes')
                 ->cascadeOnDelete();
 
-            $table->foreign(QuoteItem::PRODUCT_ID)
-                ->references(Product::ID)
-                ->on(Product::TABLE_NAME);
+            $table->foreign('product_id')
+                ->references('id')
+                ->on('products');
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists(QuoteItem::TABLE_NAME);
+        Schema::dropIfExists('quote_items');
     }
 };

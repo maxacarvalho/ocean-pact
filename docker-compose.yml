@@ -65,6 +65,16 @@ services:
             - MYSQL_ROOT_PASSWORD=${DB_PASSWORD:-secret}
             - MYSQL_DATABASE=${DB_DATABASE:-oceanpact}
             - MYSQL_USER=${DB_USERNAME:-oceanpact}
+            - MYSQL_PASSWORD=${DB_USERNAME:-secret}
+
+    node:
+        image: node:18-alpine
+        volumes:
+            - "$PWD:/app"
+        working_dir: /app
+        tty: true
+        networks:
+            - oceanpact-net
 
 networks:
     oceanpact-net:

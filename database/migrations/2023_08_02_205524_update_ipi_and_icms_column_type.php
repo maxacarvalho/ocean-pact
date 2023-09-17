@@ -9,12 +9,12 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table(QuoteItem::TABLE_NAME, function (Blueprint $table) {
+        Schema::table('quote_items', function (Blueprint $table) {
             $table->renameColumn('ipi', 'ipi_old');
             $table->renameColumn('icms', 'icms_old');
         });
 
-        Schema::table(QuoteItem::TABLE_NAME, function (Blueprint $table) {
+        Schema::table('quote_items', function (Blueprint $table) {
             $table->decimal('ipi', 10, 2)->after('unit_price');
             $table->decimal('icms', 10, 2)->after('unit_price');
         });
@@ -31,7 +31,7 @@ return new class extends Migration
             $item->save();
         });
 
-        Schema::table(QuoteItem::TABLE_NAME, function (Blueprint $table) {
+        Schema::table('quote_items', function (Blueprint $table) {
             $table->dropColumn('ipi_old');
             $table->dropColumn('icms_old');
         });

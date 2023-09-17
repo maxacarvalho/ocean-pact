@@ -1,8 +1,6 @@
 <?php
 
 use App\Data\PayloadData;
-use App\Enums\PayloadProcessingStatusEnum;
-use App\Models\IntegrationType;
 use App\Models\Payload;
 use App\Models\Quote;
 use Illuminate\Database\Eloquent\Builder;
@@ -14,26 +12,13 @@ return new class extends Migration
     {
         $items = PayloadData::collection(
             Payload::query()
-                ->select(Payload::TABLE_NAME.'.*')
-                ->join(
-                    IntegrationType::TABLE_NAME,
-                    IntegrationType::TABLE_NAME.'.'.IntegrationType::ID,
-                    '=',
-                    Payload::TABLE_NAME.'.'.Payload::INTEGRATION_TYPE_ID
-                )
-                ->where(
-                    IntegrationType::TABLE_NAME.'.'.IntegrationType::CODE,
-                    '=',
-                    IntegrationType::INTEGRATION_ANSWERED_QUOTES
-                )
+                ->select('payloads.*')
+                ->join('integration_types', 'integration_types.id', '=', 'payloads.integration_type_id')
+                ->where('integration_types.code', '=', 'cotacoes-respondidas')
                 ->where(function (Builder $query): void {
                     $query
-                        ->where(
-                            Payload::TABLE_NAME.'.'.Payload::PROCESSING_STATUS,
-                            '!=',
-                            PayloadProcessingStatusEnum::COLLECTED
-                        )
-                        ->orWhereNull(Payload::TABLE_NAME.'.'.Payload::PROCESSING_STATUS);
+                        ->where('payloads.processing_status', '!=', 'COLLECTED')
+                        ->orWhereNull('payloads.processing_status');
                 })
                 ->get()
         );
@@ -43,12 +28,10 @@ return new class extends Migration
                 $payload = $item->payload;
                 try {
                     /** @var Quote $quote */
-                    $quote = Quote::query()->where(Quote::QUOTE_NUMBER, '=', $payload['COTACAO'])->firstOrFail();
+                    $quote = Quote::query()->where('quote_number', '=', $payload['COTACAO'])->firstOrFail();
                     $payload['DATA_LIMITE_RESPOSTA'] = $quote->updated_at->format('Y-m-d');
 
-                    Payload::query()->where(Payload::ID, '=', $item->id)->update([
-                        Payload::PAYLOAD => $payload,
-                    ]);
+                    Payload::query()->where('id', '=', $item->id)->update(['payload' => $payload]);
                 } catch (Throwable $e) {
                     continue;
                 }
