@@ -70,7 +70,7 @@ class SupplierResource extends Resource
                             ->required()
                             ->unique(table: Supplier::TABLE_NAME, column: Supplier::CNPJ_CPF)
                             ->rules([new CnpjRule()])
-                            ->mask('00.000.000/0000-00'),
+                            ->mask('99.999.999/9999-99'),
                     ]),
 
                 Grid::make()
