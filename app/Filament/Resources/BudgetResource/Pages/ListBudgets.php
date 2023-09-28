@@ -31,7 +31,7 @@ class ListBudgets extends ListRecords
         return true;
     }
 
-    protected function getTableQuery() : Builder
+    protected function getTableQuery(): Builder
     {
         return parent::getTableQuery()
             ->select([
