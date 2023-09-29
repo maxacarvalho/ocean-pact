@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\Company;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -9,49 +8,44 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table(Company::TABLE_NAME, static function (Blueprint $table) {
-            $table->renameColumn(Company::BRANCH, Company::CODE_BRANCH);
-            $table->renameColumn('cnpj', Company::CNPJ_CPF);
-            $table->renameColumn('description', Company::BRANCH);
-            $table->renameColumn('legal_name', Company::BUSINESS_NAME);
-            $table->renameColumn('trade_name', Company::NAME);
+        Schema::table('companies', static function (Blueprint $table) {
+            $table->renameColumn('cnpj', 'cnpj_cpf');
+            $table->renameColumn('description', 'branch');
+            $table->renameColumn('legal_name', 'business_name');
+            $table->renameColumn('trade_name', 'name');
         });
 
-        Schema::table(Company::TABLE_NAME, function (Blueprint $table) {
-            $table->dropUnique([Company::CODE, Company::BRANCH]);
+        Schema::table('companies', function (Blueprint $table) {
+            $table->string('code', 10)->index()->change();
 
-            $table->string(Company::CODE, 10)->index()->change();
+            $table->string('code_branch', 10)->index()->change();
 
-            $table->string(Company::CODE_BRANCH, 10)->index()->change();
+            $table->string('cnpj_cpf', 14)->change();
 
-            $table->string(Company::CNPJ_CPF, 14)->change();
+            $table->string('branch', 100)->change();
 
-            $table->string(Company::BRANCH, 100)->change();
+            $table->string('business_name', 100)->change();
 
-            $table->string(Company::BUSINESS_NAME, 100)->change();
+            $table->string('name', 100)->change();
 
-            $table->string(Company::NAME, 100)->change();
-
-            $table->string(Company::PHONE_NUMBER, 100)->nullable();
-            $table->string(Company::FAX_NUMBER, 100)->nullable();
-            $table->string(Company::STATE_INSCRIPTION, 100)->nullable();
-            $table->string(Company::INSCM, 100)->nullable();
-            $table->string(Company::ADDRESS, 100)->nullable();
-            $table->string(Company::COMPLEMENT, 100)->nullable();
-            $table->string(Company::NEIGHBORHOOD, 100)->nullable();
-            $table->string(Company::CITY, 100)->nullable();
-            $table->string(Company::STATE, 2)->nullable();
-            $table->string(Company::POSTAL_CODE, 8)->nullable();
-            $table->string(Company::CITY_CODE, 100)->nullable();
-            $table->string(Company::CNAE, 100)->nullable();
-
-            $table->unique([Company::CODE, Company::CODE_BRANCH]);
+            $table->string('phone_number', 100)->nullable();
+            $table->string('fax_number', 100)->nullable();
+            $table->string('state_inscription', 100)->nullable();
+            $table->string('inscm', 100)->nullable();
+            $table->string('address', 100)->nullable();
+            $table->string('complement', 100)->nullable();
+            $table->string('neighborhood', 100)->nullable();
+            $table->string('city', 100)->nullable();
+            $table->string('state', 2)->nullable();
+            $table->string('postal_code', 8)->nullable();
+            $table->string('city_code', 100)->nullable();
+            $table->string('cnae', 100)->nullable();
         });
     }
 
     public function down(): void
     {
-        Schema::table(Company::TABLE_NAME, function (Blueprint $table) {
+        Schema::table('companies', function (Blueprint $table) {
             //
         });
     }

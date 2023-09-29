@@ -1,8 +1,5 @@
 <?php
 
-use App\Models\Company;
-use App\Models\CompanySupplier;
-use App\Models\Supplier;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -11,18 +8,18 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create(CompanySupplier::TABLE_NAME, function (Blueprint $table) {
-            $table->unsignedBigInteger(CompanySupplier::COMPANY_ID);
-            $table->unsignedBigInteger(CompanySupplier::SUPPLIER_ID);
+        Schema::create('company_supplier', function (Blueprint $table) {
+            $table->unsignedBigInteger('company_id');
+            $table->unsignedBigInteger('supplier_id');
 
-            $table->foreign(CompanySupplier::COMPANY_ID)
-                ->references(Company::ID)
-                ->on(Company::TABLE_NAME)
+            $table->foreign('company_id')
+                ->references('id')
+                ->on('companies')
                 ->cascadeOnDelete();
 
-            $table->foreign(CompanySupplier::SUPPLIER_ID)
-                ->references(Supplier::ID)
-                ->on(Supplier::TABLE_NAME)
+            $table->foreign('supplier_id')
+                ->references('id')
+                ->on('suppliers')
                 ->cascadeOnDelete();
         });
     }

@@ -1,9 +1,5 @@
 <?php
 
-use App\Enums\InvitationStatusEnum;
-use App\Models\Quote;
-use App\Models\Supplier;
-use App\Models\SupplierInvitation;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -12,29 +8,29 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create(SupplierInvitation::TABLE_NAME, function (Blueprint $table) {
+        Schema::create('supplier_invitations', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger(SupplierInvitation::SUPPLIER_ID);
-            $table->unsignedBigInteger(SupplierInvitation::QUOTE_ID);
-            $table->string(SupplierInvitation::TOKEN);
-            $table->timestamp(SupplierInvitation::SENT_AT)->nullable();
-            $table->string(SupplierInvitation::STATUS)->default(InvitationStatusEnum::PENDING);
+            $table->unsignedBigInteger('supplier_id');
+            $table->unsignedBigInteger('quote_id');
+            $table->string('token');
+            $table->timestamp('sent_at')->nullable();
+            $table->string('status')->default('PENDING');
             $table->timestamps();
 
-            $table->foreign(SupplierInvitation::SUPPLIER_ID)
-                ->references(Supplier::ID)
-                ->on(Supplier::TABLE_NAME)
+            $table->foreign('supplier_id')
+                ->references('id')
+                ->on('suppliers')
                 ->cascadeOnDelete();
 
-            $table->foreign(SupplierInvitation::QUOTE_ID)
-                ->references(Quote::ID)
-                ->on(Quote::TABLE_NAME)
+            $table->foreign('quote_id')
+                ->references('id')
+                ->on('quotes')
                 ->cascadeOnDelete();
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists(SupplierInvitation::TABLE_NAME);
+        Schema::dropIfExists('supplier_invitations');
     }
 };

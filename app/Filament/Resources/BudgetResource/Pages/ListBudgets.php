@@ -17,7 +17,7 @@ class ListBudgets extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            CreateAction::class,
+            CreateAction::make(),
         ];
     }
 
