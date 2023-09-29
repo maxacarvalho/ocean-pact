@@ -321,7 +321,7 @@ class QuoteItemsRelationManager extends RelationManager
                     ->type('date')
                     ->state(function (Model|QuoteItem $record) : ?string {
                         return $record->delivery_date instanceof Carbon
-                            ? $record->delivery_date?->toDateString()
+                            ? $record->delivery_date->toDateString()
                             : null;
                     })
                     ->updateStateUsing(function (string $state, Model|QuoteItem $record): string {
