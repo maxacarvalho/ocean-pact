@@ -23,6 +23,7 @@ use Filament\Support\RawJs;
 use Filament\Tables\Actions\EditAction as TableEditAction;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\TextInputColumn;
 use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Table;
 use Illuminate\Contracts\Database\Eloquent\Builder;
@@ -314,22 +315,22 @@ class QuoteItemsRelationManager extends RelationManager
                     })
                     ->disabled(fn (Model|QuoteItem $record): bool => $record->cannotBeResponded()),
 
-                MaskedInputColumn::make(QuoteItem::DELIVERY_DATE)
+                TextInputColumn::make(QuoteItem::DELIVERY_DATE)
                     ->label(Str::formatTitle(__('quote_item.delivery_date')))
-                    ->rules(['required', 'date_format:d/m/Y'])
-                    ->state(function (Model|QuoteItem $record): ?string {
+                    ->rules(['required', 'date_format:Y-m-d'])
+                    ->type('date')
+                    ->state(function (Model|QuoteItem $record) : ?string {
                         return $record->delivery_date instanceof Carbon
-                            ? $record->delivery_date->format('d/m/Y')
+                            ? $record->delivery_date->toDateString()
                             : null;
                     })
                     ->updateStateUsing(function (string $state, Model|QuoteItem $record): string {
                         $record->update([
-                            QuoteItem::DELIVERY_DATE => Carbon::createFromFormat('d/m/Y', $state),
+                            QuoteItem::DELIVERY_DATE => Carbon::createFromFormat('Y-m-d', $state),
                         ]);
 
                         return $state;
                     })
-                    ->mask('99/99/9999')
                     ->disabled(fn (Model|QuoteItem $record): bool => $record->cannotBeResponded()),
 
                 ToggleColumn::make(QuoteItem::SHOULD_BE_QUOTED)
