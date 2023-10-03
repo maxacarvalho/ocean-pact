@@ -17,6 +17,7 @@ return [
     'icms' => 'ICMS %',
     'total_price' => 'total price',
     'delivery_date' => 'delivery date',
+    'delivery_in_days' => 'delivery in days',
     'should_be_quoted' => 'I accept to participate in the quotation of the item',
     'price' => 'price',
     'comments' => 'comments',

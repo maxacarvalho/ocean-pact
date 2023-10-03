@@ -18,6 +18,7 @@ class ProtheusQuoteItemPayloadData extends Data
         public string|Optional $IPI,
         public string|Optional $ICMS,
         public string|null|Optional $DATA_ENTREGA,
+        public int $ENTREGA_EM_DIAS,
         public bool|null|Optional $INCLUIR_NA_COTACAO,
         public ?string $OBS,
         public ProtheusProductPayloadData $PRODUTO
@@ -35,6 +36,7 @@ class ProtheusQuoteItemPayloadData extends Data
             IPI: number_format($quoteItem->ipi, 2, ',', '.'),
             ICMS: number_format($quoteItem->icms, 2, ',', '.'),
             DATA_ENTREGA: $quoteItem->delivery_date?->format('Y-m-d'),
+            ENTREGA_EM_DIAS: $quoteItem->delivery_in_days,
             INCLUIR_NA_COTACAO: $quoteItem->should_be_quoted,
             OBS: $quoteItem->comments,
             PRODUTO: ProtheusProductPayloadData::fromQuoteItem($quoteItem)
