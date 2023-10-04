@@ -22,6 +22,9 @@ return new class extends Migration
      */
     public function down(): void
     {
-        //
+        Schema::table('quote_items', function (Blueprint $table) {
+            $table->dropColumn('delivery_in_days');
+            $table->date('delivery_date')->nullable();
+        });
     }
 };

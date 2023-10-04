@@ -21,7 +21,6 @@ use Illuminate\Support\Carbon;
  * @property string              $currency
  * @property int                 $ipi
  * @property int                 $icms
- * @property Carbon|null         $delivery_date
  * @property int                 $delivery_in_days
  * @property bool                $should_be_quoted
  * @property QuoteItemStatusEnum $status
@@ -48,7 +47,6 @@ class QuoteItem extends Model
     public const CURRENCY = 'currency';
     public const IPI = 'ipi';
     public const ICMS = 'icms';
-    public const DELIVERY_DATE = 'delivery_date';
     public const DELIVERY_IN_DAYS = 'delivery_in_days';
     public const SHOULD_BE_QUOTED = 'should_be_quoted';
     public const STATUS = 'status';
@@ -68,7 +66,6 @@ class QuoteItem extends Model
     ];
     protected $casts = [
         self::UNIT_PRICE => MoneyCast::class,
-        self::DELIVERY_DATE => 'date',
         self::SHOULD_BE_QUOTED => 'boolean',
         self::STATUS => QuoteItemStatusEnum::class,
     ];

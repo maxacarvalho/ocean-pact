@@ -31,7 +31,7 @@ class EditQuote extends EditRecord
                     return false;
                 }
 
-                return $item->should_be_quoted && ($item->unit_price <= 0 || $item->delivery_date === null);
+                return $item->should_be_quoted && ($item->unit_price <= 0 || $item->delivery_in_days === 0);
             });
 
             if ($items) {
@@ -39,7 +39,7 @@ class EditQuote extends EditRecord
 
                 Notification::make()
                     ->danger()
-                    ->title(Str::ucfirst(__('quote.please_fill_the_unit_price_and_delivery_date_for_all_items')))
+                    ->title(Str::ucfirst(__('quote.please_fill_the_unit_price_and_delivery_in_days_for_all_items')))
                     ->icon('far-circle-exclamation')
                     ->color('danger')
                     ->persistent()
