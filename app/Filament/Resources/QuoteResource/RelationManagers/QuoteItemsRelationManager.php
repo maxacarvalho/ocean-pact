@@ -187,9 +187,11 @@ class QuoteItemsRelationManager extends RelationManager
                                 return RawJs::make('$money($input)');
                             }),
 
-                        DatePicker::make(QuoteItem::DELIVERY_DATE)
-                            ->label(Str::formatTitle(__('quote_item.delivery_date')))
-                            ->displayFormat('d/m/Y')
+                        TextInput::make(QuoteItem::DELIVERY_IN_DAYS)
+                            ->label(Str::formatTitle(__('quote_item.delivery_in_days')))
+                            ->rules(['required', 'min:0', 'numeric'])
+                            ->type('number')
+                            ->default(0)
                             ->required(fn (Get $get) => $get(QuoteItem::SHOULD_BE_QUOTED)),
                     ])
                     ->columnSpanFull(),
@@ -315,22 +317,11 @@ class QuoteItemsRelationManager extends RelationManager
                     })
                     ->disabled(fn (Model|QuoteItem $record): bool => $record->cannotBeResponded()),
 
-                TextInputColumn::make(QuoteItem::DELIVERY_DATE)
-                    ->label(Str::formatTitle(__('quote_item.delivery_date')))
-                    ->rules(['required', 'date_format:Y-m-d'])
-                    ->type('date')
-                    ->state(function (Model|QuoteItem $record) : ?string {
-                        return $record->delivery_date instanceof Carbon
-                            ? $record->delivery_date->toDateString()
-                            : null;
-                    })
-                    ->updateStateUsing(function (string $state, Model|QuoteItem $record): string {
-                        $record->update([
-                            QuoteItem::DELIVERY_DATE => Carbon::createFromFormat('Y-m-d', $state),
-                        ]);
-
-                        return $state;
-                    })
+                TextInputColumn::make(QuoteItem::DELIVERY_IN_DAYS)
+                    ->label(Str::formatTitle(__('quote_item.delivery_in_days')))
+                    ->rules(['required', 'min:0', 'numeric'])
+                    ->type('number')
+                    ->default(0)
                     ->disabled(fn (Model|QuoteItem $record): bool => $record->cannotBeResponded()),
 
                 ToggleColumn::make(QuoteItem::SHOULD_BE_QUOTED)

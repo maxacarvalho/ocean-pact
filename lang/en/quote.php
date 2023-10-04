@@ -33,7 +33,7 @@ return [
     'analyzed' => 'analyzed',
     'rejected' => 'rejected',
     'quote_is_not_ready_to_be_sent' => 'quote is not ready to be sent',
-    'please_fill_the_unit_price_and_delivery_date_for_all_items' => 'please fill the unit price and delivery date for all items',
+    'please_fill_the_unit_price_and_delivery_in_days_for_all_items' => 'please fill the unit price and days to deliver for all items',
     'CIF' => 'CIF',
     'FOB' => 'FOB',
     'total' => 'total',
