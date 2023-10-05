@@ -17,7 +17,7 @@ class ProtheusQuoteItemPayloadData extends Data
         public string $PRECO_UNITARIO,
         public string|Optional $IPI,
         public string|Optional $ICMS,
-        public int $ENTREGA_EM_DIAS,
+        public int|null|Optional $ENTREGA_EM_DIAS,
         public bool|null|Optional $INCLUIR_NA_COTACAO,
         public ?string $OBS,
         public ProtheusProductPayloadData $PRODUTO
