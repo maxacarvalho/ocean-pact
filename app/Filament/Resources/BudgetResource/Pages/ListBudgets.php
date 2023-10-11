@@ -5,10 +5,13 @@ namespace App\Filament\Resources\BudgetResource\Pages;
 use App\Filament\Resources\BudgetResource;
 use App\Models\Budget;
 use App\Models\Company;
+use App\Utils\Str;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\Builder as DbQueryBuilder;
+use pxlrbt\FilamentExcel\Actions\Pages\ExportAction;
+use pxlrbt\FilamentExcel\Exports\ExcelExport;
 
 class ListBudgets extends ListRecords
 {
@@ -18,6 +21,12 @@ class ListBudgets extends ListRecords
     {
         return [
             CreateAction::make(),
+            ExportAction::make()
+                ->label(Str::ucfirst(__('actions.export')))
+                ->icon('far-download')
+                ->exports([
+                    ExcelExport::make()->fromTable()->queue()
+                ])
         ];
     }
 
