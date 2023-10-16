@@ -87,8 +87,11 @@ class PurchaseRequestResource extends Resource
                     ->action(function (PurchaseRequest $record) {
                         $filePath = "purchase_request_files/{$record->purchase_request_number}.pdf";
                         Storage::disk('local')->put($filePath, base64_decode($record->file));
-                        $record->update([PurchaseRequest::VIEWED_AT => now()]);
 
+                        if (Auth::user()->isSeller()) {
+                            $record->update([PurchaseRequest::VIEWED_AT => now()]);
+                        }
+                        
                         return Storage::disk('local')->download($filePath);
                     }),
             ]);
