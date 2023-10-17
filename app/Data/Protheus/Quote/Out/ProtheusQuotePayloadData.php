@@ -2,7 +2,7 @@
 
 namespace App\Data\Protheus\Quote\Out;
 
-use App\Data\Protheus\Quote\In\ProtheusQuoteItemPayloadData;
+use App\Data\Protheus\Quote\Out\ProtheusQuoteItemPayloadData;
 use App\Data\Protheus\Quote\ProtheusBuyerPayloadData;
 use App\Data\Protheus\Quote\ProtheusSupplierPayloadData;
 use App\Enums\FreightTypeEnum;
