@@ -47,7 +47,7 @@ class PurchaseRequestResource extends Resource
         /** @var Builder|PurchaseRequest $query */
         $query = parent::getEloquentQuery();
 
-        if (Auth::user()->isSeller()) {
+        if (!is_null(Auth::user()) && Auth::user()->isSeller()) {
             return $query->whereHas(PurchaseRequest::RELATION_QUOTE, function (Builder $query) {
                 $query->where(Quote::SUPPLIER_ID, Auth::user()->supplier_id);
             });
