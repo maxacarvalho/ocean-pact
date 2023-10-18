@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\BudgetResource\Pages;
 
+use App\Enums\BudgetStatusEnum;
 use App\Filament\Resources\BudgetResource;
 use App\Models\Budget;
 use App\Models\Company;
@@ -11,6 +12,7 @@ use Filament\Resources\Pages\ListRecords;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\Builder as DbQueryBuilder;
 use pxlrbt\FilamentExcel\Actions\Pages\ExportAction;
+use pxlrbt\FilamentExcel\Columns\Column;
 use pxlrbt\FilamentExcel\Exports\ExcelExport;
 
 class ListBudgets extends ListRecords
@@ -25,7 +27,15 @@ class ListBudgets extends ListRecords
                 ->label(Str::ucfirst(__('actions.export')))
                 ->icon('far-download')
                 ->exports([
-                    ExcelExport::make()->fromTable()->queue()
+                    ExcelExport::make()->fromTable()
+                        ->withColumns([
+                            Column::make(Budget::STATUS)
+                                ->heading(Str::formatTitle(__('budget.status')))
+                                ->formatStateUsing(function (BudgetStatusEnum $state) {
+                                    return $state->getLabel();
+                            })
+                    ])
+                    ->queue()
                 ])
         ];
     }
