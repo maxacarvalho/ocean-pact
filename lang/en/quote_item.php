@@ -20,7 +20,7 @@ return [
     'delivery_in_days' => 'delivery in days',
     'should_be_quoted' => 'I accept to participate in the quotation of the item',
     'price' => 'price',
-    'comments' => 'comments',
+    'comments' => 'buyer comments',
     'created_at' => 'created at',
     'updated_at' => 'updated at',
     'pending' => 'pending',

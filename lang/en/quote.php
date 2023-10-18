@@ -22,7 +22,7 @@ return [
     'freight_type' => 'freight type',
     'currency_id' => 'currency',
     'expenses' => 'expenses',
-    'comments' => 'comments',
+    'comments' => 'seller comments',
     'created_at' => 'created at',
     'updated_at' => 'updated at',
     'form_save_action_label' => 'send quote',

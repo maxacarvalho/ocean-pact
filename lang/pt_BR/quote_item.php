@@ -19,7 +19,7 @@ return [
     'delivery_in_days' => 'entrega em dias',
     'should_be_quoted' => 'aceito participar da cotação do item',
     'price' => 'preço',
-    'comments' => 'observações',
+    'comments' => 'observações do comprador',
     'created_at' => 'criado em',
     'updated_at' => 'atualizado em',
     'pending' => 'pendente',

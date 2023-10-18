@@ -201,7 +201,8 @@ class QuoteItemsRelationManager extends RelationManager
 
                 Textarea::make(QuoteItem::COMMENTS)
                     ->label(Str::formatTitle(__('quote_item.comments')))
-                    ->columnSpanFull(),
+                    ->columnSpanFull()
+                    ->disabled(Auth::user()->isSeller()),
             ]);
     }
 
