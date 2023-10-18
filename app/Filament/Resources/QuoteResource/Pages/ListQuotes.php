@@ -16,6 +16,9 @@ use Filament\Resources\Pages\ListRecords\Tab;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\Builder as DbQueryBuilder;
 use Illuminate\Support\Facades\Auth;
+use pxlrbt\FilamentExcel\Actions\Pages\ExportAction;
+use pxlrbt\FilamentExcel\Columns\Column;
+use pxlrbt\FilamentExcel\Exports\ExcelExport;
 
 class ListQuotes extends ListRecords
 {
@@ -44,6 +47,20 @@ class ListQuotes extends ListRecords
     {
         return [
             // PageCreateAction::make(),
+            ExportAction::make()
+                ->label(Str::ucfirst(__('actions.export')))
+                ->icon('far-download')
+                ->exports([
+                    ExcelExport::make()->fromTable()
+                    ->withColumns([
+                        Column::make(Quote::STATUS)
+                            ->heading(Str::formatTitle(__('quote.status')))
+                            ->formatStateUsing(function (QuoteStatusEnum $state) {
+                                return $state->getLabel();
+                            })
+                    ])
+                    ->queue()
+                ])
         ];
     }
 
