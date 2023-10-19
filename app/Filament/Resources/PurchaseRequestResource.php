@@ -93,13 +93,13 @@ class PurchaseRequestResource extends Resource
                         if (Auth::user()->isSeller()) {
                             $record->update([PurchaseRequest::VIEWED_AT => now()]);
                         }
-                        
+
                         return Storage::disk('local')->download($filePath);
                     }),
             ])
             ->bulkActions([
                 ExportBulkAction::make()->exports([
-                    ExcelExport::make()
+                    ExcelExport::make()->fromTable()
                         ->withFilename(fn ($resource) => Str::slug($resource::getPluralModelLabel()).'-'.now()->format('Y-m-d')),
                 ]),
             ]);
