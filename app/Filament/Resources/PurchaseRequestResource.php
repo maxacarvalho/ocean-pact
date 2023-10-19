@@ -15,6 +15,8 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
+use pxlrbt\FilamentExcel\Exports\ExcelExport;
 
 class PurchaseRequestResource extends Resource
 {
@@ -87,10 +89,19 @@ class PurchaseRequestResource extends Resource
                     ->action(function (PurchaseRequest $record) {
                         $filePath = "purchase_request_files/{$record->purchase_request_number}.pdf";
                         Storage::disk('local')->put($filePath, base64_decode($record->file));
-                        $record->update([PurchaseRequest::VIEWED_AT => now()]);
+
+                        if (Auth::user()->isSeller()) {
+                            $record->update([PurchaseRequest::VIEWED_AT => now()]);
+                        }
 
                         return Storage::disk('local')->download($filePath);
                     }),
+            ])
+            ->bulkActions([
+                ExportBulkAction::make()->exports([
+                    ExcelExport::make()->fromTable()
+                        ->withFilename(fn ($resource) => Str::slug($resource::getPluralModelLabel()).'-'.now()->format('Y-m-d')),
+                ]),
             ]);
     }
 

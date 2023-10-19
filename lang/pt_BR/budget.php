@@ -8,7 +8,7 @@ return [
     'company' => 'empresa',
     'company_code' => 'empresa',
     'company_code_branch' => 'filial',
-    'budget_number' => 'número pedido de compra',
+    'budget_number' => 'número solicitação de compra',
     'status' => 'status',
     'created_at' => 'criado em',
     'updated_at' => 'atualizado em',

@@ -18,9 +18,14 @@ return [
 
         // 'echo' => [
         //     'broadcaster' => 'pusher',
-        //     'key' => env('VITE_PUSHER_APP_KEY'),
+        //     'key' => env('VITE_ABLY_PUBLIC_KEY'),
         //     'cluster' => env('VITE_PUSHER_APP_CLUSTER'),
-        //     'forceTLS' => true,
+        //     'wsHost' => env('VITE_PUSHER_HOST'),
+        //     'wsPort' => env('VITE_PUSHER_PORT'),
+        //     'wssPort' => env('VITE_PUSHER_PORT'),
+        //     'authEndpoint' => '/broadcasting/auth',
+        //     'disableStats' => true,
+        //     'encrypted' => true,
         // ],
 
     ],

@@ -10,7 +10,6 @@ use App\Tables\Columns\MaskedInputColumn;
 use App\Utils\Str;
 use Filament\Forms\Components\BaseFileUpload;
 use Filament\Forms\Components\Checkbox;
-use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Placeholder;
@@ -28,7 +27,6 @@ use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Table;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use League\Flysystem\UnableToCheckFileExistence;
@@ -187,9 +185,11 @@ class QuoteItemsRelationManager extends RelationManager
                                 return RawJs::make('$money($input)');
                             }),
 
-                        DatePicker::make(QuoteItem::DELIVERY_DATE)
-                            ->label(Str::formatTitle(__('quote_item.delivery_date')))
-                            ->displayFormat('d/m/Y')
+                        TextInput::make(QuoteItem::DELIVERY_IN_DAYS)
+                            ->label(Str::formatTitle(__('quote_item.delivery_in_days')))
+                            ->rules(['required', 'min:0', 'numeric'])
+                            ->type('number')
+                            ->default(0)
                             ->required(fn (Get $get) => $get(QuoteItem::SHOULD_BE_QUOTED)),
                     ])
                     ->columnSpanFull(),
@@ -201,7 +201,8 @@ class QuoteItemsRelationManager extends RelationManager
 
                 Textarea::make(QuoteItem::COMMENTS)
                     ->label(Str::formatTitle(__('quote_item.comments')))
-                    ->columnSpanFull(),
+                    ->columnSpanFull()
+                    ->disabled(Auth::user()->isSeller()),
             ]);
     }
 
@@ -315,22 +316,11 @@ class QuoteItemsRelationManager extends RelationManager
                     })
                     ->disabled(fn (Model|QuoteItem $record): bool => $record->cannotBeResponded()),
 
-                TextInputColumn::make(QuoteItem::DELIVERY_DATE)
-                    ->label(Str::formatTitle(__('quote_item.delivery_date')))
-                    ->rules(['required', 'date_format:Y-m-d'])
-                    ->type('date')
-                    ->state(function (Model|QuoteItem $record) : ?string {
-                        return $record->delivery_date instanceof Carbon
-                            ? $record->delivery_date->toDateString()
-                            : null;
-                    })
-                    ->updateStateUsing(function (string $state, Model|QuoteItem $record): string {
-                        $record->update([
-                            QuoteItem::DELIVERY_DATE => Carbon::createFromFormat('Y-m-d', $state),
-                        ]);
-
-                        return $state;
-                    })
+                TextInputColumn::make(QuoteItem::DELIVERY_IN_DAYS)
+                    ->label(Str::formatTitle(__('quote_item.delivery_in_days')))
+                    ->rules(['required', 'min:0', 'numeric'])
+                    ->type('number')
+                    ->default(0)
                     ->disabled(fn (Model|QuoteItem $record): bool => $record->cannotBeResponded()),
 
                 ToggleColumn::make(QuoteItem::SHOULD_BE_QUOTED)

@@ -5,17 +5,17 @@ namespace App\Filament\Resources\QuoteResource\Pages;
 use App\Enums\QuoteStatusEnum;
 use App\Filament\Resources\QuoteResource;
 use App\Filament\Resources\QuoteResource\Widgets\QuotesOverviewWidget;
-use App\Models\Company;
 use App\Models\Quote;
 use App\Models\Role;
-use App\Models\User;
 use App\Utils\Str;
 use Filament\Pages\Concerns\ExposesTableToWidgets;
+use Filament\Resources\Components\Tab;
 use Filament\Resources\Pages\ListRecords;
-use Filament\Resources\Pages\ListRecords\Tab;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Query\Builder as DbQueryBuilder;
 use Illuminate\Support\Facades\Auth;
+use pxlrbt\FilamentExcel\Actions\Pages\ExportAction;
+use pxlrbt\FilamentExcel\Columns\Column;
+use pxlrbt\FilamentExcel\Exports\ExcelExport;
 
 class ListQuotes extends ListRecords
 {
@@ -43,7 +43,14 @@ class ListQuotes extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            // PageCreateAction::make(),
+            ExportAction::make()->exports([
+                ExcelExport::make()->fromTable()
+                    ->withFilename(fn ($resource) => Str::slug($resource::getPluralModelLabel()).'-'.now()->format('Y-m-d'))
+                    ->withColumns([
+                        Column::make(Quote::STATUS)
+                            ->formatStateUsing(fn (QuoteStatusEnum $state) => $state->getLabel()),
+                    ]),
+            ]),
         ];
     }
 
@@ -66,55 +73,5 @@ class ListQuotes extends ListRecords
     protected function shouldPersistTableSortInSession(): bool
     {
         return true;
-    }
-
-    protected function getTableQuery(): Builder
-    {
-        /** @var User $user */
-        $user = Auth::user();
-
-        return parent::getTableQuery()
-            ->select([
-                Quote::TABLE_NAME.'.'.Quote::ID,
-                Quote::TABLE_NAME.'.'.Quote::COMPANY_CODE,
-                Quote::TABLE_NAME.'.'.Quote::COMPANY_CODE_BRANCH,
-                Quote::TABLE_NAME.'.'.Quote::BUDGET_ID,
-                Quote::TABLE_NAME.'.'.Quote::SUPPLIER_ID,
-                Quote::TABLE_NAME.'.'.Quote::PAYMENT_CONDITION_ID,
-                Quote::TABLE_NAME.'.'.Quote::BUYER_ID,
-                Quote::TABLE_NAME.'.'.Quote::QUOTE_NUMBER,
-                Quote::TABLE_NAME.'.'.Quote::VALID_UNTIL,
-                Quote::TABLE_NAME.'.'.Quote::STATUS,
-                Quote::TABLE_NAME.'.'.Quote::COMMENTS,
-                Quote::TABLE_NAME.'.'.Quote::CREATED_AT,
-                Quote::TABLE_NAME.'.'.Quote::UPDATED_AT,
-            ])
-            ->where(Quote::TABLE_NAME.'.'.Quote::STATUS, '!=', QuoteStatusEnum::DRAFT)
-            ->addSelect([
-                'company_name' => fn (DbQueryBuilder $query) => $query->select(Company::BUSINESS_NAME)
-                    ->from(Company::TABLE_NAME)
-                    ->whereColumn(
-                        Company::TABLE_NAME.'.'.Company::CODE,
-                        '=',
-                        Quote::TABLE_NAME.'.'.Quote::COMPANY_CODE
-                    )
-                    ->limit(1),
-                'company_branch' => fn (DbQueryBuilder $query) => $query->select(Company::BRANCH)
-                    ->from(Company::TABLE_NAME)
-                    ->whereColumn(
-                        Company::TABLE_NAME.'.'.Company::CODE,
-                        '=',
-                        Quote::TABLE_NAME.'.'.Quote::COMPANY_CODE
-                    )
-                    ->whereColumn(
-                        Company::TABLE_NAME.'.'.Company::CODE_BRANCH,
-                        '=',
-                        Quote::TABLE_NAME.'.'.Quote::COMPANY_CODE_BRANCH
-                    )
-                    ->limit(1),
-            ])
-            ->when($user->isSeller(), function (Builder $query) use ($user) {
-                $query->where(Quote::TABLE_NAME.'.'.Quote::SUPPLIER_ID, '=', $user->supplier_id);
-            });
     }
 }

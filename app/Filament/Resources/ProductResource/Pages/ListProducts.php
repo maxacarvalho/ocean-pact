@@ -5,10 +5,13 @@ namespace App\Filament\Resources\ProductResource\Pages;
 use App\Filament\Resources\ProductResource;
 use App\Models\Company;
 use App\Models\Product;
+use App\Utils\Str;
 use Filament\Actions\CreateAction as PageCreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\Builder as DbQueryBuilder;
+use pxlrbt\FilamentExcel\Actions\Pages\ExportAction;
+use pxlrbt\FilamentExcel\Exports\ExcelExport;
 
 class ListProducts extends ListRecords
 {
@@ -18,6 +21,10 @@ class ListProducts extends ListRecords
     {
         return [
             PageCreateAction::make(),
+            ExportAction::make()->exports([
+                ExcelExport::make()->fromTable()
+                    ->withFilename(fn ($resource) => Str::slug($resource::getPluralModelLabel()).'-'.now()->format('Y-m-d')),
+            ]),
         ];
     }
 

@@ -6,8 +6,9 @@
                 "const": "none"
             }
         },
-        "yoda_style": false,
         "nullable_type_declaration": false,
-        "nullable_type_declaration_for_default_null_value": false
+        "nullable_type_declaration_for_default_null_value": false,
+        "yoda_style": false,
+        "Laravel/laravel_phpdoc_alignment": false
     }
 }
