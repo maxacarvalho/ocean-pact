@@ -162,7 +162,7 @@ class ProductResource extends Resource
             ->bulkActions([
                 TableDeleteBulkAction::make(),
                 ExportBulkAction::make()->exports([
-                    ExcelExport::make()
+                    ExcelExport::make()->fromTable()
                         ->withFilename(fn ($resource) => Str::slug($resource::getPluralModelLabel()).'-'.now()->format('Y-m-d')),
                 ]),
             ]);

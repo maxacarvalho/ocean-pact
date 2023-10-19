@@ -14,6 +14,7 @@ use Filament\Resources\Pages\ListRecords;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 use pxlrbt\FilamentExcel\Actions\Pages\ExportAction;
+use pxlrbt\FilamentExcel\Columns\Column;
 use pxlrbt\FilamentExcel\Exports\ExcelExport;
 
 class ListQuotes extends ListRecords
@@ -44,7 +45,11 @@ class ListQuotes extends ListRecords
         return [
             ExportAction::make()->exports([
                 ExcelExport::make()->fromTable()
-                    ->withFilename(fn ($resource) => Str::slug($resource::getPluralModelLabel()).'-'.now()->format('Y-m-d')),
+                    ->withFilename(fn ($resource) => Str::slug($resource::getPluralModelLabel()).'-'.now()->format('Y-m-d'))
+                    ->withColumns([
+                        Column::make(Quote::STATUS)
+                            ->formatStateUsing(fn (QuoteStatusEnum $state) => $state->getLabel()),
+                    ]),
             ]),
         ];
     }

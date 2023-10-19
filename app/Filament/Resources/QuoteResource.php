@@ -41,6 +41,7 @@ use Illuminate\Database\Query\Builder as DbQueryBuilder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
+use pxlrbt\FilamentExcel\Columns\Column;
 use pxlrbt\FilamentExcel\Exports\ExcelExport;
 
 /**
@@ -388,8 +389,12 @@ class QuoteResource extends Resource
             ])
             ->bulkActions([
                 ExportBulkAction::make()->exports([
-                    ExcelExport::make()
-                        ->withFilename(fn ($resource) => Str::slug($resource::getPluralModelLabel()).'-'.now()->format('Y-m-d')),
+                    ExcelExport::make()->fromTable()
+                        ->withFilename(fn ($resource) => Str::slug($resource::getPluralModelLabel()).'-'.now()->format('Y-m-d'))
+                        ->withColumns([
+                            Column::make(Quote::STATUS)
+                                ->formatStateUsing(fn (QuoteStatusEnum $state) => $state->getLabel()),
+                        ]),
                 ]),
             ]);
     }

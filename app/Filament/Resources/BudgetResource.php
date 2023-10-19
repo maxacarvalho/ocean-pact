@@ -8,6 +8,7 @@ use App\Filament\Resources\BudgetResource\Pages\EditBudget;
 use App\Filament\Resources\BudgetResource\Pages\ListBudgets;
 use App\Models\Budget;
 use App\Models\Company;
+use App\Models\Quote;
 use App\Utils\Str;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -21,6 +22,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Contracts\Database\Query\Builder;
 use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
+use pxlrbt\FilamentExcel\Columns\Column;
 use pxlrbt\FilamentExcel\Exports\ExcelExport;
 
 class BudgetResource extends Resource
@@ -154,8 +156,12 @@ class BudgetResource extends Resource
             ->bulkActions([
                 TableDeleteBulkAction::make(),
                 ExportBulkAction::make()->exports([
-                    ExcelExport::make()
-                        ->withFilename(fn ($resource) => Str::slug($resource::getPluralModelLabel()).'-'.now()->format('Y-m-d')),
+                    ExcelExport::make()->fromTable()
+                        ->withFilename(fn ($resource) => Str::slug($resource::getPluralModelLabel()).'-'.now()->format('Y-m-d'))
+                        ->withColumns([
+                            Column::make(Quote::STATUS)
+                                ->formatStateUsing(fn (BudgetStatusEnum $state) => $state->getLabel()),
+                        ]),
                 ]),
             ]);
     }
