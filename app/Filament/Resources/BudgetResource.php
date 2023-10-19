@@ -20,6 +20,8 @@ use Filament\Tables\Filters\Filter as TableFilter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Contracts\Database\Query\Builder;
+use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
+use pxlrbt\FilamentExcel\Exports\ExcelExport;
 
 class BudgetResource extends Resource
 {
@@ -151,6 +153,10 @@ class BudgetResource extends Resource
             ])
             ->bulkActions([
                 TableDeleteBulkAction::make(),
+                ExportBulkAction::make()->exports([
+                    ExcelExport::make()
+                        ->withFilename(fn ($resource) => Str::slug($resource::getPluralModelLabel()).'-'.now()->format('Y-m-d')),
+                ]),
             ]);
     }
 

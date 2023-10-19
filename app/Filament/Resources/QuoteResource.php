@@ -35,9 +35,13 @@ use Filament\Tables\Filters\Filter as TableFilter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Contracts\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Query\Builder as DbQueryBuilder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
+use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
+use pxlrbt\FilamentExcel\Exports\ExcelExport;
 
 /**
  * @property Quote $record
@@ -198,6 +202,55 @@ class QuoteResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(function (EloquentBuilder $query) {
+                /** @var User $user */
+                $user = Auth::user();
+
+                return $query
+                    ->with([Quote::RELATION_SUPPLIER, Quote::RELATION_BUDGET])
+                    ->select([
+                        Quote::TABLE_NAME.'.'.Quote::ID,
+                        Quote::TABLE_NAME.'.'.Quote::COMPANY_CODE,
+                        Quote::TABLE_NAME.'.'.Quote::COMPANY_CODE_BRANCH,
+                        Quote::TABLE_NAME.'.'.Quote::BUDGET_ID,
+                        Quote::TABLE_NAME.'.'.Quote::SUPPLIER_ID,
+                        Quote::TABLE_NAME.'.'.Quote::PAYMENT_CONDITION_ID,
+                        Quote::TABLE_NAME.'.'.Quote::BUYER_ID,
+                        Quote::TABLE_NAME.'.'.Quote::QUOTE_NUMBER,
+                        Quote::TABLE_NAME.'.'.Quote::VALID_UNTIL,
+                        Quote::TABLE_NAME.'.'.Quote::STATUS,
+                        Quote::TABLE_NAME.'.'.Quote::COMMENTS,
+                        Quote::TABLE_NAME.'.'.Quote::CREATED_AT,
+                        Quote::TABLE_NAME.'.'.Quote::UPDATED_AT,
+                    ])
+                    ->where(Quote::TABLE_NAME.'.'.Quote::STATUS, '!=', QuoteStatusEnum::DRAFT)
+                    ->addSelect([
+                        'company_name' => fn (DbQueryBuilder $query) => $query->select(Company::BUSINESS_NAME)
+                            ->from(Company::TABLE_NAME)
+                            ->whereColumn(
+                                Company::TABLE_NAME.'.'.Company::CODE,
+                                '=',
+                                Quote::TABLE_NAME.'.'.Quote::COMPANY_CODE
+                            )
+                            ->limit(1),
+                        'company_branch' => fn (DbQueryBuilder $query) => $query->select(Company::BRANCH)
+                            ->from(Company::TABLE_NAME)
+                            ->whereColumn(
+                                Company::TABLE_NAME.'.'.Company::CODE,
+                                '=',
+                                Quote::TABLE_NAME.'.'.Quote::COMPANY_CODE
+                            )
+                            ->whereColumn(
+                                Company::TABLE_NAME.'.'.Company::CODE_BRANCH,
+                                '=',
+                                Quote::TABLE_NAME.'.'.Quote::COMPANY_CODE_BRANCH
+                            )
+                            ->limit(1),
+                    ])
+                    ->when($user->isSeller(), function (EloquentBuilder $query) use ($user) {
+                        $query->where(Quote::TABLE_NAME.'.'.Quote::SUPPLIER_ID, '=', $user->supplier_id);
+                    });
+            })
             ->columns([
                 TextColumn::make('company_name')
                     ->label(Str::formatTitle(__('quote.company_code')))
@@ -334,7 +387,10 @@ class QuoteResource extends Resource
                 TableViewAction::make(),
             ])
             ->bulkActions([
-                //
+                ExportBulkAction::make()->exports([
+                    ExcelExport::make()
+                        ->withFilename(fn ($resource) => Str::slug($resource::getPluralModelLabel()).'-'.now()->format('Y-m-d')),
+                ]),
             ]);
     }
 
