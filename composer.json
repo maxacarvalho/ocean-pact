@@ -29,6 +29,7 @@
         "league/flysystem-aws-s3-v3": "^3.0",
         "livewire/livewire": "^3.0@beta",
         "logtail/monolog-logtail": "^3.0",
+        "maatwebsite/excel": "^3.1",
         "outhebox/blade-flags": "^1.2",
         "owenvoke/blade-fontawesome": "^2.3",
         "php-http/message-factory": "^1.1",

@@ -21,12 +21,10 @@ class ListBudgets extends ListRecords
     {
         return [
             CreateAction::make(),
-            ExportAction::make()
-                ->label(Str::ucfirst(__('actions.export')))
-                ->icon('far-download')
-                ->exports([
-                    ExcelExport::make()->fromTable()->queue()
-                ])
+            ExportAction::make()->exports([
+                ExcelExport::make()->fromTable()
+                    ->withFilename(fn ($resource) => Str::slug($resource::getPluralModelLabel()).'-'.now()->format('Y-m-d')),
+            ]),
         ];
     }
 

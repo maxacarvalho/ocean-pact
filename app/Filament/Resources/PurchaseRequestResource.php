@@ -15,6 +15,8 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
+use pxlrbt\FilamentExcel\Exports\ExcelExport;
 
 class PurchaseRequestResource extends Resource
 {
@@ -94,6 +96,12 @@ class PurchaseRequestResource extends Resource
                         
                         return Storage::disk('local')->download($filePath);
                     }),
+            ])
+            ->bulkActions([
+                ExportBulkAction::make()->exports([
+                    ExcelExport::make()
+                        ->withFilename(fn ($resource) => Str::slug($resource::getPluralModelLabel()).'-'.now()->format('Y-m-d')),
+                ]),
             ]);
     }
 
