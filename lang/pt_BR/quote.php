@@ -22,7 +22,7 @@ return [
     'freight_type' => 'tipo do frete',
     'currency_id' => 'moeda',
     'expenses' => 'despesas',
-    'comments' => 'observações',
+    'comments' => 'observações do fornecedor',
     'created_at' => 'criado em',
     'updated_at' => 'atualizado em',
     'form_save_action_label' => 'enviar cotação',

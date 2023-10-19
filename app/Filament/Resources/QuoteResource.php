@@ -158,7 +158,8 @@ class QuoteResource extends Resource
                                     ->afterStateUpdated(function (Model|Quote|null $record, $state) {
                                         $record->comments = $state;
                                         $record->save();
-                                    }),
+                                    })
+                                    ->disabled(Auth::user()->isBuyer()),
                             ]),
                     ]),
 
