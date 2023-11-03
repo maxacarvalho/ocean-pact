@@ -2,10 +2,10 @@
 
 namespace App\Console\Commands;
 
-use App\Enums\InvitationStatusEnum;
+use App\Enums\QuotesPortal\InvitationStatusEnum;
 use App\Mail\QuoteCreatedMail;
-use App\Models\Quote;
-use App\Models\SupplierInvitation;
+use App\Models\QuotesPortal\Quote;
+use App\Models\QuotesPortal\SupplierInvitation;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;

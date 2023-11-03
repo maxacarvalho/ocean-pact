@@ -2,8 +2,8 @@
 
 namespace App\Livewire;
 
-use App\Enums\InvitationStatusEnum;
-use App\Models\BuyerInvitation;
+use App\Enums\QuotesPortal\InvitationStatusEnum;
+use App\Models\QuotesPortal\BuyerInvitation;
 use App\Models\User;
 use App\Utils\Str;
 use DanHarrin\LivewireRateLimiting\Exceptions\TooManyRequestsException;

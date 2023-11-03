@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\API\Quote;
 
-use App\Data\PayloadData;
-use App\Enums\PayloadProcessingStatusEnum;
+use App\Data\IntegraHub\PayloadData;
+use App\Enums\IntegraHub\PayloadProcessingStatusEnum;
 use App\Http\Controllers\Controller;
-use App\Models\IntegrationType;
-use App\Models\Payload;
+use App\Models\IntegraHub\IntegrationType;
+use App\Models\IntegraHub\Payload;
 use Illuminate\Database\Eloquent\Builder;
 use Spatie\LaravelData\CursorPaginatedDataCollection;
 use Spatie\LaravelData\DataCollection;

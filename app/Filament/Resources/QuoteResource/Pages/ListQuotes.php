@@ -2,10 +2,10 @@
 
 namespace App\Filament\Resources\QuoteResource\Pages;
 
-use App\Enums\QuoteStatusEnum;
+use App\Enums\QuotesPortal\QuoteStatusEnum;
 use App\Filament\Resources\QuoteResource;
 use App\Filament\Resources\QuoteResource\Widgets\QuotesOverviewWidget;
-use App\Models\Quote;
+use App\Models\QuotesPortal\Quote;
 use App\Models\Role;
 use App\Utils\Str;
 use Filament\Pages\Concerns\ExposesTableToWidgets;

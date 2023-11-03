@@ -2,7 +2,7 @@
 
 namespace App\Casts;
 
-use App\Models\QuoteItem;
+use App\Models\QuotesPortal\QuoteItem;
 use Brick\Math\RoundingMode;
 use Brick\Money\Money;
 use Illuminate\Contracts\Database\Eloquent\CastsAttributes;

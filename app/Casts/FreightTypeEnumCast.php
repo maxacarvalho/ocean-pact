@@ -2,7 +2,7 @@
 
 namespace App\Casts;
 
-use App\Enums\FreightTypeEnum;
+use App\Enums\QuotesPortal\FreightTypeEnum;
 use Spatie\LaravelData\Casts\Cast;
 use Spatie\LaravelData\Support\DataProperty;
 

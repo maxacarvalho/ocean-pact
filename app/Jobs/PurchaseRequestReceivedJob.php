@@ -2,11 +2,11 @@
 
 namespace App\Jobs;
 
-use App\Data\PurchaseRequestRequestData;
+use App\Data\QuotesPortal\PurchaseRequestRequestData;
 use App\Filament\Resources\PurchaseRequestResource;
 use App\Mail\PurchaseRequestGeneratedMail;
-use App\Models\PurchaseRequest;
-use App\Models\Quote;
+use App\Models\QuotesPortal\PurchaseRequest;
+use App\Models\QuotesPortal\Quote;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;

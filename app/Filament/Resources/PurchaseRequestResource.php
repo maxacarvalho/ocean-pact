@@ -3,10 +3,10 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\PurchaseRequestResource\Pages\ListPurchaseRequests;
-use App\Models\Budget;
-use App\Models\Company;
-use App\Models\PurchaseRequest;
-use App\Models\Quote;
+use App\Models\QuotesPortal\Budget;
+use App\Models\QuotesPortal\Company;
+use App\Models\QuotesPortal\PurchaseRequest;
+use App\Models\QuotesPortal\Quote;
 use App\Utils\Str;
 use Filament\Resources\Resource;
 use Filament\Tables\Actions\Action;

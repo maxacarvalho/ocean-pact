@@ -41,4 +41,7 @@ return [
     'all' => 'todas',
     'created_from' => 'criado de: :date',
     'created_until' => 'criado até: :date',
+    'error_messages' => [
+        'error_creating_quote' => 'houve um erro ao criar a cotação.',
+    ],
 ];

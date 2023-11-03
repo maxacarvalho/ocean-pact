@@ -3,8 +3,8 @@
 namespace App\Filament\Resources\PaymentConditionResource\Pages;
 
 use App\Filament\Resources\PaymentConditionResource;
-use App\Models\Company;
-use App\Models\PaymentCondition;
+use App\Models\QuotesPortal\Company;
+use App\Models\QuotesPortal\PaymentCondition;
 use Filament\Actions\CreateAction as PageCreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Illuminate\Database\Query\Builder;

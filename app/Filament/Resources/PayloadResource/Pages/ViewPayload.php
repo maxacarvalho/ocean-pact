@@ -3,7 +3,7 @@
 namespace App\Filament\Resources\PayloadResource\Pages;
 
 use App\Filament\Resources\PayloadResource;
-use App\Models\Payload;
+use App\Models\IntegraHub\Payload;
 use Filament\Resources\Pages\ViewRecord;
 
 class ViewPayload extends ViewRecord

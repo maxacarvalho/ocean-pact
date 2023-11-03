@@ -23,4 +23,5 @@ return [
     'keys' => 'keys',
     'key_field' => 'key field',
     'system_settings' => 'system settings',
+    'headers' => 'headers',
 ];

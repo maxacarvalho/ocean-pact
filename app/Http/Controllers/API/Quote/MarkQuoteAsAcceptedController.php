@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\API\Quote;
 
-use App\Enums\QuoteItemStatusEnum;
+use App\Enums\QuotesPortal\QuoteItemStatusEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\MarkQuoteAsAcceptedRequest;
-use App\Models\Quote;
-use App\Models\QuoteItem;
+use App\Models\QuotesPortal\Quote;
+use App\Models\QuotesPortal\QuoteItem;
 use App\Utils\Str;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;

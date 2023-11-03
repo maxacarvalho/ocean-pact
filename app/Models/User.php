@@ -3,6 +3,10 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Models\QuotesPortal\Company;
+use App\Models\QuotesPortal\CompanyUser;
+use App\Models\QuotesPortal\Supplier;
+use App\Models\QuotesPortal\SupplierUser;
 use Carbon\Carbon;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
@@ -16,23 +20,26 @@ use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 
 /**
- * @property int                       $id
- * @property string                    $name
- * @property string                    $email
- * @property string|null               $buyer_code
- * @property int|null                  $supplier_id
- * @property Carbon|null               $email_verified_at
- * @property string                    $password
- * @property string|null               $two_factor_secret
- * @property string|null               $two_factor_recovery_codes
- * @property Carbon|null               $two_factor_confirmed_at
- * @property string|null               $remember_token
- * @property bool                      $is_draft
- * @property Carbon|null               $created_at
- * @property Carbon|null               $updated_at
- * @property-read Company[]|Collection $companies
- * @property-read Role[]|Collection    $roles
- * @property-read Supplier|null        $supplier
+ * @property int                        $id
+ * @property string                     $name
+ * @property string                     $email
+ * @property string|null                $buyer_code
+ * @property int|null                   $supplier_id
+ * @property Carbon|null                $email_verified_at
+ * @property string                     $password
+ * @property string|null                $two_factor_secret
+ * @property string|null                $two_factor_recovery_codes
+ * @property Carbon|null                $two_factor_confirmed_at
+ * @property string|null                $remember_token
+ * @property bool                       $is_draft
+ * @property Carbon|null                $created_at
+ * @property Carbon|null                $updated_at
+ * @property bool                       $active
+ * Relations
+ * @property-read Company[]|Collection  $companies
+ * @property-read Role[]|Collection     $roles
+ * @property-read Supplier[]|Collection $suppliers
+ * @property-read Supplier|null         $supplier
  */
 class User extends Authenticatable implements FilamentUser
 {
@@ -51,10 +58,12 @@ class User extends Authenticatable implements FilamentUser
     public const IS_DRAFT = 'is_draft';
     public const CREATED_AT = 'created_at';
     public const UPDATED_AT = 'updated_at';
+    public const ACTIVE = 'active';
 
     // Relations
     public const RELATION_COMPANIES = 'companies';
     public const RELATION_ROLES = 'roles';
+    public const RELATION_SUPPLIERS = 'suppliers';
     public const RELATION_SUPPLIER = 'supplier';
 
     use HasApiTokens, HasFactory, HasRoles, Notifiable;
@@ -72,6 +81,7 @@ class User extends Authenticatable implements FilamentUser
     protected $casts = [
         self::EMAIL_VERIFIED_AT => 'datetime',
         self::IS_DRAFT => 'boolean',
+        self::ACTIVE => 'boolean',
     ];
 
     public function isSuperAdmin(): bool
@@ -130,6 +140,11 @@ class User extends Authenticatable implements FilamentUser
                 CompanyUser::COMPANY_ID
             )
             ->withPivot(CompanyUser::BUYER_CODE);
+    }
+
+    public function suppliers(): BelongsToMany
+    {
+        return $this->belongsToMany(Supplier::class)->withPivot(SupplierUser::CODE);
     }
 
     public function supplier(): BelongsTo

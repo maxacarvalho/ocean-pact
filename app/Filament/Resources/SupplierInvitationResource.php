@@ -3,8 +3,8 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\SupplierInvitationResource\Pages;
-use App\Models\Supplier;
-use App\Models\SupplierInvitation;
+use App\Models\QuotesPortal\Supplier;
+use App\Models\QuotesPortal\SupplierInvitation;
 use App\Utils\Str;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;

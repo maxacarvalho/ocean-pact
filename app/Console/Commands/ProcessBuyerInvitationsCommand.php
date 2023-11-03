@@ -2,9 +2,9 @@
 
 namespace App\Console\Commands;
 
-use App\Enums\InvitationStatusEnum;
+use App\Enums\QuotesPortal\InvitationStatusEnum;
 use App\Mail\BuyerUserCreatedMail;
-use App\Models\BuyerInvitation;
+use App\Models\QuotesPortal\BuyerInvitation;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\URL;

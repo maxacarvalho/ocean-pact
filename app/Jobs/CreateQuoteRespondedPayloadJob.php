@@ -2,13 +2,13 @@
 
 namespace App\Jobs;
 
-use App\Data\Protheus\Quote\Out\ProtheusQuotePayloadData;
-use App\Enums\PayloadProcessingStatusEnum;
-use App\Models\IntegrationType;
-use App\Models\Payload;
-use App\Models\Product;
-use App\Models\Quote;
-use App\Models\QuoteItem;
+use App\Data\QuotesPortal\Quote\Out\ProtheusQuotePayloadData;
+use App\Enums\IntegraHub\PayloadProcessingStatusEnum;
+use App\Models\IntegraHub\IntegrationType;
+use App\Models\IntegraHub\Payload;
+use App\Models\QuotesPortal\Product;
+use App\Models\QuotesPortal\Quote;
+use App\Models\QuotesPortal\QuoteItem;
 use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;

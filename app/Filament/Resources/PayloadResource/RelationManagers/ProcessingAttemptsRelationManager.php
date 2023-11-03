@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources\PayloadResource\RelationManagers;
 
-use App\Models\PayloadProcessingAttempt;
+use App\Models\IntegraHub\PayloadProcessingAttempt;
 use App\Utils\Str;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;

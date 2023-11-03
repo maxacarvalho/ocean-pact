@@ -2,8 +2,8 @@
 
 namespace App\Jobs\PayloadProcessors;
 
-use App\Data\IncomingPaymentCondition\ProtheusPaymentConditionPayloadData;
-use App\Models\PaymentCondition;
+use App\Data\QuotesPortal\ProtheusPaymentConditionPayloadData;
+use App\Models\QuotesPortal\PaymentCondition;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Log;
 

@@ -2,7 +2,7 @@
 
 namespace App\Jobs\PayloadProcessors;
 
-use App\Models\Payload;
+use App\Models\IntegraHub\Payload;
 
 interface PayloadProcessorInterface
 {

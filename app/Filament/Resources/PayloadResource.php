@@ -2,14 +2,14 @@
 
 namespace App\Filament\Resources;
 
-use App\Enums\PayloadProcessingStatusEnum;
-use App\Enums\PayloadStoringStatusEnum;
+use App\Enums\IntegraHub\PayloadProcessingStatusEnum;
+use App\Enums\IntegraHub\PayloadStoringStatusEnum;
 use App\Filament\Resources\PayloadResource\Pages\EditPayload;
 use App\Filament\Resources\PayloadResource\Pages\ListPayloads;
 use App\Filament\Resources\PayloadResource\Pages\ViewPayload;
 use App\Filament\Resources\PayloadResource\RelationManagers\ProcessingAttemptsRelationManager;
-use App\Models\IntegrationType;
-use App\Models\Payload;
+use App\Models\IntegraHub\IntegrationType;
+use App\Models\IntegraHub\Payload;
 use App\Utils\Str;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
@@ -86,17 +86,21 @@ class PayloadResource extends Resource
 
                 TextColumn::make(Payload::STORED_AT)
                     ->label(Str::formatTitle(__('payload.stored_at')))
-                    ->dateTime('d/m/Y H:i:s'),
+                    ->dateTime('d/m/Y H:i:s')
+                    ->sortable(),
 
                 TextColumn::make(Payload::STORING_STATUS)
-                    ->label(Str::formatTitle(__('payload.stored_status'))),
+                    ->label(Str::formatTitle(__('payload.stored_status')))
+                    ->sortable(),
 
                 TextColumn::make(Payload::PROCESSED_AT)
                     ->label(Str::formatTitle(__('payload.processed_at')))
-                    ->dateTime('d/m/Y H:i:s'),
+                    ->dateTime('d/m/Y H:i:s')
+                    ->sortable(),
 
                 TextColumn::make(Payload::PROCESSING_STATUS)
-                    ->label(Str::formatTitle(__('payload.processed_status'))),
+                    ->label(Str::formatTitle(__('payload.processed_status')))
+                    ->sortable(),
 
                 TextColumn::make('processing_attempts_count')
                     ->label(Str::formatTitle(__('payload.attempts_count')))

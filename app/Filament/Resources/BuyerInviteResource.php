@@ -2,9 +2,9 @@
 
 namespace App\Filament\Resources;
 
-use App\Enums\InvitationStatusEnum;
+use App\Enums\QuotesPortal\InvitationStatusEnum;
 use App\Filament\Resources\BuyerInviteResource\Pages;
-use App\Models\BuyerInvitation;
+use App\Models\QuotesPortal\BuyerInvitation;
 use App\Models\User;
 use App\Utils\Str;
 use Filament\Forms\Components\DatePicker;

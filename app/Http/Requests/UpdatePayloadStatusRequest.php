@@ -2,8 +2,8 @@
 
 namespace App\Http\Requests;
 
-use App\Enums\PayloadProcessingAttemptsStatusEnum;
-use App\Models\PayloadProcessingAttempt;
+use App\Enums\IntegraHub\PayloadProcessingAttemptsStatusEnum;
+use App\Models\IntegraHub\PayloadProcessingAttempt;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;
 

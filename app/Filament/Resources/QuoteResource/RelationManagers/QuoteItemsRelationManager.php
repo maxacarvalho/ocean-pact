@@ -2,9 +2,9 @@
 
 namespace App\Filament\Resources\QuoteResource\RelationManagers;
 
-use App\Models\Product;
-use App\Models\Quote;
-use App\Models\QuoteItem;
+use App\Models\QuotesPortal\Product;
+use App\Models\QuotesPortal\Quote;
+use App\Models\QuotesPortal\QuoteItem;
 use App\Rules\PercentageMaxValueRule;
 use App\Tables\Columns\MaskedInputColumn;
 use App\Utils\Str;

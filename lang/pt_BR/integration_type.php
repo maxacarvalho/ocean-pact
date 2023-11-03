@@ -23,4 +23,5 @@ return [
     'keys' => 'chaves',
     'key_field' => 'campo',
     'system_settings' => 'configurações do sistema',
+    'headers' => 'cabeçalhos',
 ];

@@ -6,7 +6,7 @@ use App\Filament\Resources\SupplierResource\Pages\CreateSupplier;
 use App\Filament\Resources\SupplierResource\Pages\EditSupplier;
 use App\Filament\Resources\SupplierResource\Pages\ListSuppliers;
 use App\Filament\Resources\SupplierResource\RelationManagers\CompaniesRelationManager;
-use App\Models\Supplier;
+use App\Models\QuotesPortal\Supplier;
 use App\Rules\CnpjRule;
 use App\Utils\Str;
 use Filament\Forms\Components\Grid;

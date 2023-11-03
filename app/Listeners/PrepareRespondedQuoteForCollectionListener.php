@@ -4,7 +4,7 @@ namespace App\Listeners;
 
 use App\Events\QuoteRespondedEvent;
 use App\Jobs\CreateQuoteRespondedPayloadJob;
-use App\Models\Quote;
+use App\Models\QuotesPortal\Quote;
 
 class PrepareRespondedQuoteForCollectionListener
 {

@@ -4,8 +4,8 @@ namespace App\Filament\Resources\QuoteResource\Pages;
 
 use App\Events\QuoteRespondedEvent;
 use App\Filament\Resources\QuoteResource;
-use App\Models\Quote;
-use App\Models\QuoteItem;
+use App\Models\QuotesPortal\Quote;
+use App\Models\QuotesPortal\QuoteItem;
 use App\Utils\Str;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
