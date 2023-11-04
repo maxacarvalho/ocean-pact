@@ -5,6 +5,7 @@ use App\Http\Controllers\API\Quote\MarkQuoteAsAcceptedController;
 use App\Http\Controllers\IntegraHub\API\Payload\HandlesPayloadController;
 use App\Http\Controllers\IntegraHub\API\Payload\IndexPayloadController;
 use App\Http\Controllers\IntegraHub\API\Payload\UpdatePayloadStatusController;
+use App\Http\Controllers\QuotesPortal\API\StoreOrUpdatePaymentConditionBatchController;
 use App\Http\Controllers\QuotesPortal\API\StorePurchaseRequestController;
 use App\Http\Controllers\QuotesPortal\API\StoreQuoteController;
 use Illuminate\Http\Request;
@@ -42,7 +43,8 @@ Route::middleware('auth:sanctum')->group(static function (Router $router) {
 });
 
 // QuotesPortal
-Route::prefix('quotes-portal')
+Route::middleware('auth:sanctum')
+    ->prefix('quotes-portal')
     ->name('quotes-portal.')
     ->group(static function (Router $router) {
         $router->name('quote.')
@@ -57,5 +59,12 @@ Route::prefix('quotes-portal')
             ->group(function (Router $router) {
                 $router->post('/', StorePurchaseRequestController::class)
                     ->name('store');
+            });
+
+        $router->name('payment-conditions.')
+            ->prefix('payment-conditions')
+            ->group(function (Router $router) {
+                $router->post('/batch', StoreOrUpdatePaymentConditionBatchController::class)
+                    ->name('store-or-update-batch');
             });
     });

@@ -34,6 +34,7 @@ class PayloadForwarderProcessorJob implements ShouldQueue
 
         $httpClient = Http::withOptions(['verify' => App::environment('production')])
             ->withToken(config('ocean-pact.temp_access_token'))
+            ->withHeaders($payload->integrationType->headers)
             ->withBody(json_encode($payload->payload, JSON_THROW_ON_ERROR))
             ->throw();
 
@@ -42,7 +43,9 @@ class PayloadForwarderProcessorJob implements ShouldQueue
             url: $payload->integrationType->target_url
         )->json();
 
-        $payload->markAsDone($response);
+        $payload->markAsDone(
+            json_encode($response, JSON_THROW_ON_ERROR)
+        );
 
         $recordSuccessfulPayloadProcessingAttemptAction->handle(
             payloadId: $payload->id,
@@ -52,7 +55,7 @@ class PayloadForwarderProcessorJob implements ShouldQueue
 
     public function failed(Throwable $exception): void
     {
-        Log::error('ForwardPayloadProcessorJob failed', [
+        Log::error('PayloadForwarderProcessorJob failed', [
             'payload_id' => $this->payloadId,
             'exception_message' => $exception->getMessage(),
             'namespace' => __CLASS__,
