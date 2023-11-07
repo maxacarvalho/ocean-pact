@@ -2,7 +2,7 @@
 
 namespace App\Listeners;
 
-use App\Events\QuoteRespondedEvent;
+use App\Events\QuotePortal\QuoteRespondedEvent;
 use App\Jobs\CreateQuoteRespondedPayloadJob;
 use App\Models\QuotesPortal\Quote;
 

@@ -2,20 +2,16 @@
 
 namespace App\Jobs;
 
-use App\Data\QuotesPortal\Quote\Out\ProtheusQuotePayloadData;
-use App\Enums\IntegraHub\PayloadProcessingStatusEnum;
-use App\Models\IntegraHub\IntegrationType;
-use App\Models\IntegraHub\Payload;
-use App\Models\QuotesPortal\Product;
+use App\Data\QuotesPortal\QuoteData;
 use App\Models\QuotesPortal\Quote;
 use App\Models\QuotesPortal\QuoteItem;
-use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
+use Spatie\WebhookServer\WebhookCall;
 
 class CreateQuoteRespondedPayloadJob implements ShouldQueue
 {
@@ -30,16 +26,17 @@ class CreateQuoteRespondedPayloadJob implements ShouldQueue
     {
         /** @var Quote $quote */
         $quote = Quote::query()
-            ->with(
+            ->with([
+                Quote::RELATION_BUDGET,
                 Quote::RELATION_COMPANY,
                 Quote::RELATION_SUPPLIER,
                 Quote::RELATION_PAYMENT_CONDITION,
                 Quote::RELATION_BUYER,
-                Quote::RELATION_BUYER.'.'.User::RELATION_COMPANIES,
-                Quote::RELATION_ITEMS,
-                Quote::RELATION_ITEMS.'.'.QuoteItem::RELATION_PRODUCT,
-                Quote::RELATION_ITEMS.'.'.QuoteItem::RELATION_PRODUCT.'.'.Product::RELATION_COMPANY
-            )
+                Quote::RELATION_CURRENCY,
+                Quote::RELATION_ITEMS => [
+                    QuoteItem::RELATION_PRODUCT,
+                ],
+            ])
             ->findOrFail($this->quoteId);
 
         if (! $quote->isResponded()) {
@@ -54,18 +51,12 @@ class CreateQuoteRespondedPayloadJob implements ShouldQueue
             $this->delete();
         }
 
-        $protheusPayloadData = ProtheusQuotePayloadData::fromQuote($quote);
+        $quoteData = QuoteData::from($quote);
 
-        /** @var IntegrationType $integrationType */
-        $integrationType = IntegrationType::query()
-            ->where(IntegrationType::CODE, '=', IntegrationType::INTEGRATION_ANSWERED_QUOTES)
-            ->firstOrFail();
-
-        $integrationType->payloads()->create([
-            Payload::PAYLOAD => $protheusPayloadData->toArray(),
-            Payload::PAYLOAD_HASH => $protheusPayloadData->getHash(),
-            Payload::STORED_AT => now(),
-            Payload::PROCESSING_STATUS => PayloadProcessingStatusEnum::READY,
-        ]);
+        WebhookCall::create()
+            ->url('https://oceanpact.test/integra-hub/webhooks/payload?integration-type-code=cotacoes-respondidas')
+            ->payload($quoteData->toArray())
+            ->useSecret(config('integra-hub.webhook-secret'))
+            ->dispatchSync();
     }
 }

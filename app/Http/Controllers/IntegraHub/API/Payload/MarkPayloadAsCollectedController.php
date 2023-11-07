@@ -2,20 +2,19 @@
 
 namespace App\Http\Controllers\IntegraHub\API\Payload;
 
-use App\Enums\IntegraHub\PayloadProcessingAttemptsStatusEnum;
 use App\Enums\IntegraHub\PayloadProcessingStatusEnum;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\UpdatePayloadStatusRequest;
 use App\Models\IntegraHub\Payload;
-use App\Models\IntegraHub\PayloadProcessingAttempt;
 use App\Utils\Str;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 
-class UpdatePayloadStatusController extends Controller
+class MarkPayloadAsCollectedController extends Controller
 {
-    public function __invoke(Payload $payload, UpdatePayloadStatusRequest $request): JsonResponse
+    public function __invoke(Payload $payload): JsonResponse
     {
+        ray($payload->toArray());
+
         if ($payload->processing_status === PayloadProcessingStatusEnum::COLLECTED) {
             return response()->json([
                 'errors' => [
@@ -26,13 +25,8 @@ class UpdatePayloadStatusController extends Controller
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
-        /** @var PayloadProcessingAttempt $processingAttempt */
-        $processingAttempt = $payload->processingAttempts()->create($request->validated());
-
         $payload->update([
-            Payload::PROCESSING_STATUS => $processingAttempt->status === PayloadProcessingAttemptsStatusEnum::SUCCESS
-                ? PayloadProcessingStatusEnum::COLLECTED
-                : PayloadProcessingStatusEnum::FAILED,
+            Payload::PROCESSING_STATUS => PayloadProcessingStatusEnum::COLLECTED,
             Payload::PROCESSED_AT => now(),
         ]);
 

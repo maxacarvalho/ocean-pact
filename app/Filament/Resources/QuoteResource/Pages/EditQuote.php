@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources\QuoteResource\Pages;
 
-use App\Events\QuoteRespondedEvent;
+use App\Events\QuotePortal\QuoteRespondedEvent;
 use App\Filament\Resources\QuoteResource;
 use App\Models\QuotesPortal\Quote;
 use App\Models\QuotesPortal\QuoteItem;

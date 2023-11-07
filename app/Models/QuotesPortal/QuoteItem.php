@@ -8,6 +8,7 @@ use Brick\Money\Money;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
+use NumberFormatter;
 
 /**
  * @property int                 $id
@@ -68,6 +69,8 @@ class QuoteItem extends Model
     ];
     protected $casts = [
         self::UNIT_PRICE => MoneyCast::class,
+        self::IPI => 'float',
+        self::ICMS => 'float',
         self::SHOULD_BE_QUOTED => 'boolean',
         self::STATUS => QuoteItemStatusEnum::class,
     ];
@@ -93,5 +96,24 @@ class QuoteItem extends Model
     public function cannotBeResponded(): bool
     {
         return ! $this->canBeResponded();
+    }
+
+    public function getFormattedUnitPrice(): string
+    {
+        $currency = $this->currency;
+
+        if ('BRL' === $currency) {
+            $formatter = new NumberFormatter('pt_BR', NumberFormatter::PATTERN_DECIMAL);
+            $formatter->setSymbol(NumberFormatter::DECIMAL_SEPARATOR_SYMBOL, ',');
+            $formatter->setSymbol(NumberFormatter::GROUPING_SEPARATOR_SYMBOL, '.');
+        } else {
+            $formatter = new NumberFormatter('en_US', NumberFormatter::PATTERN_DECIMAL);
+            $formatter->setSymbol(NumberFormatter::DECIMAL_SEPARATOR_SYMBOL, '.');
+            $formatter->setSymbol(NumberFormatter::GROUPING_SEPARATOR_SYMBOL, ',');
+        }
+
+        $formatter->setAttribute(NumberFormatter::FRACTION_DIGITS, 2);
+
+        return $this->unit_price->formatWith($formatter);
     }
 }

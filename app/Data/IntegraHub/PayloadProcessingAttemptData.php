@@ -17,7 +17,7 @@ class PayloadProcessingAttemptData extends Data
         #[WithCast(EnumCast::class)]
         public readonly PayloadProcessingAttemptsStatusEnum $status,
         public readonly string|null|Optional $message,
-        public readonly string|null|Optional $response,
+        public readonly array|null|Optional $response,
         public readonly Carbon|null|Optional $created_at,
         public readonly Carbon|null|Optional $updated_at,
     ) {
@@ -27,12 +27,12 @@ class PayloadProcessingAttemptData extends Data
     public static function makeForPayload(
         int $payloadId,
         PayloadProcessingAttemptsStatusEnum $status,
-        ?string $response
+        ?array $response
     ): static {
         return new PayloadProcessingAttemptData(
             id: Optional::create(),
             payload_id: $payloadId,
-            status: PayloadProcessingAttemptsStatusEnum::SUCCESS,
+            status: $status,
             message: Optional::create(),
             response: $response,
             created_at: Optional::create(),

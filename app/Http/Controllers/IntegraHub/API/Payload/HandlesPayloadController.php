@@ -4,6 +4,7 @@ namespace App\Http\Controllers\IntegraHub\API\Payload;
 
 use App\Actions\IntegraHub\CreatePayloadAction;
 use App\Actions\IntegraHub\HandlePayloadAction;
+use App\Actions\IntegraHub\RecordFailedPayloadProcessingAttemptAction;
 use App\Data\IntegraHub\PayloadData;
 use App\Data\IntegraHub\PayloadErrorResponseData;
 use App\Data\IntegraHub\PayloadSuccessResponseData;
@@ -32,6 +33,7 @@ class HandlesPayloadController extends Controller
         StorePayloadRequest $request,
         HandlePayloadAction $handlePayloadAction,
         CreatePayloadAction $createPayloadAction,
+        RecordFailedPayloadProcessingAttemptAction $recordFailedPayloadProcessingAttemptAction
     ): PayloadSuccessResponseData|JsonResponse {
         $payloadInput = $request->validated(Payload::PAYLOAD);
 
@@ -68,7 +70,11 @@ class HandlesPayloadController extends Controller
             ]);
 
             if ($payload instanceof Payload) {
-                $payload->markAsFailed($e->getMessage(), json_encode($e->response->json(), JSON_THROW_ON_ERROR));
+                $payload->markAsFailed($e->getMessage(), $e->response->json());
+                $recordFailedPayloadProcessingAttemptAction->handle(
+                    payloadId: $payload->id,
+                    response: $e->response->json()
+                );
             }
 
             $responseError = PayloadErrorResponseData::from([
@@ -88,6 +94,10 @@ class HandlesPayloadController extends Controller
 
             if ($payload instanceof Payload) {
                 $payload->markAsFailed($e->getMessage(), null);
+                $recordFailedPayloadProcessingAttemptAction->handle(
+                    payloadId: $payload->id,
+                    response: json_decode($e->getMessage(), true, 512, JSON_THROW_ON_ERROR)
+                );
             }
 
             $responseError = PayloadErrorResponseData::from([

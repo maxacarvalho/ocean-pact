@@ -18,7 +18,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property PayloadStoringStatusEnum         $storing_status
  * @property Carbon|null                      $processed_at
  * @property PayloadProcessingStatusEnum|null $processing_status
- * @property string|null                      $response
+ * @property array|null                       $response
  * @property string|null                      $error
  * @property Carbon|null                      $created_at
  * @property Carbon|null                      $updated_at
@@ -60,6 +60,7 @@ class Payload extends Model
         self::STORING_STATUS => PayloadStoringStatusEnum::class,
         self::PROCESSED_AT => 'datetime',
         self::PROCESSING_STATUS => PayloadProcessingStatusEnum::class,
+        self::RESPONSE => 'array',
     ];
 
     public function integrationType(): BelongsTo
@@ -99,7 +100,7 @@ class Payload extends Model
         ]);
     }
 
-    public function markAsDone(?string $response): void
+    public function markAsDone(?array $response): void
     {
         $this->update([
             self::PROCESSING_STATUS => PayloadProcessingStatusEnum::DONE,
@@ -108,7 +109,7 @@ class Payload extends Model
         ]);
     }
 
-    public function markAsFailed(string $error, ?string $response): void
+    public function markAsFailed(string $error, ?array $response): void
     {
         $this->update([
             self::PROCESSING_STATUS => PayloadProcessingStatusEnum::FAILED,

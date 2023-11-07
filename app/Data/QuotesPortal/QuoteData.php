@@ -1,0 +1,82 @@
+<?php
+
+namespace App\Data\QuotesPortal;
+
+use App\Enums\QuotesPortal\FreightTypeEnum;
+use App\Enums\QuotesPortal\QuoteStatusEnum;
+use App\Models\QuotesPortal\Quote;
+use Illuminate\Support\Carbon;
+use Spatie\LaravelData\Attributes\DataCollectionOf;
+use Spatie\LaravelData\Attributes\WithCast;
+use Spatie\LaravelData\Casts\EnumCast;
+use Spatie\LaravelData\Data;
+use Spatie\LaravelData\DataCollection;
+use Spatie\LaravelData\Lazy;
+use Spatie\LaravelData\Optional;
+
+class QuoteData extends Data
+{
+    public function __construct(
+        public readonly int|Optional $id,
+        public readonly string $company_code,
+        public readonly string|null $company_code_branch,
+        public readonly int $supplier_id,
+        public readonly int $payment_condition_id,
+        public readonly int $buyer_id,
+        public readonly int $budget_id,
+        public readonly string $quote_number,
+        public readonly Carbon|null $valid_until,
+        #[WithCast(EnumCast::class)]
+        public readonly QuoteStatusEnum $status,
+        public readonly string|null $comments,
+        public readonly int $expenses,
+        public readonly int $freight_cost,
+        #[WithCast(EnumCast::class)]
+        public readonly FreightTypeEnum|null $freight_type,
+        public readonly int|null $currency_id,
+        public readonly Carbon|null|Optional $created_at,
+        public readonly Carbon|null|Optional $updated_at,
+        // Relations
+        public readonly Lazy|BudgetData $budget,
+        public readonly Lazy|CompanyData $company,
+        public readonly Lazy|SupplierData $supplier,
+        public readonly Lazy|PaymentConditionData $payment_condition,
+        public readonly Lazy|BuyerData $buyer,
+        public readonly Lazy|CurrencyData $currency,
+        #[DataCollectionOf(QuoteItemData::class)]
+        public readonly Lazy|DataCollection $items,
+    ) {
+        //
+    }
+
+    public static function fromModel(Quote $quote): self
+    {
+        return new self(
+            id: $quote->id,
+            company_code: $quote->company_code,
+            company_code_branch: $quote->company_code_branch,
+            supplier_id: $quote->supplier_id,
+            payment_condition_id: $quote->payment_condition_id,
+            buyer_id: $quote->buyer_id,
+            budget_id: $quote->budget_id,
+            quote_number: $quote->quote_number,
+            valid_until: $quote->valid_until,
+            status: $quote->status,
+            comments: $quote->comments,
+            expenses: $quote->expenses,
+            freight_cost: $quote->freight_cost,
+            freight_type: $quote->freight_type,
+            currency_id: $quote->currency_id,
+            created_at: $quote->created_at,
+            updated_at: $quote->updated_at,
+            // Relations
+            budget: Lazy::whenLoaded(Quote::RELATION_BUDGET, $quote, static fn () => BudgetData::from($quote->budget)),
+            company: Lazy::whenLoaded(Quote::RELATION_COMPANY, $quote, static fn () => CompanyData::from($quote->company)),
+            supplier: Lazy::whenLoaded(Quote::RELATION_SUPPLIER, $quote, static fn () => SupplierData::from($quote->supplier)),
+            payment_condition: Lazy::whenLoaded(Quote::RELATION_PAYMENT_CONDITION, $quote, static fn () => PaymentConditionData::from($quote->paymentCondition)),
+            buyer: Lazy::whenLoaded(Quote::RELATION_BUYER, $quote, static fn () => BuyerData::from($quote->buyer)),
+            currency: Lazy::whenLoaded(Quote::RELATION_CURRENCY, $quote, static fn () => CurrencyData::from($quote->currency)),
+            items: Lazy::whenLoaded(Quote::RELATION_ITEMS, $quote, static fn () => QuoteItemData::collection($quote->items)),
+        );
+    }
+}

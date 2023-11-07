@@ -4,8 +4,8 @@ namespace App\Http\Controllers\QuotesPortal\API;
 
 use App\Actions\QuotesPortal\ProtheusIntegration\ProcessQuotePayloadAction;
 use App\Data\QuotesPortal\Quote\ProtheusQuotePayloadData;
-use App\Data\QuotesPortal\Quote\QuoteData;
 use App\Data\QuotesPortal\Quote\StoreQuoteErrorResponseData;
+use App\Data\QuotesPortal\QuoteData;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\QuotesPortal\StoreQuoteRequest;
 use Throwable;

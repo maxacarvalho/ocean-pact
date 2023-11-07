@@ -48,8 +48,6 @@ class ProcessingAttemptsRelationManager extends RelationManager
             ->columns([
                 TextColumn::make(PayloadProcessingAttempt::STATUS)
                     ->label(Str::formatTitle(__('payload_processing_attempt.status'))),
-                TextColumn::make(PayloadProcessingAttempt::MESSAGE)
-                    ->label(Str::formatTitle(__('payload_processing_attempt.message'))),
                 TextColumn::make(PayloadProcessingAttempt::CREATED_AT)
                     ->dateTime()
                     ->label(Str::formatTitle(__('payload_processing_attempt.created_at'))),

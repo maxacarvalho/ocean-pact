@@ -23,4 +23,5 @@ return [
     'received_from' => 'recebido a partir de :date',
     'received_until' => 'recebido até :date',
     'payload_is_duplicated' => 'envelope duplicado',
+    'response' => 'resposta',
 ];

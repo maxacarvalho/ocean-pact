@@ -21,6 +21,14 @@ readonly class HandlePayloadAction
         Payload $payload,
         array $payloadInput
     ): PayloadSuccessResponseData {
+        if ($integrationType->isFetchable()) {
+            return $this->handlesSynchronousIntegrationPayloadAction->handle(
+                $payload,
+                $integrationType,
+                $payloadInput
+            );
+        }
+
         if ($integrationType->isForwardable() && $integrationType->isSynchronous()) {
             return $this->handlesSynchronousIntegrationPayloadAction->handle(
                 $payload,

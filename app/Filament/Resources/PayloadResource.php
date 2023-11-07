@@ -74,12 +74,19 @@ class PayloadResource extends Resource
                     ->view('filament-forms::components.prism')
                     ->columnSpanFull()
                     ->hiddenOn(['create']),
+
+                ViewField::make(Payload::RESPONSE)
+                    ->label(Str::formatTitle(__('payload.response')))
+                    ->view('filament-forms::components.prism')
+                    ->columnSpanFull()
+                    ->hiddenOn(['create']),
             ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
+            ->defaultSort(Payload::STORED_AT, 'desc')
             ->columns([
                 TextColumn::make(Payload::RELATION_INTEGRATION_TYPE.'.'.IntegrationType::CODE)
                     ->label(Str::formatTitle(__('integration_type.integration_type'))),
@@ -194,7 +201,7 @@ class PayloadResource extends Resource
         return [
             'index' => ListPayloads::route('/'),
             'view' => ViewPayload::route('/{record}'),
-            'edit' => EditPayload::route('/{record}/edit'),
+            // 'edit' => EditPayload::route('/{record}/edit'),
         ];
     }
 }

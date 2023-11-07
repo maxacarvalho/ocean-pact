@@ -7,31 +7,18 @@ use Brick\Math\RoundingMode;
 use Brick\Money\Money;
 use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
 use Illuminate\Database\Eloquent\Model;
-use NumberFormatter;
 
 class MoneyCast implements CastsAttributes
 {
-    public function get(Model $model, string $key, mixed $value, array $attributes): string
+    public function get(Model $model, string $key, mixed $value, array $attributes): ?Money
     {
         $currency = $attributes[QuoteItem::CURRENCY];
-
-        if ('BRL' === $currency) {
-            $formatter = new NumberFormatter('pt_BR', NumberFormatter::DECIMAL);
-            $formatter->setSymbol(NumberFormatter::DECIMAL_SEPARATOR_SYMBOL, ',');
-            $formatter->setSymbol(NumberFormatter::GROUPING_SEPARATOR_SYMBOL, '.');
-        } else {
-            $formatter = new NumberFormatter('en_US', NumberFormatter::DECIMAL);
-            $formatter->setSymbol(NumberFormatter::DECIMAL_SEPARATOR_SYMBOL, '.');
-            $formatter->setSymbol(NumberFormatter::GROUPING_SEPARATOR_SYMBOL, ',');
-        }
-
-        $formatter->setAttribute(NumberFormatter::FRACTION_DIGITS, 2);
 
         return Money::ofMinor(
             minorAmount: $value,
             currency: $currency,
             roundingMode: RoundingMode::UP
-        )->formatWith($formatter);
+        );
     }
 
     public function set(Model $model, string $key, mixed $value, array $attributes): int

@@ -16,21 +16,24 @@ readonly class HandlesSynchronousIntegrationPayloadAction
         //
     }
 
-    public function handle(Payload $payload, IntegrationType $integrationType, array $payloadInput): PayloadSuccessResponseData
+    public function handle(Payload $payload, IntegrationType $integrationType, ?array $payloadInput): PayloadSuccessResponseData
     {
         $httpClient = Http::withOptions(['verify' => App::environment('production')])
             ->withToken(config('ocean-pact.temp_access_token'))
             ->withHeaders($integrationType->headers)
-            ->withBody(json_encode($payloadInput, JSON_THROW_ON_ERROR))
             ->throw();
+
+        if ($payloadInput) {
+            $httpClient->withBody(json_encode($payloadInput, JSON_THROW_ON_ERROR));
+        }
 
         $response = $httpClient->send($integrationType->type->value, $integrationType->target_url)->json();
 
-        $payload->markAsDone(json_encode($response, JSON_THROW_ON_ERROR));
+        $payload->markAsDone($response);
 
         $this->recordSuccessfulPayloadProcessingAttemptAction->handle(
             payloadId: $payload->id,
-            response: json_encode($response, JSON_THROW_ON_ERROR)
+            response: $response
         );
 
         return PayloadSuccessResponseData::from([

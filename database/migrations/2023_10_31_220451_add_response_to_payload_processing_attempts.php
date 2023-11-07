@@ -9,7 +9,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('payload_processing_attempts', function (Blueprint $table) {
-            $table->longText('response')->nullable()->after('message');
+            $table->json('response')->nullable()->after('message');
         });
     }
 

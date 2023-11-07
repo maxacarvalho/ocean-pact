@@ -49,7 +49,7 @@ class PayloadForwarderProcessorJob implements ShouldQueue
 
         $recordSuccessfulPayloadProcessingAttemptAction->handle(
             payloadId: $payload->id,
-            response: json_encode($response, JSON_THROW_ON_ERROR)
+            response: $response
         );
     }
 
@@ -74,7 +74,7 @@ class PayloadForwarderProcessorJob implements ShouldQueue
 
         $this->getRecordFailedPayloadProcessingAttemptAction()->handle(
             payloadId: $this->payloadId,
-            response: $exception->getMessage(),
+            response: json_encode($exception->getMessage()),
         );
     }
 

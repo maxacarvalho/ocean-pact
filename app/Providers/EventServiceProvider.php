@@ -2,7 +2,7 @@
 
 namespace App\Providers;
 
-use App\Events\QuoteRespondedEvent;
+use App\Events\QuotePortal\QuoteRespondedEvent;
 use App\Listeners\PrepareRespondedQuoteForCollectionListener;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;

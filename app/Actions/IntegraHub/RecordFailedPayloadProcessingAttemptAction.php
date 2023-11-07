@@ -8,7 +8,7 @@ use App\Models\IntegraHub\PayloadProcessingAttempt;
 
 class RecordFailedPayloadProcessingAttemptAction
 {
-    public function handle(int $payloadId, ?string $response): void
+    public function handle(int $payloadId, ?array $response): void
     {
         $data = PayloadProcessingAttemptData::makeForPayload(
             payloadId: $payloadId,

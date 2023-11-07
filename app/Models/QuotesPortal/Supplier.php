@@ -19,15 +19,13 @@ use Illuminate\Support\Carbon;
  * @property string                    $store
  * @property string                    $name
  * @property string                    $business_name
- * @property string                    $address
+ * @property string|null               $address
  * @property string|null               $number
- * @property string                    $neighborhood
- * @property string                    $state_code
- * @property string|null               $state_name
- * @property string                    $postal_code
- * @property string                    $cnpj_cpf
- * @property string                    $phone_code
- * @property string                    $phone_number
+ * @property string|null               $state_code
+ * @property string|null               $postal_code
+ * @property string|null               $cnpj_cpf
+ * @property string|null               $phone_code
+ * @property string|null               $phone_number
  * @property string                    $contact
  * @property string                    $email
  * @property Carbon|null               $created_at
@@ -49,9 +47,7 @@ class Supplier extends Model
     public const BUSINESS_NAME = 'business_name';
     public const ADDRESS = 'address';
     public const NUMBER = 'number';
-    public const NEIGHBORHOOD = 'neighborhood';
     public const STATE_CODE = 'state_code';
-    public const STATE_NAME = 'state_name';
     public const POSTAL_CODE = 'postal_code';
     public const CNPJ_CPF = 'cnpj_cpf';
     public const PHONE_CODE = 'phone_code';
@@ -100,10 +96,16 @@ class Supplier extends Model
     protected function cnpjCpf(): Attribute
     {
         return Attribute::make(
-            get: static fn ($value) => match (strlen($value)) {
-                11 => preg_replace("/(\d{3})(\d{3})(\d{3})(\d{2})/", '$1.$2.$3-$4', $value),
-                14 => preg_replace("/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/", '$1.$2.$3/$4-$5', $value),
-                default => $value,
+            get: static function ($value) {
+                if (empty($value)) {
+                    return $value;
+                }
+
+                return match (strlen($value)) {
+                    11 => preg_replace("/(\d{3})(\d{3})(\d{3})(\d{2})/", '$1.$2.$3-$4', $value),
+                    14 => preg_replace("/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/", '$1.$2.$3/$4-$5', $value),
+                    default => $value,
+                };
             },
             set: static fn ($value) => preg_replace("/\D/", '', $value),
         );

@@ -117,4 +117,9 @@ class IntegrationType extends Model
     {
         return $this->handling_type->equals(IntegrationHandlingTypeEnum::STORE_AND_SEND);
     }
+
+    public function isFetchable(): bool
+    {
+        return $this->handling_type->equals(IntegrationHandlingTypeEnum::FETCH);
+    }
 }

@@ -12,7 +12,7 @@ use Illuminate\Support\Carbon;
  * @property int                                 $payload_id
  * @property PayloadProcessingAttemptsStatusEnum $status
  * @property string|null                         $message
- * @property string|null                         $response
+ * @property array|null                          $response
  * @property Carbon|null                         $created_at
  * @property Carbon|null                         $updated_at
  * Relations
@@ -42,6 +42,7 @@ class PayloadProcessingAttempt extends Model
 
     protected $casts = [
         self::STATUS => PayloadProcessingAttemptsStatusEnum::class,
+        self::RESPONSE => 'array',
     ];
 
     public function payload(): BelongsTo
