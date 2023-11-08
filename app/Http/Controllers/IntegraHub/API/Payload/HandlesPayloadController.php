@@ -7,9 +7,9 @@ use App\Actions\IntegraHub\HandlePayloadAction;
 use App\Actions\IntegraHub\RecordFailedPayloadProcessingAttemptAction;
 use App\Data\IntegraHub\PayloadData;
 use App\Data\IntegraHub\PayloadErrorResponseData;
+use App\Data\IntegraHub\PayloadInputData;
 use App\Data\IntegraHub\PayloadSuccessResponseData;
 use App\Enums\IntegraHub\PayloadProcessingStatusEnum;
-use App\Enums\IntegraHub\PayloadStoringStatusEnum;
 use App\Exceptions\IntegraHub\DuplicatedPayloadException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePayloadRequest;
@@ -23,7 +23,6 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use JsonException;
-use Spatie\LaravelData\Optional;
 use Throwable;
 
 class HandlesPayloadController extends Controller
@@ -35,19 +34,19 @@ class HandlesPayloadController extends Controller
         CreatePayloadAction $createPayloadAction,
         RecordFailedPayloadProcessingAttemptAction $recordFailedPayloadProcessingAttemptAction
     ): PayloadSuccessResponseData|JsonResponse {
-        $payloadInput = $request->validated(Payload::PAYLOAD);
+        $payloadInput = PayloadInputData::from($request->validated());
 
-        $this->validatePayload($integrationType, $payloadInput);
+        $this->validatePayload($integrationType, $payloadInput->payload);
 
         $payload = null;
 
         try {
             if (! $integrationType->allows_duplicates) {
-                $this->ensureItIsNotDuplicated($integrationType, $payloadInput);
+                $this->ensureItIsNotDuplicated($integrationType, $payloadInput->payload);
             }
 
             $payload = $createPayloadAction->handle(
-                $this->buildPayloadData($integrationType, $payloadInput)
+                PayloadData::fromPayloadHandlerController($integrationType, $payloadInput)
             );
 
             $payload->markAsProcessing();
@@ -96,7 +95,7 @@ class HandlesPayloadController extends Controller
                 $payload->markAsFailed($e->getMessage(), null);
                 $recordFailedPayloadProcessingAttemptAction->handle(
                     payloadId: $payload->id,
-                    response: json_decode($e->getMessage(), true, 512, JSON_THROW_ON_ERROR)
+                    response: [$e->getMessage()]
                 );
             }
 
@@ -121,25 +120,6 @@ class HandlesPayloadController extends Controller
         }
 
         Validator::make($payloadInput, $validationRules, attributes: $validationAttributes)->validate();
-    }
-
-    /** @throws JsonException */
-    private function buildPayloadData(IntegrationType $integrationType, array $payloadInput): PayloadData
-    {
-        return new PayloadData(
-            id: Optional::create(),
-            integration_type_id: $integrationType->id,
-            payload: $payloadInput,
-            payload_hash: md5(json_encode($payloadInput, JSON_THROW_ON_ERROR)),
-            stored_at: now(),
-            storing_status: PayloadStoringStatusEnum::STORED,
-            processed_at: null,
-            processing_status: PayloadProcessingStatusEnum::READY,
-            response: Optional::create(),
-            error: Optional::create(),
-            created_at: Optional::create(),
-            updated_at: Optional::create(),
-        );
     }
 
     /** @throws DuplicatedPayloadException|JsonException */

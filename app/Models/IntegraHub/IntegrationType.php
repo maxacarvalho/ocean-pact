@@ -27,6 +27,7 @@ use RuntimeException;
  * @property bool                                    $is_synchronous
  * @property bool                                    $allows_duplicates
  * @property array                                   $headers
+ * @property array|null                              $path_parameters
  * @property Carbon|null                             $created_at
  * @property Carbon|null                             $updated_at
  * Relations
@@ -50,6 +51,7 @@ class IntegrationType extends Model
     public const IS_SYNCHRONOUS = 'is_synchronous';
     public const ALLOWS_DUPLICATES = 'allows_duplicates';
     public const HEADERS = 'headers';
+    public const PATH_PARAMETERS = 'path_parameters';
     public const CREATED_AT = 'created_at';
     public const UPDATED_AT = 'updated_at';
 
@@ -57,9 +59,6 @@ class IntegrationType extends Model
     public const RELATION_COMPANY = 'company';
     public const RELATION_FIELDS = 'fields';
     public const RELATION_PAYLOADS = 'payloads';
-
-    // Protected integration types
-    public const INTEGRATION_ANSWERED_QUOTES = 'cotacoes-respondidas';
 
     protected $table = self::TABLE_NAME;
 
@@ -78,6 +77,7 @@ class IntegrationType extends Model
         self::IS_SYNCHRONOUS => 'boolean',
         self::ALLOWS_DUPLICATES => 'boolean',
         self::HEADERS => 'array',
+        self::PATH_PARAMETERS => 'array',
     ];
 
     protected static function booted(): void
@@ -118,8 +118,25 @@ class IntegrationType extends Model
         return $this->handling_type->equals(IntegrationHandlingTypeEnum::STORE_AND_SEND);
     }
 
-    public function isFetchable(): bool
+    public function resolveTargetUrl(Payload $payload): string
     {
-        return $this->handling_type->equals(IntegrationHandlingTypeEnum::FETCH);
+        if (! is_array($this->path_parameters) || empty($this->path_parameters)) {
+            return $this->target_url;
+        }
+
+        $inputPathParameters = collect($payload->path_parameters);
+        $targetUrl = $this->target_url;
+
+        foreach ($this->path_parameters as $keyParameter) {
+            $parameter = $keyParameter['parameter'];
+
+            if (! $inputPathParameters->has($parameter)) {
+                continue;
+            }
+
+            $targetUrl = Str::replace(":{$parameter}", $inputPathParameters->get($parameter), $targetUrl);
+        }
+
+        return $targetUrl;
     }
 }

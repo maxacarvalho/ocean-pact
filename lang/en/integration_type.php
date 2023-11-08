@@ -25,4 +25,6 @@ return [
     'system_settings' => 'system settings',
     'headers' => 'headers',
     'fetch' => 'fetch',
+    'path_parameters' => 'URL parameters',
+    'parameter' => 'parameter',
 ];

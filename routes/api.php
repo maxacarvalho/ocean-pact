@@ -3,6 +3,7 @@
 use App\Http\Controllers\IntegraHub\API\Payload\HandlesPayloadController;
 use App\Http\Controllers\IntegraHub\API\Payload\ListPayloadController;
 use App\Http\Controllers\IntegraHub\API\Payload\MarkPayloadAsCollectedController;
+use App\Http\Controllers\QuotesPortal\API\ApproveQuoteItemsController;
 use App\Http\Controllers\QuotesPortal\API\ListQuotesController;
 use App\Http\Controllers\QuotesPortal\API\StoreOrUpdatePaymentConditionBatchController;
 use App\Http\Controllers\QuotesPortal\API\StorePurchaseRequestController;
@@ -30,10 +31,6 @@ Route::middleware('auth:sanctum')
     ->prefix('integra-hub')
     ->name('integra-hub.')
     ->group(static function (Router $router) {
-        /*$router->name('cotacoes.')->prefix('cotacoes')->group(static function (Router $router) {
-            $router->put('{quote}/aceita', MarkQuoteAsAcceptedController::class)->name('marca-como-aceita');
-        });*/
-
         $router->name('payload.')
             ->group(static function (Router $router) {
                 $router->get('/payloads', ListPayloadController::class)->name('index');
@@ -56,6 +53,9 @@ Route::middleware('auth:sanctum')
 
                 $router->post('/quotes', StoreQuoteController::class)
                     ->name('store');
+
+                $router->put('/quotes/{quote}/approve-items', ApproveQuoteItemsController::class)
+                    ->name('approve-quote-items');
             });
 
         $router->name('purchase-request.')

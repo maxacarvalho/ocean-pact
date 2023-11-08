@@ -17,6 +17,7 @@ final class PayloadData extends Data
         public readonly int|Optional $id,
         public readonly int $integration_type_id,
         public readonly array $payload,
+        public readonly array|null $path_parameters,
         public readonly string|null $payload_hash,
         public readonly Carbon|null $stored_at,
         #[WithCast(EnumCast::class)]
@@ -30,6 +31,21 @@ final class PayloadData extends Data
         public readonly Carbon|null|Optional $updated_at,
     ) {
         //
+    }
+
+    public static function fromPayloadHandlerController(
+        IntegrationType $integrationType,
+        PayloadInputData $payloadInput
+    ): PayloadData {
+        return PayloadData::from([
+            'integration_type_id' => $integrationType->id,
+            'payload' => $payloadInput->payload,
+            'path_parameters' => $payloadInput->pathParameters,
+            'payload_hash' => md5(json_encode($payloadInput, JSON_THROW_ON_ERROR)),
+            'stored_at' => now(),
+            'storing_status' => PayloadStoringStatusEnum::STORED,
+            'processing_status' => PayloadProcessingStatusEnum::READY,
+        ]);
     }
 
     public static function fromWebhookPayloadProcessor(IntegrationType $integrationType, array $payload): self

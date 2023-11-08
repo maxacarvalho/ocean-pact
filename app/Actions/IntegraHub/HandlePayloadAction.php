@@ -2,6 +2,7 @@
 
 namespace App\Actions\IntegraHub;
 
+use App\Data\IntegraHub\PayloadInputData;
 use App\Data\IntegraHub\PayloadSuccessResponseData;
 use App\Jobs\PayloadProcessors\PayloadForwarderProcessorJob;
 use App\Models\IntegraHub\IntegrationType;
@@ -19,22 +20,10 @@ readonly class HandlePayloadAction
     public function handle(
         IntegrationType $integrationType,
         Payload $payload,
-        array $payloadInput
+        PayloadInputData $payloadInput
     ): PayloadSuccessResponseData {
-        if ($integrationType->isFetchable()) {
-            return $this->handlesSynchronousIntegrationPayloadAction->handle(
-                $payload,
-                $integrationType,
-                $payloadInput
-            );
-        }
-
         if ($integrationType->isForwardable() && $integrationType->isSynchronous()) {
-            return $this->handlesSynchronousIntegrationPayloadAction->handle(
-                $payload,
-                $integrationType,
-                $payloadInput
-            );
+            return $this->handlesSynchronousIntegrationPayloadAction->handle($payload, $integrationType);
         }
 
         if ($integrationType->isForwardable()) {

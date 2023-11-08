@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Controllers\API\Quote;
+namespace App\Http\Controllers\QuotesPortal\API;
 
 use App\Enums\QuotesPortal\QuoteItemStatusEnum;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\MarkQuoteAsAcceptedRequest;
+use App\Http\Requests\ApproveQuoteItemsRequest;
 use App\Models\QuotesPortal\Quote;
 use App\Models\QuotesPortal\QuoteItem;
 use App\Utils\Str;
@@ -14,14 +14,14 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
-class MarkQuoteAsAcceptedController extends Controller
+class ApproveQuoteItemsController extends Controller
 {
-    public function __invoke(Quote $quote, MarkQuoteAsAcceptedRequest $request): JsonResponse
+    public function __invoke(Quote $quote, ApproveQuoteItemsRequest $request): JsonResponse
     {
         try {
             DB::beginTransaction();
 
-            $items = collect($request->validated('ITENS'))->pluck('ITEM');
+            $items = $request->validated(Quote::RELATION_ITEMS);
 
             $quotesExceptTheOneBeingAccepted = $quote
                 ->budget
@@ -48,19 +48,22 @@ class MarkQuoteAsAcceptedController extends Controller
             DB::commit();
 
             return response()->json([
-                'message' => Str::ucfirst(__('quote_item.items_marked_as_accepted')),
+                'title' => Str::ucfirst(__('quote_item.items_marked_as_accepted')),
             ]);
         } catch (Throwable $exception) {
             DB::rollBack();
 
             Log::error('MarkQuoteAsAcceptedController: could not mark quote items as accepted', [
-                'quote_id' => $quote->id,
+                'namespace' => __CLASS__,
                 'exception_message' => $exception->getMessage(),
+                'context' => [
+                    'quote_id' => $quote->id,
+                ],
             ]);
 
             return response()->json([
-                'message' => Str::ucfirst(__('quote_item.problem_marking_quote_items_as_accepted')),
-                'exception_message' => $exception->getMessage(),
+                'title' => Str::ucfirst(__('quote_item.problem_marking_quote_items_as_accepted')),
+                'errors' => [$exception->getMessage()],
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }

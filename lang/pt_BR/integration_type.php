@@ -25,4 +25,6 @@ return [
     'system_settings' => 'configurações do sistema',
     'headers' => 'cabeçalhos',
     'fetch' => 'buscar',
+    'path_parameters' => 'parâmetros da URL',
+    'parameter' => 'parâmetro',
 ];

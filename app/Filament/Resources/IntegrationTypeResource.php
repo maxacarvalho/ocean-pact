@@ -13,6 +13,7 @@ use App\Models\QuotesPortal\Company;
 use App\Utils\Str;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\KeyValue;
+use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -81,6 +82,14 @@ class IntegrationTypeResource extends Resource
 
                 KeyValue::make(IntegrationType::HEADERS)
                     ->label(Str::formatTitle(__('integration_type.headers'))),
+
+                Repeater::make(IntegrationType::PATH_PARAMETERS)
+                    ->label(Str::formatTitle(__('integration_type.path_parameters')))
+                    ->schema([
+                        TextInput::make('parameter')
+                            ->label(Str::formatTitle(__('integration_type.parameter')))
+                            ->required(),
+                    ]),
 
                 Fieldset::make(Str::formatTitle(__('integration_type.system_settings')))
                     ->visible(fn () => Auth::user()->isSuperAdmin())

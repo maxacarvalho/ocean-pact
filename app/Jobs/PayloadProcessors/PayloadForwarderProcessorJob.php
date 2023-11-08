@@ -38,14 +38,14 @@ class PayloadForwarderProcessorJob implements ShouldQueue
             ->withBody(json_encode($payload->payload, JSON_THROW_ON_ERROR))
             ->throw();
 
+        $url = $payload->integrationType->resolveTargetUrl($payload);
+
         $response = $httpClient->send(
             method: $payload->integrationType->type->value,
-            url: $payload->integrationType->target_url
+            url: $url
         )->json();
 
-        $payload->markAsDone(
-            json_encode($response, JSON_THROW_ON_ERROR)
-        );
+        $payload->markAsDone($response);
 
         $recordSuccessfulPayloadProcessingAttemptAction->handle(
             payloadId: $payload->id,

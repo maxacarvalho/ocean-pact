@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property int                              $id
  * @property int                              $integration_type_id
  * @property array                            $payload
+ * @property array|null                       $path_parameters
  * @property string|null                      $payload_hash
  * @property Carbon|null                      $stored_at
  * @property PayloadStoringStatusEnum         $storing_status
@@ -32,6 +33,7 @@ class Payload extends Model
     public const ID = 'id';
     public const INTEGRATION_TYPE_ID = 'integration_type_id';
     public const PAYLOAD = 'payload';
+    public const PATH_PARAMETERS = 'path_parameters';
     public const PAYLOAD_HASH = 'payload_hash';
     public const STORED_AT = 'stored_at';
     public const STORING_STATUS = 'storing_status';
@@ -56,6 +58,7 @@ class Payload extends Model
 
     protected $casts = [
         self::PAYLOAD => 'array',
+        self::PATH_PARAMETERS => 'array',
         self::STORED_AT => 'datetime',
         self::STORING_STATUS => PayloadStoringStatusEnum::class,
         self::PROCESSED_AT => 'datetime',
