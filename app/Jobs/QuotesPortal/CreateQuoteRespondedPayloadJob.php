@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Jobs;
+namespace App\Jobs\QuotesPortal;
 
 use App\Data\QuotesPortal\QuoteData;
 use App\Models\QuotesPortal\Quote;

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Casts;
+namespace App\Casts\QuotesPortal;
 
 use App\Models\QuotesPortal\QuoteItem;
 use Brick\Math\RoundingMode;

@@ -2,35 +2,39 @@
 
 namespace App\Actions\QuotesPortal\ProtheusIntegration;
 
-use App\Data\QuotesPortal\Quote\ProtheusQuotePayloadData;
+use App\Data\QuotesPortal\QuoteData;
+use App\Data\QuotesPortal\QuoteItemData;
+use App\Data\QuotesPortal\SellerData;
 use App\Models\QuotesPortal\Company;
 use App\Models\QuotesPortal\Quote;
 use App\Models\QuotesPortal\QuoteItem;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
-class ProcessQuotePayloadAction
+readonly class ProcessQuotePayloadAction
 {
     public function __construct(
-        private readonly FindOrCreateBuyerAction $findOrCreateBuyerAction,
-        private readonly FindOrCreateSupplierAction $findOrCreateSupplierAction,
-        private readonly FindOrCreateBudgetAction $findOrCreateBudgetAction,
-        private readonly FindOrCreateCurrencyAction $findOrCreateCurrencyAction,
-        private readonly FindOrCreatePaymentConditionAction $findOrCreatePaymentConditionAction,
-        private readonly FindOrCreateProductsAction $findOrCreateProductsAction,
-        private readonly CreateQuoteAction $createQuoteAction,
-        private readonly CreateSellerAction $createSellerAction
+        private FindOrCreateBuyerAction $findOrCreateBuyerAction,
+        private FindOrCreateSupplierAction $findOrCreateSupplierAction,
+        private FindOrCreateBudgetAction $findOrCreateBudgetAction,
+        private FindOrCreateCurrencyAction $findOrCreateCurrencyAction,
+        private FindOrCreatePaymentConditionAction $findOrCreatePaymentConditionAction,
+        private FindOrCreateProductsAction $findOrCreateProductsAction,
+        private CreateQuoteAction $createQuoteAction,
+        private CreateSellerAction $createSellerAction
     ) {
         //
     }
 
-    public function handle(ProtheusQuotePayloadData $quotePayloadData): Quote
+    public function handle(QuoteData $quotePayloadData): Quote
     {
         $company = $this->getCompany($quotePayloadData);
 
         $buyer = $this->findOrCreateBuyerAction->handle($quotePayloadData, $company);
 
         $supplier = $this->findOrCreateSupplierAction->handle($quotePayloadData, $company);
-        foreach ($quotePayloadData->VENDEDORES as $seller) {
+
+        /** @var SellerData $seller */
+        foreach ($quotePayloadData->supplier->sellers as $seller) {
             $this->createSellerAction->handle($seller, $supplier);
         }
 
@@ -38,19 +42,19 @@ class ProcessQuotePayloadAction
         $currency = $this->findOrCreateCurrencyAction->handle($quotePayloadData);
         $paymentCondition = $this->findOrCreatePaymentConditionAction->handle($quotePayloadData);
         $codeToProductsMapping = $this->findOrCreateProductsAction->handle($quotePayloadData);
-
         $quote = $this->createQuoteAction->handle($budget, $currency, $supplier, $paymentCondition, $buyer, $quotePayloadData);
 
-        foreach ($quotePayloadData->ITENS as $item) {
+        /** @var QuoteItemData $item */
+        foreach ($quotePayloadData->items as $item) {
             $quote->items()->create([
-                QuoteItem::PRODUCT_ID => $codeToProductsMapping[$item->PRODUTO->CODIGO],
-                QuoteItem::DESCRIPTION => $item->DESCRICAO,
-                QuoteItem::MEASUREMENT_UNIT => $item->UNIDADE_MEDIDA,
-                QuoteItem::ITEM => $item->ITEM,
-                QuoteItem::QUANTITY => $item->QUANTIDADE,
+                QuoteItem::PRODUCT_ID => $codeToProductsMapping[$item->product->code],
+                QuoteItem::DESCRIPTION => $item->description,
+                QuoteItem::MEASUREMENT_UNIT => $item->measurement_unit,
+                QuoteItem::ITEM => $item->item,
+                QuoteItem::QUANTITY => $item->quantity,
                 QuoteItem::CURRENCY => $currency->iso_code,
-                QuoteItem::UNIT_PRICE => $item->PRECO_UNITARIO,
-                QuoteItem::COMMENTS => $item->OBS,
+                QuoteItem::UNIT_PRICE => $item->unit_price,
+                QuoteItem::COMMENTS => $item->comments,
             ]);
         }
 
@@ -61,12 +65,12 @@ class ProcessQuotePayloadAction
     }
 
     /** @throws ModelNotFoundException */
-    private function getCompany(ProtheusQuotePayloadData $data): Company
+    private function getCompany(QuoteData $data): Company
     {
         /** @var Company $company */
         $company = Company::query()
-            ->where(Company::CODE, '=', $data->EMPRESA)
-            ->where(Company::CODE_BRANCH, '=', $data->FILIAL)
+            ->where(Company::CODE, '=', $data->company_code)
+            ->where(Company::CODE_BRANCH, '=', $data->company_code_branch)
             ->firstOrFail();
 
         return $company;

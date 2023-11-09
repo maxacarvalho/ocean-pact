@@ -10,12 +10,12 @@ class CurrencyData extends Data
 {
     public function __construct(
         public readonly int|Optional $id,
-        public readonly string $company_code,
+        public readonly string|Optional $company_code,
         public readonly int $protheus_currency_id,
         public readonly string $description,
         public readonly string $protheus_code,
         public readonly string $protheus_acronym,
-        public readonly string $iso_code,
+        public readonly string|Optional $iso_code,
         public readonly Carbon|null|Optional $created_at,
         public readonly Carbon|null|Optional $updated_at,
     ) {

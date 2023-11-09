@@ -24,6 +24,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property string                     $name
  * @property string                     $email
  * @property string|null                $buyer_code
+ * @property string|null                $seller_code
  * @property int|null                   $supplier_id
  * @property Carbon|null                $email_verified_at
  * @property string                     $password
@@ -48,6 +49,7 @@ class User extends Authenticatable implements FilamentUser
     public const NAME = 'name';
     public const EMAIL = 'email';
     public const BUYER_CODE = 'buyer_code';
+    public const SELLER_CODE = 'seller_code';
     public const SUPPLIER_ID = 'supplier_id';
     public const EMAIL_VERIFIED_AT = 'email_verified_at';
     public const PASSWORD = 'password';
@@ -144,7 +146,12 @@ class User extends Authenticatable implements FilamentUser
 
     public function suppliers(): BelongsToMany
     {
-        return $this->belongsToMany(Supplier::class)->withPivot(SupplierUser::CODE);
+        return $this->belongsToMany(
+            related: Supplier::class,
+            table: SupplierUser::TABLE_NAME,
+            foreignPivotKey: SupplierUser::USER_ID,
+            relatedPivotKey: SupplierUser::SUPPLIER_ID,
+        )->withPivot(SupplierUser::CODE);
     }
 
     public function supplier(): BelongsTo

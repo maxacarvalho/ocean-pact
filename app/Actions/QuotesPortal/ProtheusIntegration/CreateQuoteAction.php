@@ -2,7 +2,7 @@
 
 namespace App\Actions\QuotesPortal\ProtheusIntegration;
 
-use App\Data\QuotesPortal\Quote\ProtheusQuotePayloadData;
+use App\Data\QuotesPortal\QuoteData;
 use App\Enums\QuotesPortal\QuoteStatusEnum;
 use App\Models\QuotesPortal\Budget;
 use App\Models\QuotesPortal\Currency;
@@ -19,17 +19,17 @@ class CreateQuoteAction
         Supplier $supplier,
         PaymentCondition $paymentCondition,
         User $buyer,
-        ProtheusQuotePayloadData $data
+        QuoteData $data
     ): Quote {
         return $budget->quotes()->create([
-            Quote::COMPANY_CODE => $data->EMPRESA,
-            Quote::COMPANY_CODE_BRANCH => $data->FILIAL,
+            Quote::COMPANY_CODE => $data->company_code,
+            Quote::COMPANY_CODE_BRANCH => $data->company_code_branch,
             Quote::SUPPLIER_ID => $supplier->id,
             Quote::PAYMENT_CONDITION_ID => $paymentCondition->id,
             Quote::BUYER_ID => $buyer->id,
-            Quote::QUOTE_NUMBER => $data->COTACAO,
+            Quote::QUOTE_NUMBER => $data->quote_number,
             Quote::STATUS => QuoteStatusEnum::DRAFT,
-            Quote::COMMENTS => $data->OBSERVACAO_GERAL,
+            Quote::COMMENTS => $data->comments,
             Quote::CURRENCY_ID => $currency->id,
         ]);
     }

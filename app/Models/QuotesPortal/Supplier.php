@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 
 /**
@@ -34,6 +33,7 @@ use Illuminate\Support\Carbon;
  * @property-read Company|null         $company
  * @property-read Company[]|Collection $companies
  * @property-read User[]|Collection    $users
+ * @property-read User[]|Collection    $sellers
  */
 class Supplier extends Model
 {
@@ -61,6 +61,7 @@ class Supplier extends Model
     public const RELATION_COMPANY = 'company';
     public const RELATION_USERS = 'users';
     public const RELATION_COMPANIES = 'companies';
+    public const RELATION_SELLERS = 'sellers';
 
     protected $table = self::TABLE_NAME;
     protected $guarded = [
@@ -88,9 +89,24 @@ class Supplier extends Model
         );
     }
 
-    public function users(): HasMany
+    public function users(): BelongsToMany
     {
-        return $this->hasMany(User::class);
+        return $this->belongsToMany(
+            related: User::class,
+            table: SupplierUser::TABLE_NAME,
+            foreignPivotKey: SupplierUser::SUPPLIER_ID,
+            relatedPivotKey: SupplierUser::USER_ID,
+        )->withPivot(SupplierUser::CODE);
+    }
+
+    public function sellers(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            related: User::class,
+            table: SupplierUser::TABLE_NAME,
+            foreignPivotKey: SupplierUser::SUPPLIER_ID,
+            relatedPivotKey: SupplierUser::USER_ID,
+        )->withPivot(SupplierUser::CODE);
     }
 
     protected function cnpjCpf(): Attribute

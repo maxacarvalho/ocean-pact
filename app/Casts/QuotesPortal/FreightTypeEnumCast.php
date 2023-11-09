@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Casts;
+namespace App\Casts\QuotesPortal;
 
 use App\Enums\QuotesPortal\FreightTypeEnum;
 use Spatie\LaravelData\Casts\Cast;

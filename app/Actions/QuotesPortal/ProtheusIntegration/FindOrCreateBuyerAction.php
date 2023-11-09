@@ -2,7 +2,7 @@
 
 namespace App\Actions\QuotesPortal\ProtheusIntegration;
 
-use App\Data\QuotesPortal\Quote\ProtheusQuotePayloadData;
+use App\Data\QuotesPortal\QuoteData;
 use App\Models\QuotesPortal\Company;
 use App\Models\QuotesPortal\CompanyUser;
 use App\Models\Role;
@@ -11,19 +11,19 @@ use App\Utils\Str;
 
 class FindOrCreateBuyerAction
 {
-    public function handle(ProtheusQuotePayloadData $data, Company $company): User
+    public function handle(QuoteData $data, Company $company): User
     {
         /** @var User|null $buyer */
         $buyer = User::query()
             ->with([User::RELATION_COMPANIES])
-            ->where(User::EMAIL, '=', $data->COMPRADOR->EMAIL)
+            ->where(User::EMAIL, '=', $data->buyer->email)
             ->first();
 
         if (null === $buyer) {
             /** @var User $buyer */
             $buyer = User::query()->create([
-                User::NAME => $data->COMPRADOR->NOME,
-                User::EMAIL => $data->COMPRADOR->EMAIL,
+                User::NAME => $data->buyer->name,
+                User::EMAIL => $data->buyer->email,
                 User::PASSWORD => bcrypt(Str::random(30)),
                 User::IS_DRAFT => true,
             ]);
@@ -33,7 +33,7 @@ class FindOrCreateBuyerAction
         $companyUser = CompanyUser::query()
             ->where(CompanyUser::USER_ID, '=', $buyer->id)
             ->where(CompanyUser::COMPANY_ID, '=', $company->id)
-            ->where(CompanyUser::BUYER_CODE, '=', $data->COMPRADOR->CODIGO)
+            ->where(CompanyUser::BUYER_CODE, '=', $data->buyer->buyer_code)
             ->first();
 
         if (null === $companyUser) {
@@ -41,7 +41,7 @@ class FindOrCreateBuyerAction
                 ->create([
                     CompanyUser::USER_ID => $buyer->id,
                     CompanyUser::COMPANY_ID => $company->id,
-                    CompanyUser::BUYER_CODE => $data->COMPRADOR->CODIGO,
+                    CompanyUser::BUYER_CODE => $data->buyer->buyer_code,
                 ]);
         }
 

@@ -13,11 +13,11 @@ class BudgetData extends Data
 {
     public function __construct(
         public readonly int|Optional $id,
-        public readonly string $company_code,
+        public readonly string|Optional $company_code,
         public readonly string|null|Optional $company_code_branch,
         public readonly string $budget_number,
         #[WithCast(EnumCast::class)]
-        public readonly BudgetStatusEnum $status,
+        public readonly BudgetStatusEnum|Optional $status,
         public readonly Carbon|null|Optional $created_at,
         public readonly Carbon|null|Optional $updated_at,
     ) {

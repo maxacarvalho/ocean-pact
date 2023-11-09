@@ -2,7 +2,7 @@
 
 namespace App\Actions\QuotesPortal\ProtheusIntegration;
 
-use App\Data\QuotesPortal\Quote\ProtheusSellerPayloadData;
+use App\Data\QuotesPortal\SellerData;
 use App\Models\QuotesPortal\Supplier;
 use App\Models\QuotesPortal\SupplierUser;
 use App\Models\Role;
@@ -11,20 +11,20 @@ use App\Utils\Str;
 
 class CreateSellerAction
 {
-    public function handle(ProtheusSellerPayloadData $data, Supplier $supplier)
+    public function handle(SellerData $data, Supplier $supplier): void
     {
         /** @var User|null $seller */
         $seller = User::query()
-            ->where(User::EMAIL, '=', $data->EMAIL)
+            ->where(User::EMAIL, '=', $data->email)
             ->first();
 
         if (null === $seller) {
             $seller = User::query()
                 ->create([
-                    User::NAME => $data->NOME,
-                    User::EMAIL => $data->EMAIL,
+                    User::NAME => $data->name,
+                    User::EMAIL => $data->email,
                     User::IS_DRAFT => true,
-                    User::ACTIVE => $data->STATUS,
+                    User::ACTIVE => $data->active,
                     User::PASSWORD => bcrypt(Str::random(30)),
                 ]);
         }
@@ -33,7 +33,7 @@ class CreateSellerAction
         $supplierUser = SupplierUser::query()
             ->where(SupplierUser::USER_ID, '=', $seller->id)
             ->where(SupplierUser::SUPPLIER_ID, '=', $supplier->id)
-            ->where(SupplierUser::CODE, '=', $data->CODIGO)
+            ->where(SupplierUser::CODE, '=', $data->seller_code)
             ->first();
 
         if (null === $supplierUser) {
@@ -41,7 +41,7 @@ class CreateSellerAction
                 ->create([
                     SupplierUser::USER_ID => $seller->id,
                     SupplierUser::SUPPLIER_ID => $supplier->id,
-                    SupplierUser::CODE => $data->CODIGO,
+                    SupplierUser::CODE => $data->seller_code,
                 ]);
         }
 

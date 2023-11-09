@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Data\QuotesPortal\Quote;
+namespace App\Data\QuotesPortal;
 
 use Spatie\LaravelData\Data;
 

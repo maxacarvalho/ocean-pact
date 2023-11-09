@@ -2,7 +2,7 @@
 
 namespace App\Models\QuotesPortal;
 
-use App\Casts\MoneyCast;
+use App\Casts\QuotesPortal\MoneyCast;
 use App\Enums\QuotesPortal\QuoteItemStatusEnum;
 use Brick\Money\Money;
 use Illuminate\Database\Eloquent\Model;

@@ -3,7 +3,7 @@
 namespace App\Listeners;
 
 use App\Events\QuotePortal\QuoteRespondedEvent;
-use App\Jobs\CreateQuoteRespondedPayloadJob;
+use App\Jobs\QuotesPortal\CreateQuoteRespondedPayloadJob;
 use App\Models\QuotesPortal\Quote;
 
 class PrepareRespondedQuoteForCollectionListener

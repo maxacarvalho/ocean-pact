@@ -23,7 +23,8 @@ readonly class HandlePayloadAction
         PayloadInputData $payloadInput
     ): PayloadSuccessResponseData {
         if ($integrationType->isForwardable() && $integrationType->isSynchronous()) {
-            return $this->handlesSynchronousIntegrationPayloadAction->handle($payload, $integrationType);
+            return $this->handlesSynchronousIntegrationPayloadAction->
+            handle($payload, $integrationType);
         }
 
         if ($integrationType->isForwardable()) {

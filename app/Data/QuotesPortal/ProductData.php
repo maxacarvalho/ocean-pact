@@ -10,7 +10,7 @@ class ProductData extends Data
 {
     public function __construct(
         public readonly int|Optional $id,
-        public readonly string $company_code,
+        public readonly string|Optional $company_code,
         public readonly string|null $company_code_branch,
         public readonly string $code,
         public readonly string $description,
