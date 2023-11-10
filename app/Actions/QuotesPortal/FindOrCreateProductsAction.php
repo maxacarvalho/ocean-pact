@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Actions\QuotesPortal\ProtheusIntegration;
+namespace App\Actions\QuotesPortal;
 
 use App\Data\QuotesPortal\QuoteData;
 use App\Data\QuotesPortal\QuoteItemData;

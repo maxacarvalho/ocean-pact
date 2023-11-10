@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Actions\QuotesPortal\ProtheusIntegration;
+namespace App\Actions\QuotesPortal;
 
 use App\Data\QuotesPortal\QuoteData;
 use App\Data\QuotesPortal\QuoteItemData;
 use App\Data\QuotesPortal\SellerData;
+use App\Events\QuotePortal\QuoteCreatedEvent;
 use App\Models\QuotesPortal\Company;
 use App\Models\QuotesPortal\Quote;
 use App\Models\QuotesPortal\QuoteItem;
@@ -60,6 +61,8 @@ readonly class ProcessQuotePayloadAction
 
         $quote->markAsPending();
         $quote->refresh();
+
+        QuoteCreatedEvent::dispatch($quote->id);
 
         return $quote;
     }

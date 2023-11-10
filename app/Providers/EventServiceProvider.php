@@ -2,8 +2,12 @@
 
 namespace App\Providers;
 
+use App\Events\QuotePortal\BuyerCreatedEvent;
+use App\Events\QuotePortal\QuoteCreatedEvent;
 use App\Events\QuotePortal\QuoteRespondedEvent;
-use App\Listeners\PrepareRespondedQuoteForCollectionListener;
+use App\Listeners\QuotesPortal\BuyerCreatedEventListener;
+use App\Listeners\QuotesPortal\PrepareRespondedQuoteForCollectionListener;
+use App\Listeners\QuotesPortal\QuoteCreatedEventListener;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -21,6 +25,12 @@ class EventServiceProvider extends ServiceProvider
         ],
         QuoteRespondedEvent::class => [
             PrepareRespondedQuoteForCollectionListener::class,
+        ],
+        QuoteCreatedEvent::class => [
+            QuoteCreatedEventListener::class,
+        ],
+        BuyerCreatedEvent::class => [
+            BuyerCreatedEventListener::class,
         ],
     ];
 

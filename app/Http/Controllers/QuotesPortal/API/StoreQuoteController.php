@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers\QuotesPortal\API;
 
-use App\Actions\QuotesPortal\ProtheusIntegration\ProcessQuotePayloadAction;
+use App\Actions\QuotesPortal\ProcessQuotePayloadAction;
 use App\Data\QuotesPortal\QuoteData;
 use App\Data\QuotesPortal\StoreQuoteErrorResponseData;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\QuotesPortal\StoreQuoteRequest;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Log;
 use Throwable;
@@ -19,7 +20,7 @@ class StoreQuoteController extends Controller
         //
     }
 
-    public function __invoke(StoreQuoteRequest $request)
+    public function __invoke(StoreQuoteRequest $request): QuoteData|JsonResponse
     {
         try {
             $quotePayloadData = QuoteData::from($request->validated());

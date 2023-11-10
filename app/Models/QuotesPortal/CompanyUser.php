@@ -17,4 +17,6 @@ class CompanyUser extends Pivot
     public const BUYER_CODE = 'buyer_code';
 
     protected $table = self::TABLE_NAME;
+
+    public $timestamps = false;
 }

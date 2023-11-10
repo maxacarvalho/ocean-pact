@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Actions\QuotesPortal\ProtheusIntegration;
+namespace App\Actions\QuotesPortal;
 
 use App\Data\QuotesPortal\QuoteData;
+use App\Events\QuotePortal\BuyerCreatedEvent;
 use App\Models\QuotesPortal\Company;
 use App\Models\QuotesPortal\CompanyUser;
 use App\Models\Role;
@@ -27,6 +28,8 @@ class FindOrCreateBuyerAction
                 User::PASSWORD => bcrypt(Str::random(30)),
                 User::IS_DRAFT => true,
             ]);
+
+            BuyerCreatedEvent::dispatch($buyer->id);
         }
 
         /** @var CompanyUser|null $companyUser */
