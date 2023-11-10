@@ -54,7 +54,7 @@ class CreateQuoteRespondedPayloadJob implements ShouldQueue
         $quoteData = QuoteData::from($quote);
 
         WebhookCall::create()
-            ->url('https://oceanpact.test/integra-hub/webhooks/payload?integration-type-code=cotacoes-respondidas')
+            ->url(config('integra-hub.base_url').'/integra-hub/webhooks/payload?integration-type-code=cotacoes-respondidas')
             ->payload($quoteData->toArray())
             ->useSecret(config('integra-hub.webhook-secret'))
             ->dispatchSync();
