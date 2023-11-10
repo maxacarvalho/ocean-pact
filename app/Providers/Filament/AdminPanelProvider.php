@@ -4,8 +4,7 @@ namespace App\Providers\Filament;
 
 use App\Filament\Pages\Auth\Login;
 use App\Http\Middleware\SetLocaleMiddleware;
-use App\Livewire\BuyerRegistration;
-use App\Livewire\SupplierRegistration;
+use App\Livewire\UserAccountActivation;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -79,12 +78,9 @@ class AdminPanelProvider extends PanelProvider
                     ->url('/admin/my-profile'),
             ])
             ->routes(function () {
-                Route::get('buyer-registration/{token}', BuyerRegistration::class)
+                Route::get('user-activation/{token}', UserAccountActivation::class)
                     ->middleware('signed')
-                    ->name('buyer-registration');
-
-                Route::get('supplier-registration/{token}', SupplierRegistration::class)
-                    ->name('supplier-registration');
+                    ->name('user-activation');
             });
     }
 }

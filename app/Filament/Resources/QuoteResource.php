@@ -16,6 +16,7 @@ use App\Models\QuotesPortal\PaymentCondition;
 use App\Models\QuotesPortal\Quote;
 use App\Models\QuotesPortal\QuoteItem;
 use App\Models\QuotesPortal\Supplier;
+use App\Models\QuotesPortal\SupplierUser;
 use App\Models\Role;
 use App\Models\User;
 use App\Utils\Str;
@@ -209,7 +210,12 @@ class QuoteResource extends Resource
                 $user = Auth::user();
 
                 return $query
-                    ->with([Quote::RELATION_SUPPLIER, Quote::RELATION_BUDGET])
+                    ->with([
+                        Quote::RELATION_SUPPLIER => [
+                            Supplier::RELATION_SELLERS,
+                        ],
+                        Quote::RELATION_BUDGET,
+                    ])
                     ->select([
                         Quote::TABLE_NAME.'.'.Quote::ID,
                         Quote::TABLE_NAME.'.'.Quote::COMPANY_CODE,
@@ -250,7 +256,12 @@ class QuoteResource extends Resource
                             ->limit(1),
                     ])
                     ->when($user->isSeller(), function (EloquentBuilder $query) use ($user) {
-                        $query->where(Quote::TABLE_NAME.'.'.Quote::SUPPLIER_ID, '=', $user->supplier_id);
+                        $query->whereHas(
+                            Quote::RELATION_SUPPLIER.'.'.Supplier::RELATION_SELLERS,
+                            function (EloquentBuilder $query) use ($user) {
+                                $query->where(SupplierUser::USER_ID, '=', $user->id);
+                            }
+                        );
                     });
             })
             ->columns([

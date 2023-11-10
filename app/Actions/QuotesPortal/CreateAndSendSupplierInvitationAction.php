@@ -30,6 +30,10 @@ class CreateAndSendSupplierInvitationAction
         );
 
         foreach ($supplier->sellers as $seller) {
+            if (! $seller->isActive()) {
+                continue;
+            }
+
             Mail::to($seller->email)->send(
                 new QuoteCreatedMail(
                     $supplier->name,

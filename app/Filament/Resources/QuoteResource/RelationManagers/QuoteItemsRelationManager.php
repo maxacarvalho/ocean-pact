@@ -85,7 +85,7 @@ class QuoteItemsRelationManager extends RelationManager
                             if (! $file->exists()) {
                                 return null;
                             }
-                        } catch (UnableToCheckFileExistence $exception) {
+                        } catch (UnableToCheckFileExistence) {
                             return null;
                         }
 
@@ -108,7 +108,7 @@ class QuoteItemsRelationManager extends RelationManager
                             if (! $file->exists()) {
                                 return null;
                             }
-                        } catch (UnableToCheckFileExistence $exception) {
+                        } catch (UnableToCheckFileExistence) {
                             return null;
                         }
 
@@ -307,6 +307,16 @@ class QuoteItemsRelationManager extends RelationManager
                 MaskedInputColumn::make(QuoteItem::UNIT_PRICE)
                     ->label(Str::formatTitle(__('quote_item.unit_price')))
                     ->rules(['required'])
+                    ->state(function (Model|QuoteItem $record) {
+                        return $record->getFormattedUnitPrice();
+                    })
+                    ->updateStateUsing(function (string $state, Model|QuoteItem $record) {
+                        $record->update([
+                            QuoteItem::UNIT_PRICE => $state,
+                        ]);
+
+                        return $record->getFormattedUnitPrice();
+                    })
                     ->mask(function (Model|Quote $record) {
                         if ('BRL' === $record->currency) {
                             return RawJs::make('$money($input, \',\', \'.\')');

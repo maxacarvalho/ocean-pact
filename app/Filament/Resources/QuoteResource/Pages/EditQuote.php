@@ -31,7 +31,7 @@ class EditQuote extends EditRecord
                     return false;
                 }
 
-                return $item->should_be_quoted && ($item->unit_price <= 0 || $item->delivery_in_days === 0);
+                return $item->should_be_quoted && ($item->unit_price->getMinorAmount()->toInt() <= 0 || $item->delivery_in_days === 0);
             });
 
             if ($items) {

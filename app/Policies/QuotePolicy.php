@@ -18,7 +18,7 @@ class QuotePolicy
     public function view(User $user, Quote $quote): bool
     {
         if ($user->isSeller()) {
-            return $quote->supplier_id === $user->supplier_id
+            return $quote->supplier->sellers->contains($user)
                 && $user->can('view_quote') && ($quote->isResponded() || $quote->isAnalyzed());
         }
 
@@ -33,7 +33,7 @@ class QuotePolicy
     public function update(User $user, Quote $quote): bool
     {
         if ($user->isSeller()) {
-            return $quote->supplier_id === $user->supplier_id
+            return $quote->supplier->sellers->contains($user)
                 && $user->can('update_quote') && $quote->canBeResponded();
         }
 

@@ -7,13 +7,7 @@
         </x-slot>
     @endif
 
-    <div>
-        <h4 class="font-bold tracking-tight text-center text-lg">
-            {{ \App\Utils\Str::ucfirst(__('invitation.create_supplier_user_account')) }}
-        </h4>
-    </div>
-
-    <x-filament-panels::form wire:submit="register">
+    <x-filament-panels::form wire:submit="activate">
         {{ $this->form }}
 
         <x-filament-panels::form.actions

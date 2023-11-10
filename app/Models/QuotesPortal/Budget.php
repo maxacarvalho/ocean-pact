@@ -37,11 +37,13 @@ class Budget extends Model
     public const RELATION_QUOTES = 'quotes';
 
     protected $table = self::TABLE_NAME;
+
     protected $guarded = [
         self::ID,
         self::CREATED_AT,
         self::UPDATED_AT,
     ];
+
     protected $casts = [
         self::STATUS => BudgetStatusEnum::class,
     ];

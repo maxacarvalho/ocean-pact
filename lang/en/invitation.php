@@ -17,7 +17,7 @@ return [
     'greetings' => 'Hello, :name',
     'click_the_button_below_to_finish_your_registration' => 'Click the button below to finish your registration',
     'finish_registration' => 'Finish registration',
-    'buyer_registration_page_title' => 'complete your registration',
+    'account_registration_page_title' => 'complete your registration',
     'buyer_registration_notification_success' => 'registration was successfully completed!',
     'new_quote_ready_for_reply' => 'new quote ready for reply - :company',
     'click_below_to_reply_the_quote' => 'click below to reply the quote',

@@ -64,6 +64,7 @@ class Supplier extends Model
     public const RELATION_SELLERS = 'sellers';
 
     protected $table = self::TABLE_NAME;
+
     protected $guarded = [
         self::ID,
         self::CREATED_AT,
@@ -120,6 +121,23 @@ class Supplier extends Model
                 return match (strlen($value)) {
                     11 => preg_replace("/(\d{3})(\d{3})(\d{3})(\d{2})/", '$1.$2.$3-$4', $value),
                     14 => preg_replace("/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/", '$1.$2.$3/$4-$5', $value),
+                    default => $value,
+                };
+            },
+            set: static fn ($value) => preg_replace("/\D/", '', $value),
+        );
+    }
+
+    protected function postalCode(): Attribute
+    {
+        return Attribute::make(
+            get: static function ($value) {
+                if (empty($value)) {
+                    return $value;
+                }
+
+                return match (strlen($value)) { // 13085-420
+                    8 => preg_replace("/(\d{5})(\d{3})/", '$1-$2', $value),
                     default => $value,
                 };
             },

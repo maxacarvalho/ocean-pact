@@ -13,6 +13,7 @@ use Filament\Tables\Table;
 class ProcessingAttemptsRelationManager extends RelationManager
 {
     protected static string $relationship = 'processingAttempts';
+
     protected static ?string $inverseRelationship = 'payload';
 
     protected static ?string $recordTitleAttribute = 'status';

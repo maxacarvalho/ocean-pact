@@ -30,7 +30,9 @@ class Currency extends Model
     public const UPDATED_AT = 'updated_at';
 
     protected $table = self::TABLE_NAME;
+
     protected $primaryKey = self::ID;
+
     protected $guarded = [
         self::ID,
         self::CREATED_AT,

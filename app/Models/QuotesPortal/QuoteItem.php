@@ -62,11 +62,13 @@ class QuoteItem extends Model
     public const RELATION_PRODUCT = 'product';
 
     protected $table = self::TABLE_NAME;
+
     protected $guarded = [
         self::ID,
         self::CREATED_AT,
         self::UPDATED_AT,
     ];
+
     protected $casts = [
         self::UNIT_PRICE => MoneyCast::class,
         self::IPI => 'float',
@@ -103,11 +105,11 @@ class QuoteItem extends Model
         $currency = $this->currency;
 
         if ('BRL' === $currency) {
-            $formatter = new NumberFormatter('pt_BR', NumberFormatter::PATTERN_DECIMAL);
+            $formatter = new NumberFormatter('pt_BR', NumberFormatter::DECIMAL);
             $formatter->setSymbol(NumberFormatter::DECIMAL_SEPARATOR_SYMBOL, ',');
             $formatter->setSymbol(NumberFormatter::GROUPING_SEPARATOR_SYMBOL, '.');
         } else {
-            $formatter = new NumberFormatter('en_US', NumberFormatter::PATTERN_DECIMAL);
+            $formatter = new NumberFormatter('en_US', NumberFormatter::DECIMAL);
             $formatter->setSymbol(NumberFormatter::DECIMAL_SEPARATOR_SYMBOL, '.');
             $formatter->setSymbol(NumberFormatter::GROUPING_SEPARATOR_SYMBOL, ',');
         }

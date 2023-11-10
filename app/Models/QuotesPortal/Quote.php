@@ -73,11 +73,13 @@ class Quote extends Model
     public const RELATION_CURRENCY = 'currency';
 
     protected $table = self::TABLE_NAME;
+
     protected $guarded = [
         self::ID,
         self::CREATED_AT,
         self::UPDATED_AT,
     ];
+
     protected $casts = [
         self::STATUS => QuoteStatusEnum::class,
         self::VALID_UNTIL => 'date',

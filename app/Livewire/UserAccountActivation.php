@@ -3,7 +3,7 @@
 namespace App\Livewire;
 
 use App\Enums\QuotesPortal\InvitationStatusEnum;
-use App\Models\QuotesPortal\BuyerInvitation;
+use App\Models\QuotesPortal\UserInvitation;
 use App\Models\User;
 use App\Utils\Str;
 use DanHarrin\LivewireRateLimiting\Exceptions\TooManyRequestsException;
@@ -26,7 +26,7 @@ use Livewire\Features\SupportRedirects\Redirector;
 /**
  * @property Form $form
  */
-class BuyerRegistration extends SimplePage
+class UserAccountActivation extends SimplePage
 {
     use InteractsWithFormActions;
     use WithRateLimiting;
@@ -40,13 +40,13 @@ class BuyerRegistration extends SimplePage
     #[Locked]
     public int $invitationId;
 
-    protected static string $view = 'livewire.buyer-registration';
+    protected static string $view = 'livewire.account-activation';
 
     public ?array $data = [];
 
     public function getTitle(): string|Htmlable
     {
-        return Str::ucfirst(__('invitation.buyer_registration_page_title'));
+        return Str::ucfirst(__('invitation.account_registration_page_title'));
     }
 
     public function mount(string $token): void
@@ -55,19 +55,22 @@ class BuyerRegistration extends SimplePage
             redirect()->intended(Filament::getUrl());
         }
 
-        /** @var BuyerInvitation $invitation */
-        $invitation = BuyerInvitation::query()
-            ->with(BuyerInvitation::RELATION_BUYER)
-            ->where(BuyerInvitation::TOKEN, '=', $token)
-            ->where(BuyerInvitation::STATUS, '=', InvitationStatusEnum::SENT)
+        /** @var UserInvitation $invitation */
+        $invitation = UserInvitation::query()
+            ->with([
+                UserInvitation::RELATION_USER,
+                UserInvitation::RELATION_QUOTE,
+            ])
+            ->where(UserInvitation::TOKEN, '=', $token)
+            ->where(UserInvitation::STATUS, '=', InvitationStatusEnum::SENT)
             ->firstOrFail();
 
-        if (null === $invitation->buyer) {
+        if (null === $invitation->user) {
             abort(404);
         }
 
         $this->invitationId = $invitation->id;
-        $user = $invitation->buyer;
+        $user = $invitation->user;
         $this->email = $user->email;
         $this->userId = $user->id;
 
@@ -117,14 +120,14 @@ class BuyerRegistration extends SimplePage
             ->url(filament()->getLoginUrl());
     }
 
-    public function getRegisterFormAction(): Action
+    public function getActivateAccountFormAction(): Action
     {
         return Action::make('register')
             ->label(__('filament-panels::pages/auth/register.form.actions.register.label'))
             ->submit('register');
     }
 
-    public function register(): RedirectResponse|Redirector|null
+    public function activate(): RedirectResponse|Redirector|null
     {
         try {
             $this->rateLimit(5);
@@ -148,20 +151,21 @@ class BuyerRegistration extends SimplePage
             return null;
         }
 
-        /** @var BuyerInvitation $invitation */
-        $invitation = BuyerInvitation::query()->findOrFail($this->invitationId);
+        /** @var UserInvitation $invitation */
+        $invitation = UserInvitation::query()->findOrFail($this->invitationId);
 
         /** @var User $user */
         $user = User::query()->findOrFail($this->userId);
 
         $data = $this->form->getState();
 
-        $user->password = $data[User::PASSWORD];
-        $user->setRememberToken(Str::random(60));
-        $user->is_draft = false;
-        $user->save();
+        $user->activateAccount($data[User::PASSWORD]);
 
         $invitation->markAsAccepted();
+
+        if ($invitation->quote_id && $invitation->user->isSeller()) {
+            return redirect()->route('filament.admin.resources.quotes.edit', ['record' => $invitation->quote_id]);
+        }
 
         return redirect()->to(Filament::getPanel('admin')->getLoginUrl());
     }
@@ -169,7 +173,7 @@ class BuyerRegistration extends SimplePage
     protected function getFormActions(): array
     {
         return [
-            $this->getRegisterFormAction(),
+            $this->getActivateAccountFormAction(),
         ];
     }
 

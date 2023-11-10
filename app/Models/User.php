@@ -7,6 +7,7 @@ use App\Models\QuotesPortal\Company;
 use App\Models\QuotesPortal\CompanyUser;
 use App\Models\QuotesPortal\Supplier;
 use App\Models\QuotesPortal\SupplierUser;
+use App\Utils\Str;
 use Carbon\Carbon;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
@@ -86,6 +87,33 @@ class User extends Authenticatable implements FilamentUser
         self::ACTIVE => 'boolean',
     ];
 
+    public function companies(): BelongsToMany
+    {
+        return $this
+            ->belongsToMany(
+                Company::class,
+                CompanyUser::TABLE_NAME,
+                CompanyUser::USER_ID,
+                CompanyUser::COMPANY_ID
+            )
+            ->withPivot(CompanyUser::BUYER_CODE);
+    }
+
+    public function suppliers(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            related: Supplier::class,
+            table: SupplierUser::TABLE_NAME,
+            foreignPivotKey: SupplierUser::USER_ID,
+            relatedPivotKey: SupplierUser::SUPPLIER_ID,
+        )->withPivot(SupplierUser::CODE);
+    }
+
+    public function supplier(): BelongsTo
+    {
+        return $this->belongsTo(Supplier::class);
+    }
+
     public function isSuperAdmin(): bool
     {
         return $this->hasRole(config('filament-shield.super_admin.name'));
@@ -117,6 +145,11 @@ class User extends Authenticatable implements FilamentUser
         );
     }
 
+    public function isActive(): bool
+    {
+        return $this->active;
+    }
+
     public function canAccessPanel(Panel $panel): bool
     {
         return true;
@@ -132,30 +165,11 @@ class User extends Authenticatable implements FilamentUser
         return $this->isNotSuperAdmin();
     }
 
-    public function companies(): BelongsToMany
+    public function activateAccount(string $password): void
     {
-        return $this
-            ->belongsToMany(
-                Company::class,
-                CompanyUser::TABLE_NAME,
-                CompanyUser::USER_ID,
-                CompanyUser::COMPANY_ID
-            )
-            ->withPivot(CompanyUser::BUYER_CODE);
-    }
-
-    public function suppliers(): BelongsToMany
-    {
-        return $this->belongsToMany(
-            related: Supplier::class,
-            table: SupplierUser::TABLE_NAME,
-            foreignPivotKey: SupplierUser::USER_ID,
-            relatedPivotKey: SupplierUser::SUPPLIER_ID,
-        )->withPivot(SupplierUser::CODE);
-    }
-
-    public function supplier(): BelongsTo
-    {
-        return $this->belongsTo(Supplier::class);
+        $this->password = $password;
+        $this->setRememberToken(Str::random(60));
+        $this->is_draft = false;
+        $this->save();
     }
 }

@@ -37,11 +37,13 @@ class SupplierInvitation extends Model
     public const RELATION_QUOTE = 'quote';
 
     protected $table = self::TABLE_NAME;
+
     protected $guarded = [
         self::ID,
         self::CREATED_AT,
         self::UPDATED_AT,
     ];
+
     protected $casts = [
         self::SENT_AT => 'datetime',
         self::STATUS => InvitationStatusEnum::class,

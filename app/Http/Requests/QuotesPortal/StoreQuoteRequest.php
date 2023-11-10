@@ -14,6 +14,7 @@ use App\Models\User;
 use App\Rules\CnpjRule;
 use Closure;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreQuoteRequest extends FormRequest
 {
@@ -52,7 +53,12 @@ class StoreQuoteRequest extends FormRequest
                     }
                 },
             ],
-            Quote::QUOTE_NUMBER => ['required'],
+            Quote::QUOTE_NUMBER => [
+                'required',
+                Rule::unique(Quote::TABLE_NAME, Quote::QUOTE_NUMBER)
+                    ->where(Quote::COMPANY_CODE, $this->input(Quote::COMPANY_CODE))
+                    ->where(Quote::COMPANY_CODE_BRANCH, $this->input(Quote::COMPANY_CODE_BRANCH)),
+            ],
             Quote::COMMENTS => ['nullable'],
 
             Quote::RELATION_BUDGET => ['required', 'array'],

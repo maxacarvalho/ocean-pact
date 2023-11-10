@@ -32,6 +32,7 @@ class PaymentCondition extends Model
     public const RELATION_COMPANY = 'company';
 
     protected $table = self::TABLE_NAME;
+
     protected $guarded = [
         self::ID,
         self::CREATED_AT,
