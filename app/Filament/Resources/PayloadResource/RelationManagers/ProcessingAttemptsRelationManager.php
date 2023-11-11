@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources\PayloadResource\RelationManagers;
 
-use App\Models\PayloadProcessingAttempt;
+use App\Models\IntegraHub\PayloadProcessingAttempt;
 use App\Utils\Str;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
@@ -13,6 +13,7 @@ use Filament\Tables\Table;
 class ProcessingAttemptsRelationManager extends RelationManager
 {
     protected static string $relationship = 'processingAttempts';
+
     protected static ?string $inverseRelationship = 'payload';
 
     protected static ?string $recordTitleAttribute = 'status';
@@ -48,8 +49,6 @@ class ProcessingAttemptsRelationManager extends RelationManager
             ->columns([
                 TextColumn::make(PayloadProcessingAttempt::STATUS)
                     ->label(Str::formatTitle(__('payload_processing_attempt.status'))),
-                TextColumn::make(PayloadProcessingAttempt::MESSAGE)
-                    ->label(Str::formatTitle(__('payload_processing_attempt.message'))),
                 TextColumn::make(PayloadProcessingAttempt::CREATED_AT)
                     ->dateTime()
                     ->label(Str::formatTitle(__('payload_processing_attempt.created_at'))),

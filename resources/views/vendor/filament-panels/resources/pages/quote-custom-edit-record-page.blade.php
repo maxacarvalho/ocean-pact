@@ -60,7 +60,7 @@
                 </div>
                 <div class="ml-3">
                     <h3 class="text-sm font-medium text-danger-800">
-                        {{ Str::ucfirst(__('quote.please_fill_the_unit_price_and_delivery_date_for_all_items')) }}
+                        {{ Str::ucfirst(__('quote.please_fill_the_unit_price_and_delivery_in_days_for_all_items')) }}
                     </h3>
                 </div>
             </div>

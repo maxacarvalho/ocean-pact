@@ -2,10 +2,10 @@
 
 namespace App\Filament\Resources\QuoteResource\Pages;
 
-use App\Events\QuoteRespondedEvent;
+use App\Events\QuotePortal\QuoteRespondedEvent;
 use App\Filament\Resources\QuoteResource;
-use App\Models\Quote;
-use App\Models\QuoteItem;
+use App\Models\QuotesPortal\Quote;
+use App\Models\QuotesPortal\QuoteItem;
 use App\Utils\Str;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
@@ -31,7 +31,7 @@ class EditQuote extends EditRecord
                     return false;
                 }
 
-                return $item->should_be_quoted && ($item->unit_price <= 0 || $item->delivery_in_days === 0);
+                return $item->should_be_quoted && ($item->unit_price->getMinorAmount()->toInt() <= 0 || $item->delivery_in_days === 0);
             });
 
             if ($items) {

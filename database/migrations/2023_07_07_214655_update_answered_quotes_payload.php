@@ -1,8 +1,8 @@
 <?php
 
-use App\Data\PayloadData;
-use App\Models\Payload;
-use App\Models\Quote;
+use App\Data\IntegraHub\PayloadData;
+use App\Models\IntegraHub\Payload;
+use App\Models\QuotesPortal\Quote;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Migrations\Migration;
 

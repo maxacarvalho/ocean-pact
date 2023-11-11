@@ -25,4 +25,5 @@ return [
     'cnae' => 'CNAE',
     'created_at' => 'created at',
     'updated_at' => 'updated at',
+    'validation_error_company_not_found' => 'company (:code-:code_branch) not found',
 ];

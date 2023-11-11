@@ -2,21 +2,22 @@
 
 namespace App\Filament\Resources;
 
-use App\Enums\FreightTypeEnum;
-use App\Enums\QuoteStatusEnum;
+use App\Enums\QuotesPortal\FreightTypeEnum;
+use App\Enums\QuotesPortal\QuoteStatusEnum;
 use App\Filament\Resources\QuoteResource\Pages\EditQuote;
 use App\Filament\Resources\QuoteResource\Pages\ListQuotes;
 use App\Filament\Resources\QuoteResource\Pages\ViewQuote;
 use App\Filament\Resources\QuoteResource\RelationManagers\QuoteItemsRelationManager;
 use App\Filament\Resources\QuoteResource\Widgets\QuotesOverviewWidget;
-use App\Models\Budget;
-use App\Models\Company;
-use App\Models\Currency;
-use App\Models\PaymentCondition;
-use App\Models\Quote;
-use App\Models\QuoteItem;
+use App\Models\QuotesPortal\Budget;
+use App\Models\QuotesPortal\Company;
+use App\Models\QuotesPortal\Currency;
+use App\Models\QuotesPortal\PaymentCondition;
+use App\Models\QuotesPortal\Quote;
+use App\Models\QuotesPortal\QuoteItem;
+use App\Models\QuotesPortal\Supplier;
+use App\Models\QuotesPortal\SupplierUser;
 use App\Models\Role;
-use App\Models\Supplier;
 use App\Models\User;
 use App\Utils\Str;
 use Filament\Forms\Components\Component;
@@ -209,7 +210,12 @@ class QuoteResource extends Resource
                 $user = Auth::user();
 
                 return $query
-                    ->with([Quote::RELATION_SUPPLIER, Quote::RELATION_BUDGET])
+                    ->with([
+                        Quote::RELATION_SUPPLIER => [
+                            Supplier::RELATION_SELLERS,
+                        ],
+                        Quote::RELATION_BUDGET,
+                    ])
                     ->select([
                         Quote::TABLE_NAME.'.'.Quote::ID,
                         Quote::TABLE_NAME.'.'.Quote::COMPANY_CODE,
@@ -250,7 +256,12 @@ class QuoteResource extends Resource
                             ->limit(1),
                     ])
                     ->when($user->isSeller(), function (EloquentBuilder $query) use ($user) {
-                        $query->where(Quote::TABLE_NAME.'.'.Quote::SUPPLIER_ID, '=', $user->supplier_id);
+                        $query->whereHas(
+                            Quote::RELATION_SUPPLIER.'.'.Supplier::RELATION_SELLERS,
+                            function (EloquentBuilder $query) use ($user) {
+                                $query->where(SupplierUser::USER_ID, '=', $user->id);
+                            }
+                        );
                     });
             })
             ->columns([

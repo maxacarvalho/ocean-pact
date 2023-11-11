@@ -2,16 +2,18 @@
 
 namespace App\Filament\Resources;
 
-use App\Enums\IntegrationHandlingTypeEnum;
-use App\Enums\IntegrationTypeEnum;
+use App\Enums\IntegraHub\IntegrationHandlingTypeEnum;
+use App\Enums\IntegraHub\IntegrationTypeEnum;
 use App\Filament\Resources\IntegrationTypeResource\Pages\CreateIntegrationType;
 use App\Filament\Resources\IntegrationTypeResource\Pages\EditIntegrationType;
 use App\Filament\Resources\IntegrationTypeResource\Pages\ListIntegrationTypes;
 use App\Filament\Resources\IntegrationTypeResource\RelationManagers\FieldsRelationManager;
-use App\Models\Company;
-use App\Models\IntegrationType;
+use App\Models\IntegraHub\IntegrationType;
+use App\Models\QuotesPortal\Company;
 use App\Utils\Str;
 use Filament\Forms\Components\Fieldset;
+use Filament\Forms\Components\KeyValue;
+use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -78,6 +80,17 @@ class IntegrationTypeResource extends Resource
                     ->label(Str::formatTitle(__('integration_type.target_url')))
                     ->url(),
 
+                KeyValue::make(IntegrationType::HEADERS)
+                    ->label(Str::formatTitle(__('integration_type.headers'))),
+
+                Repeater::make(IntegrationType::PATH_PARAMETERS)
+                    ->label(Str::formatTitle(__('integration_type.path_parameters')))
+                    ->schema([
+                        TextInput::make('parameter')
+                            ->label(Str::formatTitle(__('integration_type.parameter')))
+                            ->required(),
+                    ]),
+
                 Fieldset::make(Str::formatTitle(__('integration_type.system_settings')))
                     ->visible(fn () => Auth::user()->isSuperAdmin())
                     ->columns(5)
@@ -101,23 +114,6 @@ class IntegrationTypeResource extends Resource
                         Toggle::make(IntegrationType::ALLOWS_DUPLICATES)
                             ->label(Str::formatTitle(__('integration_type.allows_duplicates')))
                             ->default(fn () => false),
-
-                        Select::make(IntegrationType::PROCESSOR)
-                            ->label(Str::formatTitle(__('integration_type.processor')))
-                            ->columnSpan(3)
-                            ->options(function () {
-                                return collect(scandir(app_path('Jobs/PayloadProcessors')))
-                                    ->filter(fn ($file) => ! in_array($file, ['.', '..']))
-                                    ->map(fn ($file) => 'App\Jobs\PayloadProcessors\\'.preg_replace('/\\.[^.\\s]{3,4}$/', '', $file))
-                                    ->filter(fn ($class) => class_exists($class))
-                                    ->filter(fn ($class) => is_subclass_of($class, 'App\Jobs\PayloadProcessors\PayloadProcessor'))
-                                    ->map(fn ($class) => [
-                                        'label' => $class,
-                                        'value' => $class,
-                                    ])
-                                    ->mapWithKeys(fn (array $item, int $key) => [$item['label'] => $item['value']])
-                                    ->toArray();
-                            }),
                     ]),
             ]);
     }

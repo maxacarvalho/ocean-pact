@@ -41,4 +41,7 @@ return [
     'all' => 'all',
     'created_from' => 'created from: :date',
     'created_until' => 'created until: :date',
+    'error_messages' => [
+        'error_creating_quote' => 'there was an error creating the quote.',
+    ],
 ];

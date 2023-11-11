@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\Company;
+use App\Models\QuotesPortal\Company;
 use Illuminate\Database\Migrations\Migration;
 
 return new class() extends Migration

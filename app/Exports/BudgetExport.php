@@ -2,7 +2,7 @@
 
 namespace App\Exports;
 
-use App\Models\Budget;
+use App\Models\QuotesPortal\Budget;
 use Maatwebsite\Excel\Concerns\FromCollection;
 
 class BudgetExport implements FromCollection

@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -16,3 +17,9 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', static function () {
     return redirect()->to('/admin');
 });
+
+Route::prefix('integra-hub/webhooks')
+    ->name('integra-hub.webhooks.')
+    ->group(static function (Router $router) {
+        Route::webhooks('payload');
+    });

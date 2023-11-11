@@ -2,7 +2,7 @@
 
 namespace App\Policies;
 
-use App\Models\Payload;
+use App\Models\IntegraHub\Payload;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 

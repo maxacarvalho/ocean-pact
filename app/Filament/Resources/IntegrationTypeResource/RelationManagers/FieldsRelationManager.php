@@ -2,8 +2,8 @@
 
 namespace App\Filament\Resources\IntegrationTypeResource\RelationManagers;
 
-use App\Enums\IntegrationTypeFieldTypeEnum;
-use App\Models\IntegrationTypeField;
+use App\Enums\IntegraHub\IntegrationTypeFieldTypeEnum;
+use App\Models\IntegraHub\IntegrationTypeField;
 use App\Rules\MultipleEmailsRule;
 use App\Utils\Str;
 use Filament\Forms\Components\Grid;

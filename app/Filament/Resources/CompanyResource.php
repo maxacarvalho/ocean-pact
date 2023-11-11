@@ -5,7 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\CompanyResource\Pages\CreateCompany;
 use App\Filament\Resources\CompanyResource\Pages\EditCompany;
 use App\Filament\Resources\CompanyResource\Pages\ListCompanies;
-use App\Models\Company;
+use App\Models\QuotesPortal\Company;
 use App\Utils\Str;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;

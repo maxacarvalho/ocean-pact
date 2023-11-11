@@ -2,8 +2,8 @@
 
 namespace App\Filament\Resources\UserResource\RelationManagers;
 
-use App\Models\Company;
-use App\Models\CompanyUser;
+use App\Models\QuotesPortal\Company;
+use App\Models\QuotesPortal\CompanyUser;
 use App\Models\User;
 use App\Utils\Str;
 use Filament\Forms\Components\TextInput;

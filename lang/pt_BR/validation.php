@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\QuotesPortal\Company;
+
 return [
 
     /*
@@ -155,7 +157,7 @@ return [
         'attribute-name' => [
             'rule-name' => 'custom-message',
         ],
-        'data.'.\App\Models\Company::CNPJ_CPF => [
+        'data.'.Company::CNPJ_CPF => [
             'unique' => 'CNPJ já cadastrado.',
         ],
     ],
