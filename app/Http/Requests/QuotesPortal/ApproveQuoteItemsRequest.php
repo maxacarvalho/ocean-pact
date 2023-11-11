@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\QuotesPortal;
 
 use App\Models\QuotesPortal\Quote;
 use App\Models\QuotesPortal\QuoteItem;

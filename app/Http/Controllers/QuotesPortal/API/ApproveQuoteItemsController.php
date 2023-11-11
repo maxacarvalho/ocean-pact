@@ -4,7 +4,7 @@ namespace App\Http\Controllers\QuotesPortal\API;
 
 use App\Enums\QuotesPortal\QuoteItemStatusEnum;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\ApproveQuoteItemsRequest;
+use App\Http\Requests\QuotesPortal\ApproveQuoteItemsRequest;
 use App\Models\QuotesPortal\Quote;
 use App\Models\QuotesPortal\QuoteItem;
 use App\Utils\Str;

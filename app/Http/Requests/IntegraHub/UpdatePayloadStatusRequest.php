@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\IntegraHub;
 
 use App\Enums\IntegraHub\PayloadProcessingAttemptsStatusEnum;
 use App\Models\IntegraHub\PayloadProcessingAttempt;

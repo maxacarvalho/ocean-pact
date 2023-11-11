@@ -4,9 +4,9 @@ namespace App\Http\Controllers\IntegraHub\API\Payload;
 
 use App\Data\IntegraHub\PayloadData;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\IntegraHub\ListPayloadRequest;
 use App\Models\IntegraHub\IntegrationType;
 use App\Models\IntegraHub\Payload;
-use Illuminate\Http\Request;
 use Spatie\LaravelData\CursorPaginatedDataCollection;
 use Spatie\LaravelData\DataCollection;
 use Spatie\LaravelData\PaginatedDataCollection;
@@ -15,8 +15,10 @@ use Spatie\QueryBuilder\QueryBuilder;
 
 class ListPayloadController extends Controller
 {
-    public function __invoke(Request $request): DataCollection|CursorPaginatedDataCollection|PaginatedDataCollection
+    public function __invoke(ListPayloadRequest $request): DataCollection|CursorPaginatedDataCollection|PaginatedDataCollection
     {
+        $perPage = $request->integer('perPage', 15);
+
         $payloads = QueryBuilder::for(Payload::class)
             ->with([
                 Payload::RELATION_INTEGRATION_TYPE,
@@ -27,7 +29,7 @@ class ListPayloadController extends Controller
                 AllowedFilter::exact(Payload::RELATION_INTEGRATION_TYPE.'.'.IntegrationType::CODE),
             ])
             ->defaultSort('-'.Payload::STORED_AT)
-            ->paginate($request->query('limit', 10))
+            ->paginate($perPage)
             ->appends($request->query());
 
         return PayloadData::collection(

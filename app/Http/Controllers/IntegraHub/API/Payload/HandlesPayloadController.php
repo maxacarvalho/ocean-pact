@@ -12,7 +12,7 @@ use App\Data\IntegraHub\PayloadSuccessResponseData;
 use App\Enums\IntegraHub\PayloadProcessingStatusEnum;
 use App\Exceptions\IntegraHub\DuplicatedPayloadException;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StorePayloadRequest;
+use App\Http\Requests\IntegraHub\StorePayloadRequest;
 use App\Models\IntegraHub\IntegrationType;
 use App\Models\IntegraHub\Payload;
 use App\Utils\Str;

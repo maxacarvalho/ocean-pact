@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\IntegraHub;
 
 use App\Models\IntegraHub\IntegrationType;
 use App\Models\IntegraHub\Payload;
