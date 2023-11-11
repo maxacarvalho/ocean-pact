@@ -26,8 +26,8 @@ class SupplierData extends Data
         public readonly string|null $cnpj_cpf,
         public readonly string|null $phone_code,
         public readonly string|null $phone_number,
-        public readonly string $contact,
-        public readonly string $email,
+        public readonly string|null|Optional $contact,
+        public readonly string|null|Optional $email,
         public readonly Carbon|null|Optional $created_at,
         public readonly Carbon|null|Optional $updated_at,
         // Relations
