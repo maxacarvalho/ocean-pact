@@ -20,6 +20,7 @@ use Filament\Tables\Actions\EditAction as TableEditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Support\HtmlString;
+use Illuminate\Validation\Rule;
 
 class FieldsRelationManager extends RelationManager
 {
@@ -51,7 +52,12 @@ class FieldsRelationManager extends RelationManager
                     ->schema([
                         TextInput::make(IntegrationTypeField::FIELD_NAME)
                             ->label(Str::formatTitle(__('integration_type_field.field_name')))
-                            ->required(),
+                            ->rules([
+                                'required',
+                                Rule::unique(IntegrationTypeField::TABLE_NAME, IntegrationTypeField::FIELD_NAME)
+                                    ->ignore($form->getRecord()?->id)
+                                    ->where(IntegrationTypeField::INTEGRATION_TYPE_ID, $this->getOwnerRecord()->id),
+                            ]),
                         Select::make(IntegrationTypeField::FIELD_TYPE)
                             ->label(Str::formatTitle(__('integration_type_field.field_type')))
                             ->required()
