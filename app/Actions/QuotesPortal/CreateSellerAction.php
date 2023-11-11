@@ -33,7 +33,7 @@ class CreateSellerAction
         $supplierUser = SupplierUser::query()
             ->where(SupplierUser::USER_ID, '=', $seller->id)
             ->where(SupplierUser::SUPPLIER_ID, '=', $supplier->id)
-            ->where(SupplierUser::CODE, '=', $data->seller_code)
+            ->where(SupplierUser::CODE, '=', $data->supplier_user->code)
             ->first();
 
         if (null === $supplierUser) {
@@ -41,7 +41,7 @@ class CreateSellerAction
                 ->create([
                     SupplierUser::USER_ID => $seller->id,
                     SupplierUser::SUPPLIER_ID => $supplier->id,
-                    SupplierUser::CODE => $data->seller_code,
+                    SupplierUser::CODE => $data->supplier_user->code,
                 ]);
         }
 

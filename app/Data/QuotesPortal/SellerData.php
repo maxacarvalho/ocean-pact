@@ -12,11 +12,11 @@ class SellerData extends Data
         public readonly int|Optional $id,
         public readonly string $name,
         public readonly string $email,
-        public readonly string|Optional $seller_code,
         public readonly bool $active,
         public readonly Carbon|null|Optional $email_verified_at,
         public readonly Carbon|null|Optional $created_at,
         public readonly Carbon|null|Optional $updated_at,
+        public readonly SupplierUserData|Optional $supplier_user,
     ) {
         //
     }

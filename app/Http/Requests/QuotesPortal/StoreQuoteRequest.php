@@ -10,6 +10,7 @@ use App\Models\QuotesPortal\Product;
 use App\Models\QuotesPortal\Quote;
 use App\Models\QuotesPortal\QuoteItem;
 use App\Models\QuotesPortal\Supplier;
+use App\Models\QuotesPortal\SupplierUser;
 use App\Models\User;
 use App\Rules\CnpjRule;
 use Closure;
@@ -93,7 +94,7 @@ class StoreQuoteRequest extends FormRequest
             Quote::RELATION_SUPPLIER.'.'.Supplier::RELATION_SELLERS.'.*.'.User::ACTIVE => ['required', 'boolean'],
             Quote::RELATION_SUPPLIER.'.'.Supplier::RELATION_SELLERS.'.*.'.User::NAME => ['required', 'string'],
             Quote::RELATION_SUPPLIER.'.'.Supplier::RELATION_SELLERS.'.*.'.User::EMAIL => ['required', 'email'],
-            Quote::RELATION_SUPPLIER.'.'.Supplier::RELATION_SELLERS.'.*.'.User::SELLER_CODE => ['required', 'string'],
+            Quote::RELATION_SUPPLIER.'.'.Supplier::RELATION_SELLERS.'.*.supplier_user.'.SupplierUser::CODE => ['required', 'string'],
 
             Quote::RELATION_BUYER => ['required', 'array'],
             Quote::RELATION_BUYER.'.'.User::NAME => ['required'],

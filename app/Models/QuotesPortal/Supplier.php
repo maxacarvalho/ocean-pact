@@ -102,12 +102,16 @@ class Supplier extends Model
 
     public function sellers(): BelongsToMany
     {
-        return $this->belongsToMany(
-            related: User::class,
-            table: SupplierUser::TABLE_NAME,
-            foreignPivotKey: SupplierUser::SUPPLIER_ID,
-            relatedPivotKey: SupplierUser::USER_ID,
-        )->withPivot(SupplierUser::CODE);
+        return $this
+            ->belongsToMany(
+                related: User::class,
+                table: SupplierUser::TABLE_NAME,
+                foreignPivotKey: SupplierUser::SUPPLIER_ID,
+                relatedPivotKey: SupplierUser::USER_ID,
+            )
+            ->as('supplier_user')
+            ->withPivot(SupplierUser::CODE)
+            ->withTimestamps();
     }
 
     protected function cnpjCpf(): Attribute
