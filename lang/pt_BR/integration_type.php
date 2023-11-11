@@ -16,7 +16,6 @@ return [
     'store_and_process' => 'armazenar e processar',
     'is_visible' => 'visível',
     'is_enabled' => 'habilitado',
-    'is_protected' => 'protegido',
     'is_synchronous' => 'síncrono',
     'allows_duplicates' => 'permite duplicados',
     'processor' => 'processador',

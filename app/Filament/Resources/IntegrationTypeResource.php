@@ -103,10 +103,6 @@ class IntegrationTypeResource extends Resource
                             ->label(Str::formatTitle(__('integration_type.is_enabled')))
                             ->default(fn () => true),
 
-                        Toggle::make(IntegrationType::IS_PROTECTED)
-                            ->label(Str::formatTitle(__('integration_type.is_protected')))
-                            ->default(fn () => false),
-
                         Toggle::make(IntegrationType::IS_SYNCHRONOUS)
                             ->label(Str::formatTitle(__('integration_type.is_synchronous')))
                             ->default(fn () => false),

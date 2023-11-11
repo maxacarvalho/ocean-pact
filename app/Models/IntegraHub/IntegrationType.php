@@ -11,7 +11,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
-use RuntimeException;
 
 /**
  * @property int                                     $id
@@ -23,7 +22,6 @@ use RuntimeException;
  * @property string                                  $target_url
  * @property bool                                    $is_visible
  * @property bool                                    $is_enabled
- * @property bool                                    $is_protected
  * @property bool                                    $is_synchronous
  * @property bool                                    $allows_duplicates
  * @property array                                   $headers
@@ -47,7 +45,6 @@ class IntegrationType extends Model
     public const TARGET_URL = 'target_url';
     public const IS_VISIBLE = 'is_visible';
     public const IS_ENABLED = 'is_enabled';
-    public const IS_PROTECTED = 'is_protected';
     public const IS_SYNCHRONOUS = 'is_synchronous';
     public const ALLOWS_DUPLICATES = 'allows_duplicates';
     public const HEADERS = 'headers';
@@ -73,7 +70,6 @@ class IntegrationType extends Model
         self::HANDLING_TYPE => IntegrationHandlingTypeEnum::class,
         self::IS_VISIBLE => 'boolean',
         self::IS_ENABLED => 'boolean',
-        self::IS_PROTECTED => 'boolean',
         self::IS_SYNCHRONOUS => 'boolean',
         self::ALLOWS_DUPLICATES => 'boolean',
         self::HEADERS => 'array',
@@ -84,12 +80,6 @@ class IntegrationType extends Model
     {
         static::creating(static function (self $model) {
             $model->code = $model->code ?? Str::slug($model->description);
-        });
-
-        static::deleting(function (self $integrationType) {
-            if ($integrationType->is_protected) {
-                throw new RuntimeException('Cannot delete a protected integration type');
-            }
         });
     }
 
