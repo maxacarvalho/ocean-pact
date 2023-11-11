@@ -5,6 +5,7 @@ namespace App\Actions\QuotesPortal;
 use App\Data\QuotesPortal\QuoteData;
 use App\Models\QuotesPortal\Company;
 use App\Models\QuotesPortal\Supplier;
+use Spatie\LaravelData\Optional;
 
 class FindOrCreateSupplierAction
 {
@@ -32,8 +33,8 @@ class FindOrCreateSupplierAction
                 Supplier::CNPJ_CPF => $data->supplier->cnpj_cpf,
                 Supplier::PHONE_CODE => $data->supplier->phone_code,
                 Supplier::PHONE_NUMBER => $data->supplier->phone_number,
-                Supplier::CONTACT => $data->supplier->contact,
-                Supplier::EMAIL => $data->supplier->email,
+                Supplier::CONTACT => $data->supplier->contact instanceof Optional ? null : $data->supplier->contact,
+                Supplier::EMAIL => $data->supplier->email instanceof Optional ? null : $data->supplier->email,
             ]);
         }
 
