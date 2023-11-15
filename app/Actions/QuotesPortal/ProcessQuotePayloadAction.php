@@ -9,6 +9,7 @@ use App\Events\QuotePortal\QuoteCreatedEvent;
 use App\Models\QuotesPortal\Company;
 use App\Models\QuotesPortal\Quote;
 use App\Models\QuotesPortal\QuoteItem;
+use App\Models\QuotesPortal\SupplierUser;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 readonly class ProcessQuotePayloadAction
@@ -34,10 +35,15 @@ readonly class ProcessQuotePayloadAction
 
         $supplier = $this->findOrCreateSupplierAction->handle($quotePayloadData, $company);
 
+        $sellers = [];
         /** @var SellerData $seller */
         foreach ($quotePayloadData->supplier->sellers as $seller) {
-            $this->createSellerAction->handle($seller, $supplier);
+            $createdSeller = $this->createSellerAction->handle($seller);
+
+            $sellers[$createdSeller->id] = [SupplierUser::CODE => $seller->supplier_user->code];
         }
+
+        $supplier->sellers()->sync($sellers);
 
         $budget = $this->findOrCreateBudgetAction->handle($quotePayloadData);
         $currency = $this->findOrCreateCurrencyAction->handle($quotePayloadData);
