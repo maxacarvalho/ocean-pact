@@ -3,15 +3,13 @@
 namespace App\Actions\QuotesPortal;
 
 use App\Data\QuotesPortal\SellerData;
-use App\Models\QuotesPortal\Supplier;
-use App\Models\QuotesPortal\SupplierUser;
 use App\Models\Role;
 use App\Models\User;
 use App\Utils\Str;
 
 class CreateSellerAction
 {
-    public function handle(SellerData $data, Supplier $supplier): void
+    public function handle(SellerData $data): User
     {
         /** @var User|null $seller */
         $seller = User::query()
@@ -29,24 +27,10 @@ class CreateSellerAction
                 ]);
         }
 
-        /** @var SupplierUser|null $supplierUser */
-        $supplierUser = SupplierUser::query()
-            ->where(SupplierUser::USER_ID, '=', $seller->id)
-            ->where(SupplierUser::SUPPLIER_ID, '=', $supplier->id)
-            ->where(SupplierUser::CODE, '=', $data->supplier_user->code)
-            ->first();
-
-        if (null === $supplierUser) {
-            SupplierUser::query()
-                ->create([
-                    SupplierUser::USER_ID => $seller->id,
-                    SupplierUser::SUPPLIER_ID => $supplier->id,
-                    SupplierUser::CODE => $data->supplier_user->code,
-                ]);
-        }
-
         if (false === $seller->hasRole(Role::ROLE_SELLER)) {
             $seller->assignRole(Role::ROLE_SELLER);
         }
+
+        return $seller;
     }
 }
