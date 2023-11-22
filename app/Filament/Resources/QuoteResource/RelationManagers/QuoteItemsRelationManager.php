@@ -8,6 +8,7 @@ use App\Models\QuotesPortal\QuoteItem;
 use App\Rules\PercentageMaxValueRule;
 use App\Tables\Columns\MaskedInputColumn;
 use App\Utils\Str;
+use Brick\Money\Money;
 use Filament\Forms\Components\BaseFileUpload;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\FileUpload;
@@ -177,6 +178,9 @@ class QuoteItemsRelationManager extends RelationManager
                             ->label(Str::formatTitle(__('quote_item.unit_price')))
                             ->required(fn (Get $get) => $get(QuoteItem::SHOULD_BE_QUOTED))
                             ->default(0)
+                            ->formatStateUsing(function (Money $state, Model|QuoteItem $record) {
+                                return $record->getFormattedUnitPrice();
+                            })
                             ->mask(function (Model|Quote $record) {
                                 if ('BRL' === $record->currency) {
                                     return RawJs::make('$money($input, \',\', \'.\')');
