@@ -7,8 +7,10 @@ use Brick\Math\RoundingMode;
 use Brick\Money\Money;
 use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\LaravelData\Casts\Cast;
+use Spatie\LaravelData\Support\DataProperty;
 
-class MoneyCast implements CastsAttributes
+class MoneyCast implements Cast, CastsAttributes
 {
     public function get(Model $model, string $key, mixed $value, array $attributes): ?Money
     {
@@ -39,5 +41,20 @@ class MoneyCast implements CastsAttributes
             currency: $currency,
             roundingMode: RoundingMode::UP
         )->getMinorAmount()->toInt();
+    }
+
+    public function cast(DataProperty $property, mixed $value, array $context): mixed
+    {
+        $currency = 'BRL';
+
+        if (is_string($context[QuoteItem::CURRENCY])) {
+            $currency = $context[QuoteItem::CURRENCY];
+        }
+
+        return Money::ofMinor(
+            minorAmount: $value,
+            currency: $currency,
+            roundingMode: RoundingMode::UP
+        );
     }
 }

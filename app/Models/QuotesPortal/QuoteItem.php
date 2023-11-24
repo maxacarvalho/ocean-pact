@@ -17,7 +17,7 @@ use NumberFormatter;
  * @property string              $description
  * @property string              $measurement_unit
  * @property string              $item
- * @property int                 $quantity
+ * @property float               $quantity
  * @property Money               $unit_price
  * @property string              $currency
  * @property int                 $ipi

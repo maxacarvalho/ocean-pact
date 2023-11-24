@@ -7,6 +7,7 @@ use App\Data\QuotesPortal\QuoteData;
 use App\Data\QuotesPortal\StoreQuoteErrorResponseData;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\QuotesPortal\StoreQuoteRequest;
+use App\Models\QuotesPortal\Quote;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Log;
@@ -26,6 +27,7 @@ class StoreQuoteController extends Controller
             $quotePayloadData = QuoteData::from($request->validated());
 
             $quote = $this->processQuotePayloadAction->handle($quotePayloadData);
+            $quote->load(Quote::RELATION_ITEMS);
 
             return QuoteData::from($quote);
         } catch (Throwable $exception) {

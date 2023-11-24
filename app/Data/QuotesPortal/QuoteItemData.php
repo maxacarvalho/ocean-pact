@@ -2,8 +2,10 @@
 
 namespace App\Data\QuotesPortal;
 
+use App\Casts\QuotesPortal\MoneyCast;
 use App\Enums\QuotesPortal\QuoteItemStatusEnum;
 use App\Models\QuotesPortal\QuoteItem;
+use Brick\Money\Money;
 use Illuminate\Support\Carbon;
 use Spatie\LaravelData\Attributes\WithCast;
 use Spatie\LaravelData\Casts\EnumCast;
@@ -20,8 +22,9 @@ class QuoteItemData extends Data
         public readonly string $description,
         public readonly string $measurement_unit,
         public readonly string $item,
-        public readonly int $quantity,
-        public readonly int $unit_price,
+        public readonly float $quantity,
+        #[WithCast(MoneyCast::class)]
+        public readonly Money $unit_price,
         public readonly string|Optional $currency,
         public readonly float $ipi,
         public readonly float $icms,
@@ -50,7 +53,7 @@ class QuoteItemData extends Data
             measurement_unit: $quoteItem->measurement_unit,
             item: $quoteItem->item,
             quantity: $quoteItem->quantity,
-            unit_price: $quoteItem->unit_price->getMinorAmount()->toInt(),
+            unit_price: $quoteItem->unit_price,
             currency: $quoteItem->currency,
             ipi: $quoteItem->ipi,
             icms: $quoteItem->icms,
