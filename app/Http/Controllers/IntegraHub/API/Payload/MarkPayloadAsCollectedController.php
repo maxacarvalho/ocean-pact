@@ -13,8 +13,6 @@ class MarkPayloadAsCollectedController extends Controller
 {
     public function __invoke(Payload $payload): JsonResponse
     {
-        ray($payload->toArray());
-
         if ($payload->processing_status === PayloadProcessingStatusEnum::COLLECTED) {
             return response()->json([
                 'errors' => [
