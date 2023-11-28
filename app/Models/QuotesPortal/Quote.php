@@ -97,7 +97,7 @@ class Quote extends Model
             Company::class,
             self::COMPANY_CODE,
             Company::CODE
-        );
+        )->where(Company::CODE_BRANCH, '=', $this->company_code_branch);
     }
 
     public function supplier(): BelongsTo
