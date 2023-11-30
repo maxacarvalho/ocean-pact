@@ -14,7 +14,6 @@ class BuyerData extends Data
         public readonly int|Optional $id,
         public readonly string $name,
         public readonly string $email,
-        public readonly string|null $buyer_code,
         public readonly Carbon|null|Optional $created_at,
         public readonly Carbon|null|Optional $updated_at,
         public readonly BuyerCompanyData|Optional $buyer_company,
@@ -30,7 +29,6 @@ class BuyerData extends Data
             id: $buyer->id,
             name: $buyer->name,
             email: $buyer->email,
-            buyer_code: $buyer->buyer_code,
             created_at: $buyer->created_at,
             updated_at: $buyer->updated_at,
             buyer_company: BuyerCompanyData::from(
