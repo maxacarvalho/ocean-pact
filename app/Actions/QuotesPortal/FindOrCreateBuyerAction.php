@@ -35,7 +35,7 @@ class FindOrCreateBuyerAction
         $companyUser = CompanyUser::query()
             ->where(CompanyUser::USER_ID, '=', $buyer->id)
             ->where(CompanyUser::COMPANY_ID, '=', $data->company_id)
-            ->where(CompanyUser::BUYER_CODE, '=', $data->buyer->buyer_code)
+            ->where(CompanyUser::BUYER_CODE, '=', $data->buyer->buyer_company->buyer_code)
             ->first();
 
         if (null === $companyUser) {
@@ -43,7 +43,7 @@ class FindOrCreateBuyerAction
                 ->create([
                     CompanyUser::USER_ID => $buyer->id,
                     CompanyUser::COMPANY_ID => $data->company_id,
-                    CompanyUser::BUYER_CODE => $data->buyer->buyer_code,
+                    CompanyUser::BUYER_CODE => $data->buyer->buyer_company->buyer_code,
                 ]);
         }
 

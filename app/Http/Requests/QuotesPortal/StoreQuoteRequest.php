@@ -115,7 +115,7 @@ class StoreQuoteRequest extends FormRequest
             Quote::RELATION_BUYER => ['required', 'array'],
             Quote::RELATION_BUYER.'.'.User::NAME => ['required'],
             Quote::RELATION_BUYER.'.'.User::EMAIL => ['required', 'email'],
-            Quote::RELATION_BUYER.'.'.User::BUYER_CODE => ['required'],
+            Quote::RELATION_BUYER.'.buyer_company.'.User::BUYER_CODE => ['required'],
 
             Quote::RELATION_ITEMS => ['required', 'array'],
             Quote::RELATION_ITEMS.'.*.'.QuoteItem::DESCRIPTION => ['required'],
