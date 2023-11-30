@@ -95,6 +95,7 @@ class User extends Authenticatable implements FilamentUser
                 CompanyUser::USER_ID,
                 CompanyUser::COMPANY_ID
             )
+            ->as('buyer_company')
             ->withPivot(CompanyUser::BUYER_CODE);
     }
 
@@ -106,6 +107,18 @@ class User extends Authenticatable implements FilamentUser
             foreignPivotKey: SupplierUser::USER_ID,
             relatedPivotKey: SupplierUser::SUPPLIER_ID,
         )->withPivot(SupplierUser::CODE);
+    }
+
+    /**
+     * @return \Illuminate\Support\Collection|Company[]
+     */
+    public function getSellerCompanies(): \Illuminate\Support\Collection|array
+    {
+        return $this->suppliers()
+            ->with('companies')
+            ->get()
+            ->pluck('companies')
+            ->flatten();
     }
 
     public function supplier(): BelongsTo

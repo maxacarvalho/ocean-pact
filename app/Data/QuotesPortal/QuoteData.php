@@ -4,6 +4,8 @@ namespace App\Data\QuotesPortal;
 
 use App\Enums\QuotesPortal\FreightTypeEnum;
 use App\Enums\QuotesPortal\QuoteStatusEnum;
+use App\Http\Requests\QuotesPortal\StoreQuoteRequest;
+use App\Models\QuotesPortal\Company;
 use App\Models\QuotesPortal\Quote;
 use Illuminate\Support\Carbon;
 use Spatie\LaravelData\Attributes\DataCollectionOf;
@@ -18,8 +20,7 @@ class QuoteData extends Data
 {
     public function __construct(
         public readonly int|Optional $id,
-        public readonly string $company_code,
-        public readonly string|null $company_code_branch,
+        public readonly int $company_id,
         public readonly int|Optional $supplier_id,
         public readonly int|Optional $payment_condition_id,
         public readonly int|Optional $buyer_id,
@@ -53,8 +54,7 @@ class QuoteData extends Data
     {
         return new self(
             id: $quote->id,
-            company_code: $quote->company_code,
-            company_code_branch: $quote->company_code_branch,
+            company_id: $quote->company_id,
             supplier_id: $quote->supplier_id,
             payment_condition_id: $quote->payment_condition_id,
             buyer_id: $quote->buyer_id,
@@ -74,9 +74,23 @@ class QuoteData extends Data
             company: Lazy::whenLoaded(Quote::RELATION_COMPANY, $quote, static fn () => CompanyData::from($quote->company)),
             supplier: Lazy::whenLoaded(Quote::RELATION_SUPPLIER, $quote, static fn () => SupplierData::from($quote->supplier)),
             paymentCondition: Lazy::whenLoaded(Quote::RELATION_PAYMENT_CONDITION, $quote, static fn () => PaymentConditionData::from($quote->paymentCondition)),
-            buyer: Lazy::whenLoaded(Quote::RELATION_BUYER, $quote, static fn () => BuyerData::from($quote->buyer)),
+            buyer: Lazy::whenLoaded(Quote::RELATION_BUYER, $quote, static fn () => BuyerData::fromQuote($quote)),
             currency: Lazy::whenLoaded(Quote::RELATION_CURRENCY, $quote, static fn () => CurrencyData::from($quote->currency)),
             items: Lazy::whenLoaded(Quote::RELATION_ITEMS, $quote, static fn () => QuoteItemData::collection($quote->items)),
         );
+    }
+
+    public static function fromStoreQuoteRequest(StoreQuoteRequest $request): QuoteData
+    {
+        /** @var Company $company */
+        $company = Company::query()
+            ->where(Company::CODE, '=', $request->input('company_code'))
+            ->where(Company::CODE_BRANCH, '=', $request->input('company_code_branch'))
+            ->firstOrFail();
+
+        return static::from([
+            ...$request->validated(),
+            'company_id' => $company->id,
+        ]);
     }
 }

@@ -14,6 +14,7 @@ use Illuminate\Support\Carbon;
 
 /**
  * @property int                         $id
+ * @property int                         $company_id
  * @property string                      $company_code
  * @property string|null                 $company_code_branch
  * @property int                         $supplier_id
@@ -93,11 +94,7 @@ class Quote extends Model
 
     public function company(): BelongsTo
     {
-        return $this->belongsTo(
-            Company::class,
-            self::COMPANY_CODE,
-            Company::CODE
-        )->where(Company::CODE_BRANCH, '=', $this->company_code_branch);
+        return $this->belongsTo(Company::class);
     }
 
     public function supplier(): BelongsTo

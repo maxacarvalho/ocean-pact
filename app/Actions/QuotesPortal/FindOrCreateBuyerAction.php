@@ -4,7 +4,6 @@ namespace App\Actions\QuotesPortal;
 
 use App\Data\QuotesPortal\QuoteData;
 use App\Events\QuotePortal\BuyerCreatedEvent;
-use App\Models\QuotesPortal\Company;
 use App\Models\QuotesPortal\CompanyUser;
 use App\Models\Role;
 use App\Models\User;
@@ -12,7 +11,7 @@ use App\Utils\Str;
 
 class FindOrCreateBuyerAction
 {
-    public function handle(QuoteData $data, Company $company): User
+    public function handle(QuoteData $data): User
     {
         /** @var User|null $buyer */
         $buyer = User::query()
@@ -35,7 +34,7 @@ class FindOrCreateBuyerAction
         /** @var CompanyUser|null $companyUser */
         $companyUser = CompanyUser::query()
             ->where(CompanyUser::USER_ID, '=', $buyer->id)
-            ->where(CompanyUser::COMPANY_ID, '=', $company->id)
+            ->where(CompanyUser::COMPANY_ID, '=', $data->company_id)
             ->where(CompanyUser::BUYER_CODE, '=', $data->buyer->buyer_code)
             ->first();
 
@@ -43,7 +42,7 @@ class FindOrCreateBuyerAction
             CompanyUser::query()
                 ->create([
                     CompanyUser::USER_ID => $buyer->id,
-                    CompanyUser::COMPANY_ID => $company->id,
+                    CompanyUser::COMPANY_ID => $data->company_id,
                     CompanyUser::BUYER_CODE => $data->buyer->buyer_code,
                 ]);
         }

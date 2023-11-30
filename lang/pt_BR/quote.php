@@ -4,6 +4,7 @@ return [
     'quote' => 'cotação',
     'quotes' => 'cotações',
     'id' => 'ID',
+    'company' => 'empresa',
     'company_code' => 'empresa',
     'company_code_branch' => 'filial',
     'budget_id' => 'solicitação de compra',
@@ -44,4 +45,5 @@ return [
     'error_messages' => [
         'error_creating_quote' => 'houve um erro ao criar a cotação.',
     ],
+    'validation_duplicated_quote_for_company' => 'já existe uma cotação para a empresa :company_code-:company_code_branch com o número :quote_number.',
 ];

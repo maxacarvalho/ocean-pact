@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @property string                     $code_branch
  * @property string                     $branch
  * @property string                     $name
+ * @property-read string                $name_and_branch
  * @property string                     $business_name
  * @property string|null                $phone_number
  * @property string|null                $fax_number
@@ -46,6 +47,7 @@ class Company extends Model
     public const CODE = 'code';
     public const CODE_BRANCH = 'code_branch';
     public const BRANCH = 'branch';
+    public const NAME_AND_BRANCH = 'name_and_branch';
     public const NAME = 'name';
     public const CODE_CODE_BRANCH_AND_BUSINESS_NAME = 'code_code_branch_and_business_name';
     public const CODE_CODE_BRANCH_AND_BRANCH = 'code_code_branch_and_branch';

@@ -6,6 +6,7 @@ use App\Data\QuotesPortal\QuoteData;
 use App\Http\Controllers\Controller;
 use App\Models\QuotesPortal\Quote;
 use App\Models\QuotesPortal\QuoteItem;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Spatie\LaravelData\CursorPaginatedDataCollection;
 use Spatie\LaravelData\DataCollection;
@@ -23,7 +24,9 @@ class ListQuotesController extends Controller
                 Quote::RELATION_COMPANY,
                 Quote::RELATION_SUPPLIER,
                 Quote::RELATION_PAYMENT_CONDITION,
-                Quote::RELATION_BUYER,
+                Quote::RELATION_BUYER => [
+                    User::RELATION_COMPANIES,
+                ],
                 Quote::RELATION_CURRENCY,
                 Quote::RELATION_ITEMS => [
                     QuoteItem::RELATION_PRODUCT,

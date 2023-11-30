@@ -24,7 +24,7 @@ class StoreQuoteController extends Controller
     public function __invoke(StoreQuoteRequest $request): QuoteData|JsonResponse
     {
         try {
-            $quotePayloadData = QuoteData::from($request->validated());
+            $quotePayloadData = QuoteData::fromStoreQuoteRequest($request);
 
             $quote = $this->processQuotePayloadAction->handle($quotePayloadData);
             $quote->load(Quote::RELATION_ITEMS);

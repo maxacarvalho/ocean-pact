@@ -20,8 +20,8 @@ class FindOrCreateSupplierAction
 
         if (null === $supplier) {
             $supplier = Supplier::query()->create([
-                Supplier::COMPANY_CODE => $data->company_code,
-                Supplier::COMPANY_CODE_BRANCH => $data->company_code_branch,
+                Supplier::COMPANY_CODE => $company->code,
+                Supplier::COMPANY_CODE_BRANCH => $company->code_branch,
                 Supplier::CODE => $data->supplier->code,
                 Supplier::STORE => $data->supplier->store,
                 Supplier::NAME => $data->supplier->name,

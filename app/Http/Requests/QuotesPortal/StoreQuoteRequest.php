@@ -15,50 +15,66 @@ use App\Models\User;
 use App\Rules\CnpjRule;
 use Closure;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 class StoreQuoteRequest extends FormRequest
 {
     public function rules(): array
     {
         return [
-            Quote::COMPANY_CODE => [
+            'company_code' => [
                 'required',
                 function (string $attribute, mixed $value, Closure $fail) {
                     $exists = Company::query()
                         ->where(Company::CODE, '=', $value)
-                        ->where(Company::CODE_BRANCH, '=', $this->input(Quote::COMPANY_CODE_BRANCH))
+                        ->where(Company::CODE_BRANCH, '=', $this->input('company_code_branch'))
                         ->exists();
 
                     if (! $exists) {
                         $fail(__('company.validation_error_company_not_found', [
                             'code' => $value,
-                            'code_branch' => $this->input(Quote::COMPANY_CODE_BRANCH),
+                            'code_branch' => $this->input('company_code_branch'),
                         ]));
                     }
                 },
             ],
-            Quote::COMPANY_CODE_BRANCH => [
+            'company_code_branch' => [
                 'required',
                 function (string $attribute, mixed $value, Closure $fail) {
                     $exists = Company::query()
                         ->where(Company::CODE_BRANCH, '=', $value)
-                        ->where(Company::CODE, '=', $this->input(Quote::COMPANY_CODE))
+                        ->where(Company::CODE, '=', $this->input('company_code'))
                         ->exists();
 
                     if (! $exists) {
                         $fail(__('company.validation_error_company_not_found', [
-                            'code' => $this->input(Quote::COMPANY_CODE),
+                            'code' => $this->input('company_code'),
                             'code_branch' => $value,
                         ]));
                     }
                 },
             ],
             Quote::QUOTE_NUMBER => [
+                function (string $attribute, mixed $value, Closure $fail) {
+                    /** @var Company $company */
+                    $company = Company::query()
+                        ->where(Company::CODE, '=', $this->input('company_code'))
+                        ->where(Company::CODE_BRANCH, '=', $this->input('company_code_branch'))
+                        ->firstOrFail();
+
+                    $exists = Quote::query()
+                        ->where(Quote::QUOTE_NUMBER, '=', $value)
+                        ->where(Quote::COMPANY_ID, '=', $company->id)
+                        ->exists();
+
+                    if (! $exists) {
+                        $fail(__('quote.validation_duplicated_quote_for_company', [
+                            'company_code' => $this->input('company_code'),
+                            'company_code_branch' => $this->input('company_code_branch'),
+                            'quote_number' => $value,
+                        ]));
+                    }
+                },
                 'required',
-                Rule::unique(Quote::TABLE_NAME, Quote::QUOTE_NUMBER)
-                    ->where(Quote::COMPANY_CODE, $this->input(Quote::COMPANY_CODE))
-                    ->where(Quote::COMPANY_CODE_BRANCH, $this->input(Quote::COMPANY_CODE_BRANCH)),
             ],
             Quote::COMMENTS => ['nullable'],
 

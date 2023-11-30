@@ -6,6 +6,7 @@ use App\Filament\Resources\UserResource\Pages\CreateUser;
 use App\Filament\Resources\UserResource\Pages\EditUser;
 use App\Filament\Resources\UserResource\Pages\ListUsers;
 use App\Filament\Resources\UserResource\RelationManagers\CompaniesRelationManager;
+use App\Filament\Resources\UserResource\RelationManagers\SuppliersRelationManager;
 use App\Models\QuotesPortal\Company;
 use App\Models\QuotesPortal\Supplier;
 use App\Models\Role;
@@ -148,6 +149,7 @@ class UserResource extends Resource
     {
         return [
             CompaniesRelationManager::class,
+            SuppliersRelationManager::class,
         ];
     }
 

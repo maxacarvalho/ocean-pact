@@ -10,7 +10,6 @@ use App\Models\QuotesPortal\Company;
 use App\Models\QuotesPortal\Quote;
 use App\Models\QuotesPortal\QuoteItem;
 use App\Models\QuotesPortal\SupplierUser;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 readonly class ProcessQuotePayloadAction
 {
@@ -29,9 +28,10 @@ readonly class ProcessQuotePayloadAction
 
     public function handle(QuoteData $quotePayloadData): Quote
     {
-        $company = $this->getCompany($quotePayloadData);
+        /** @var Company $company */
+        $company = Company::query()->findOrFail($quotePayloadData->company_id);
 
-        $buyer = $this->findOrCreateBuyerAction->handle($quotePayloadData, $company);
+        $buyer = $this->findOrCreateBuyerAction->handle($quotePayloadData);
 
         $supplier = $this->findOrCreateSupplierAction->handle($quotePayloadData, $company);
 
@@ -45,10 +45,10 @@ readonly class ProcessQuotePayloadAction
 
         $supplier->sellers()->sync($sellers);
 
-        $budget = $this->findOrCreateBudgetAction->handle($quotePayloadData);
-        $currency = $this->findOrCreateCurrencyAction->handle($quotePayloadData);
-        $paymentCondition = $this->findOrCreatePaymentConditionAction->handle($quotePayloadData);
-        $codeToProductsMapping = $this->findOrCreateProductsAction->handle($quotePayloadData);
+        $budget = $this->findOrCreateBudgetAction->handle($quotePayloadData, $company);
+        $currency = $this->findOrCreateCurrencyAction->handle($quotePayloadData, $company);
+        $paymentCondition = $this->findOrCreatePaymentConditionAction->handle($quotePayloadData, $company);
+        $codeToProductsMapping = $this->findOrCreateProductsAction->handle($quotePayloadData, $company);
         $quote = $this->createQuoteAction->handle($budget, $currency, $supplier, $paymentCondition, $buyer, $quotePayloadData);
 
         /** @var QuoteItemData $item */
@@ -71,17 +71,5 @@ readonly class ProcessQuotePayloadAction
         QuoteCreatedEvent::dispatch($quote->id);
 
         return $quote;
-    }
-
-    /** @throws ModelNotFoundException */
-    private function getCompany(QuoteData $data): Company
-    {
-        /** @var Company $company */
-        $company = Company::query()
-            ->where(Company::CODE, '=', $data->company_code)
-            ->where(Company::CODE_BRANCH, '=', $data->company_code_branch)
-            ->firstOrFail();
-
-        return $company;
     }
 }
