@@ -16,7 +16,6 @@ jobs:
       - name: Set PR title and get commit list
         run: |
           git fetch origin main:main
-          export TZ="America/Sao_Paulo"
           echo "RELEASE_TITLE=:rocket: Portal de Cotações Release $(date +%F\ %R)" >> $GITHUB_ENV
           {
             echo 'RELEASE_BODY<<LISTEOF'
