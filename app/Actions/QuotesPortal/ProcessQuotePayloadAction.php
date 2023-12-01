@@ -10,6 +10,7 @@ use App\Models\QuotesPortal\Company;
 use App\Models\QuotesPortal\Quote;
 use App\Models\QuotesPortal\QuoteItem;
 use App\Models\QuotesPortal\SupplierUser;
+use Illuminate\Validation\ValidationException;
 
 readonly class ProcessQuotePayloadAction
 {
@@ -34,6 +35,23 @@ readonly class ProcessQuotePayloadAction
         $buyer = $this->findOrCreateBuyerAction->handle($quotePayloadData);
 
         $supplier = $this->findOrCreateSupplierAction->handle($quotePayloadData, $company);
+
+        $hasDuplicatedQuote = Quote::query()
+            ->where(Quote::QUOTE_NUMBER, '=', $quotePayloadData->quote_number)
+            ->where(Quote::COMPANY_ID, '=', $company->id)
+            ->where(Quote::SUPPLIER_ID, '=', $supplier->id)
+            ->exists();
+
+        if ($hasDuplicatedQuote) {
+            throw ValidationException::withMessages([
+                Quote::QUOTE_NUMBER => __('quote.validation_duplicated_quote_for_company', [
+                    'company_code' => $company->code,
+                    'company_code_branch' => $company->code_branch,
+                    'quote_number' => $quotePayloadData->quote_number,
+                    'supplier_name' => $supplier->name,
+                ]),
+            ]);
+        }
 
         $sellers = [];
         /** @var SellerData $seller */

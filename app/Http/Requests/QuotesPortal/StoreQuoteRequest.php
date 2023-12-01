@@ -53,29 +53,6 @@ class StoreQuoteRequest extends FormRequest
                     }
                 },
             ],
-            Quote::QUOTE_NUMBER => [
-                'required',
-                function (string $attribute, mixed $value, Closure $fail) {
-                    /** @var Company $company */
-                    $company = Company::query()
-                        ->where(Company::CODE, '=', $this->input('company_code'))
-                        ->where(Company::CODE_BRANCH, '=', $this->input('company_code_branch'))
-                        ->firstOrFail();
-
-                    $exists = Quote::query()
-                        ->where(Quote::QUOTE_NUMBER, '=', $value)
-                        ->where(Quote::COMPANY_ID, '=', $company->id)
-                        ->exists();
-
-                    if ($exists) {
-                        $fail(__('quote.validation_duplicated_quote_for_company', [
-                            'company_code' => $this->input('company_code'),
-                            'company_code_branch' => $this->input('company_code_branch'),
-                            'quote_number' => $value,
-                        ]));
-                    }
-                },
-            ],
             Quote::COMMENTS => ['nullable'],
 
             Quote::RELATION_BUDGET => ['required', 'array'],
