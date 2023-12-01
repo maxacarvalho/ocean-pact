@@ -2,13 +2,13 @@
 
 namespace App\Filament\Resources;
 
-use App\Enums\BudgetStatusEnum;
+use App\Enums\QuotesPortal\BudgetStatusEnum;
 use App\Filament\Resources\BudgetResource\Pages\CreateBudget;
 use App\Filament\Resources\BudgetResource\Pages\EditBudget;
 use App\Filament\Resources\BudgetResource\Pages\ListBudgets;
-use App\Models\Budget;
-use App\Models\Company;
-use App\Models\Quote;
+use App\Models\QuotesPortal\Budget;
+use App\Models\QuotesPortal\Company;
+use App\Models\QuotesPortal\Quote;
 use App\Utils\Str;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;

@@ -3,10 +3,13 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\PurchaseRequestResource\Pages\ListPurchaseRequests;
-use App\Models\Budget;
-use App\Models\Company;
-use App\Models\PurchaseRequest;
-use App\Models\Quote;
+use App\Models\QuotesPortal\Budget;
+use App\Models\QuotesPortal\Company;
+use App\Models\QuotesPortal\PurchaseRequest;
+use App\Models\QuotesPortal\Quote;
+use App\Models\QuotesPortal\Supplier;
+use App\Models\QuotesPortal\SupplierUser;
+use App\Models\User;
 use App\Utils\Str;
 use Filament\Resources\Resource;
 use Filament\Tables\Actions\Action;
@@ -44,23 +47,23 @@ class PurchaseRequestResource extends Resource
         return Str::formatTitle(__('navigation.quotes'));
     }
 
-    public static function getEloquentQuery(): Builder
-    {
-        /** @var Builder|PurchaseRequest $query */
-        $query = parent::getEloquentQuery();
-
-        if (Auth::user()->isSeller()) {
-            return $query->whereHas(PurchaseRequest::RELATION_QUOTE, function (Builder $query) {
-                $query->where(Quote::SUPPLIER_ID, Auth::user()->supplier_id);
-            });
-        }
-
-        return parent::getEloquentQuery();
-    }
-
     public static function table(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(function (Builder $query) {
+                /** @var User $user */
+                $user = Auth::user();
+
+                return $query
+                    ->when($user->isSeller(), function (Builder $query) use ($user) {
+                        $query->whereHas(
+                            PurchaseRequest::RELATION_QUOTE.'.'.Quote::RELATION_SUPPLIER.'.'.Supplier::RELATION_SELLERS,
+                            function (Builder $query) use ($user) {
+                                $query->where(SupplierUser::USER_ID, '=', $user->id);
+                            }
+                        );
+                    });
+            })
             ->columns([
                 TextColumn::make(PurchaseRequest::RELATION_QUOTE.'.'.Quote::RELATION_COMPANY.'.'.Company::CODE_CODE_BRANCH_AND_BUSINESS_NAME)
                     ->label(Str::ucfirst(__('purchase_request.company'))),

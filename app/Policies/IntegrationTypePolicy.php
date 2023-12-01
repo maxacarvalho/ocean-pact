@@ -2,7 +2,7 @@
 
 namespace App\Policies;
 
-use App\Models\IntegrationType;
+use App\Models\IntegraHub\IntegrationType;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 

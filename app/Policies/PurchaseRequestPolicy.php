@@ -2,7 +2,7 @@
 
 namespace App\Policies;
 
-use App\Models\PurchaseRequest;
+use App\Models\QuotesPortal\PurchaseRequest;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 

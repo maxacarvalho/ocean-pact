@@ -3,8 +3,8 @@
 namespace App\Filament\Resources\ProductResource\Pages;
 
 use App\Filament\Resources\ProductResource;
-use App\Models\Company;
-use App\Models\Product;
+use App\Models\QuotesPortal\Company;
+use App\Models\QuotesPortal\Product;
 use App\Utils\Str;
 use Filament\Actions\CreateAction as PageCreateAction;
 use Filament\Resources\Pages\ListRecords;

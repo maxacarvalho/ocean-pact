@@ -3,7 +3,7 @@
 namespace App\Filament\Resources\IntegrationTypeResource\Pages;
 
 use App\Filament\Resources\IntegrationTypeResource;
-use App\Models\IntegrationType;
+use App\Models\IntegraHub\IntegrationType;
 use Filament\Actions\CreateAction as PageCreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Illuminate\Database\Eloquent\Builder;

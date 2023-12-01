@@ -2,8 +2,8 @@
 
 namespace App\Filament\Resources\SupplierResource\RelationManagers;
 
-use App\Models\Company;
-use App\Models\Supplier;
+use App\Models\QuotesPortal\Company;
+use App\Models\QuotesPortal\Supplier;
 use App\Utils\Str;
 use Filament\Forms;
 use Filament\Forms\Form;

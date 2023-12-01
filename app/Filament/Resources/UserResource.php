@@ -6,9 +6,10 @@ use App\Filament\Resources\UserResource\Pages\CreateUser;
 use App\Filament\Resources\UserResource\Pages\EditUser;
 use App\Filament\Resources\UserResource\Pages\ListUsers;
 use App\Filament\Resources\UserResource\RelationManagers\CompaniesRelationManager;
-use App\Models\Company;
+use App\Filament\Resources\UserResource\RelationManagers\SuppliersRelationManager;
+use App\Models\QuotesPortal\Company;
+use App\Models\QuotesPortal\Supplier;
 use App\Models\Role;
-use App\Models\Supplier;
 use App\Models\User;
 use App\Utils\Str;
 use Filament\Forms\Components\Select;
@@ -148,6 +149,7 @@ class UserResource extends Resource
     {
         return [
             CompaniesRelationManager::class,
+            SuppliersRelationManager::class,
         ];
     }
 

@@ -1,11 +1,13 @@
 <?php
 
-use App\Http\Controllers\API\Payload\IndexPayloadController;
-use App\Http\Controllers\API\Payload\StorePayloadController;
-use App\Http\Controllers\API\Payload\UpdatePayloadStatusController;
-use App\Http\Controllers\API\Quote\ListAnsweredQuotesController;
-use App\Http\Controllers\API\Quote\MarkQuoteAsAcceptedController;
-use App\Http\Controllers\API\Quote\StoreAndProcessPurchaseRequestController;
+use App\Http\Controllers\IntegraHub\API\Payload\HandlesPayloadController;
+use App\Http\Controllers\IntegraHub\API\Payload\ListPayloadController;
+use App\Http\Controllers\IntegraHub\API\Payload\MarkPayloadAsCollectedController;
+use App\Http\Controllers\QuotesPortal\API\ApproveQuoteItemsController;
+use App\Http\Controllers\QuotesPortal\API\ListQuotesController;
+use App\Http\Controllers\QuotesPortal\API\StoreOrUpdatePaymentConditionBatchController;
+use App\Http\Controllers\QuotesPortal\API\StorePurchaseRequestController;
+use App\Http\Controllers\QuotesPortal\API\StoreQuoteController;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Route;
@@ -25,19 +27,46 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::middleware('auth:sanctum')->group(static function (Router $router) {
-    $router->name('cotacoes.')->prefix('cotacoes')->group(static function (Router $router) {
-        $router->get('respondidas', ListAnsweredQuotesController::class)->name('respondidas');
-        $router->put('{quote}/aceita', MarkQuoteAsAcceptedController::class)->name('marca-como-aceita');
-        $router->post('store-and-process-purchase-request', StoreAndProcessPurchaseRequestController::class)
-            ->name('store-and-process-purchase-request');
+Route::middleware('auth:sanctum')
+    ->prefix('integra-hub')
+    ->name('integra-hub.')
+    ->group(static function (Router $router) {
+        $router->name('payload.')
+            ->group(static function (Router $router) {
+                $router->get('/payloads', ListPayloadController::class)->name('index');
+
+                $router->post('/payloads/{integration_type:code}', HandlesPayloadController::class)->name('store');
+
+                $router->put('/payloads/{payload}/mark-as-collected', MarkPayloadAsCollectedController::class)->name('update-status');
+            });
     });
 
-    $router->name('payload.')->prefix('payload')->group(static function (Router $router) {
-        $router->get('', IndexPayloadController::class)->name('index');
+// QuotesPortal
+Route::middleware('auth:sanctum')
+    ->prefix('quotes-portal')
+    ->name('quotes-portal.')
+    ->group(static function (Router $router) {
+        $router->name('quote.')
+            ->group(function (Router $router) {
+                $router->get('/quotes', ListQuotesController::class)
+                    ->name('index');
 
-        $router->post('{integration_type:code}', StorePayloadController::class)->name('store');
+                $router->post('/quotes', StoreQuoteController::class)
+                    ->name('store');
 
-        $router->put('{payload}', UpdatePayloadStatusController::class)->name('update-status');
+                $router->put('/quotes/{quote}/approve-items', ApproveQuoteItemsController::class)
+                    ->name('approve-quote-items');
+            });
+
+        $router->name('purchase-request.')
+            ->group(function (Router $router) {
+                $router->post('/purchase-requests', StorePurchaseRequestController::class)
+                    ->name('store');
+            });
+
+        $router->name('payment-conditions.')
+            ->group(function (Router $router) {
+                $router->post('/payment-conditions/batch', StoreOrUpdatePaymentConditionBatchController::class)
+                    ->name('store-or-update-batch');
+            });
     });
-});

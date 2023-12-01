@@ -2,9 +2,9 @@
 
 namespace App\Filament\Resources\BudgetResource\Pages;
 
-use App\Enums\BudgetStatusEnum;
+use App\Enums\QuotesPortal\BudgetStatusEnum;
 use App\Filament\Resources\BudgetResource;
-use App\Models\Quote;
+use App\Models\QuotesPortal\Quote;
 use App\Utils\Str;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;

@@ -3,11 +3,11 @@
 namespace App\Providers;
 
 // use Illuminate\Support\Facades\Gate;
-use App\Models\Budget;
-use App\Models\Company;
-use App\Models\IntegrationType;
-use App\Models\Payload;
-use App\Models\Quote;
+use App\Models\IntegraHub\IntegrationType;
+use App\Models\IntegraHub\Payload;
+use App\Models\QuotesPortal\Budget;
+use App\Models\QuotesPortal\Company;
+use App\Models\QuotesPortal\Quote;
 use App\Models\User;
 use App\Policies\BudgetPolicy;
 use App\Policies\CompanyPolicy;

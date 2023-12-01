@@ -2,7 +2,7 @@
 
 namespace App\Policies;
 
-use App\Models\PaymentCondition;
+use App\Models\QuotesPortal\PaymentCondition;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 

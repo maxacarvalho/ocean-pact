@@ -2,7 +2,7 @@
 
 namespace App\Policies;
 
-use App\Models\Supplier;
+use App\Models\QuotesPortal\Supplier;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
