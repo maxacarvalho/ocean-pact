@@ -45,5 +45,5 @@ return [
     'error_messages' => [
         'error_creating_quote' => 'houve um erro ao criar a cotação.',
     ],
-    'validation_duplicated_quote_for_company' => 'já existe uma cotação para a empresa :company_code-:company_code_branch com o número :quote_number.',
+    'validation_duplicated_quote_for_company' => 'uma cotação da empresa :company_code-:company_code_branch, com o número :quote_number, já foi enviada ao fornecedor :supplier.',
 ];
