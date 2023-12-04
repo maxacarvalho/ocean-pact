@@ -53,6 +53,8 @@ class StoreQuoteRequest extends FormRequest
                     }
                 },
             ],
+            Quote::QUOTE_NUMBER => ['required'],
+
             Quote::COMMENTS => ['nullable'],
 
             Quote::RELATION_BUDGET => ['required', 'array'],
@@ -102,7 +104,7 @@ class StoreQuoteRequest extends FormRequest
             Quote::RELATION_ITEMS.'.*.'.QuoteItem::UNIT_PRICE => ['required', 'numeric'],
             Quote::RELATION_ITEMS.'.*.'.QuoteItem::ICMS => ['required', 'decimal:'],
             Quote::RELATION_ITEMS.'.*.'.QuoteItem::IPI => ['required', 'numeric'],
-            Quote::RELATION_ITEMS.'.*.'.QuoteItem::COMMENTS => ['required'],
+            Quote::RELATION_ITEMS.'.*.'.QuoteItem::COMMENTS => ['nullable'],
             Quote::RELATION_ITEMS.'.*.'.QuoteItem::RELATION_PRODUCT.'.'.Product::CODE => ['required'],
             Quote::RELATION_ITEMS.'.*.'.QuoteItem::RELATION_PRODUCT.'.'.Product::DESCRIPTION => ['required'],
             Quote::RELATION_ITEMS.'.*.'.QuoteItem::RELATION_PRODUCT.'.'.Product::MEASUREMENT_UNIT => ['required'],
