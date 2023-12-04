@@ -53,6 +53,8 @@ class StoreQuoteRequest extends FormRequest
                     }
                 },
             ],
+            Quote::QUOTE_NUMBER => ['required'],
+
             Quote::COMMENTS => ['nullable'],
 
             Quote::RELATION_BUDGET => ['required', 'array'],
