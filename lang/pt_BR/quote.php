@@ -4,6 +4,7 @@ return [
     'quote' => 'cotação',
     'quotes' => 'cotações',
     'id' => 'ID',
+    'version' => 'versão',
     'company' => 'empresa',
     'company_code' => 'empresa',
     'company_code_branch' => 'filial',
@@ -22,6 +23,7 @@ return [
     'freight_cost' => 'custo do frete',
     'freight_type' => 'tipo do frete',
     'currency_id' => 'moeda',
+    'replaced_by' => 'substituída por',
     'expenses' => 'despesas',
     'comments' => 'observações do fornecedor',
     'created_at' => 'criado em',
@@ -30,6 +32,9 @@ return [
     'form_save_action_confirmation' => 'Você tem certeza que gostaria de fazer isso? Não será possível editar a cotação após o envio.',
     'draft' => 'rascunho',
     'pending' => 'pendente',
+    'replaced' => 'substituída',
+    'replaced_only' => 'apenas substituídas',
+    'latest_only' => 'apenas a últimas',
     'responded' => 'respondida',
     'analyzed' => 'analisada',
     'rejected' => 'não selecionada',
@@ -45,5 +50,5 @@ return [
     'error_messages' => [
         'error_creating_quote' => 'houve um erro ao criar a cotação.',
     ],
-    'validation_duplicated_quote_for_company' => 'uma cotação da empresa :company_code-:company_code_branch, com o número :quote_number, já foi enviada ao fornecedor :supplier.',
+    'validation_duplicated_quote_for_company' => 'uma cotação da empresa :company_code-:company_code_branch, com o número :quote_number e versão :version, já foi enviada ao fornecedor :supplier.',
 ];

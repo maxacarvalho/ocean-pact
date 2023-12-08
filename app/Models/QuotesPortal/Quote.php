@@ -14,6 +14,7 @@ use Illuminate\Support\Carbon;
 
 /**
  * @property int                         $id
+ * @property int                         $version
  * @property int                         $company_id
  * @property string                      $company_code
  * @property string|null                 $company_code_branch
@@ -29,6 +30,7 @@ use Illuminate\Support\Carbon;
  * @property int                         $freight_cost
  * @property FreightTypeEnum|null        $freight_type
  * @property int|null                    $currency_id
+ * @property int|null                    $replaced_by
  * @property Carbon|null                 $created_at
  * @property Carbon|null                 $updated_at
  * Relations
@@ -39,6 +41,7 @@ use Illuminate\Support\Carbon;
  * @property-read User|null              $buyer
  * @property-read QuoteItem[]|Collection $items
  * @property-read Currency|null          $currency
+ * @property-read Quote|null             $replacedBy
  * Virtual
  * @property-read int                    $count
  */
@@ -46,6 +49,7 @@ class Quote extends Model
 {
     public const TABLE_NAME = 'quotes';
     public const ID = 'id';
+    public const VERSION = 'version';
     public const COMPANY_ID = 'company_id';
     public const COMPANY_CODE = 'company_code';
     public const COMPANY_CODE_BRANCH = 'company_code_branch';
@@ -61,6 +65,7 @@ class Quote extends Model
     public const FREIGHT_COST = 'freight_cost';
     public const FREIGHT_TYPE = 'freight_type';
     public const CURRENCY_ID = 'currency_id';
+    public const REPLACED_BY = 'replaced_by';
     public const CREATED_AT = 'created_at';
     public const UPDATED_AT = 'updated_at';
 
@@ -72,6 +77,7 @@ class Quote extends Model
     public const RELATION_BUYER = 'buyer';
     public const RELATION_ITEMS = 'items';
     public const RELATION_CURRENCY = 'currency';
+    public const RELATION_REPLACED_BY = 'replacedBy';
 
     protected $table = self::TABLE_NAME;
 
@@ -123,6 +129,11 @@ class Quote extends Model
     public function currency(): BelongsTo
     {
         return $this->belongsTo(Currency::class);
+    }
+
+    public function replacedBy(): BelongsTo
+    {
+        return $this->belongsTo(self::class, self::REPLACED_BY);
     }
 
     public function isResponded(): bool

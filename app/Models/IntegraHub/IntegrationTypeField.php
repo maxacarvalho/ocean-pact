@@ -3,24 +3,31 @@
 namespace App\Models\IntegraHub;
 
 use App\Enums\IntegraHub\IntegrationTypeFieldTypeEnum;
+use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
+use Spatie\EloquentSortable\Sortable;
+use Spatie\EloquentSortable\SortableTrait;
 
 /**
  * @property int                          $id
  * @property int                          $integration_type_id
+ * @property int                          $order_column
  * @property string                       $field_name
  * @property IntegrationTypeFieldTypeEnum $field_type
  * @property array                        $field_rules
  * @property ?Carbon                      $created_at
  * @property ?Carbon                      $updated_at
  */
-class IntegrationTypeField extends Model
+class IntegrationTypeField extends Model implements Sortable
 {
+    use SortableTrait;
+
     public const TABLE_NAME = 'integration_type_fields';
     public const ID = 'id';
     public const INTEGRATION_TYPE_ID = 'integration_type_id';
+    public const ORDER_COLUMN = 'order_column';
     public const FIELD_NAME = 'field_name';
     public const FIELD_TYPE = 'field_type';
     public const FIELD_RULES = 'field_rules';
@@ -43,5 +50,10 @@ class IntegrationTypeField extends Model
     public function integrationType(): BelongsTo
     {
         return $this->belongsTo(IntegrationType::class);
+    }
+
+    public function buildSortQuery(): Builder
+    {
+        return static::query()->where(self::INTEGRATION_TYPE_ID, $this->integration_type_id);
     }
 }

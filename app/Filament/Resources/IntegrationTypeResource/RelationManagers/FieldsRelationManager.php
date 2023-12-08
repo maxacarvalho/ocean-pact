@@ -33,16 +33,6 @@ class FieldsRelationManager extends RelationManager
         return Str::formatTitle(__('integration_type_field.integration_type_fields'));
     }
 
-    public static function getModelLabel(): ?string
-    {
-        return Str::formatTitle(__('integration_type_field.integration_type_field'));
-    }
-
-    public static function getPluralModelLabel(): string
-    {
-        return Str::formatTitle(__('integration_type_field.integration_type_fields'));
-    }
-
     public function form(Form $form): Form
     {
         return $form
@@ -166,6 +156,10 @@ class FieldsRelationManager extends RelationManager
     public function table(Table $table): Table
     {
         return $table
+            ->modelLabel(fn () => Str::formatTitle(__('integration_type_field.integration_type_field')))
+            ->pluralModelLabel(fn () => Str::formatTitle(__('integration_type_field.integration_type_fields')))
+            ->reorderable(IntegrationTypeField::ORDER_COLUMN)
+            ->defaultSort(IntegrationTypeField::ORDER_COLUMN)
             ->columns([
                 TextColumn::make(IntegrationTypeField::FIELD_NAME)
                     ->label(Str::formatTitle(__('integration_type_field.field_name'))),

@@ -5,6 +5,7 @@ namespace App\Actions\QuotesPortal;
 use App\Data\QuotesPortal\QuoteData;
 use App\Data\QuotesPortal\QuoteItemData;
 use App\Data\QuotesPortal\SellerData;
+use App\Enums\QuotesPortal\QuoteStatusEnum;
 use App\Events\QuotePortal\QuoteCreatedEvent;
 use App\Models\QuotesPortal\Company;
 use App\Models\QuotesPortal\Quote;
@@ -37,6 +38,7 @@ readonly class ProcessQuotePayloadAction
         $supplier = $this->findOrCreateSupplierAction->handle($quotePayloadData, $company);
 
         $hasDuplicatedQuote = Quote::query()
+            ->where(Quote::VERSION, '=', $quotePayloadData->version)
             ->where(Quote::QUOTE_NUMBER, '=', $quotePayloadData->quote_number)
             ->where(Quote::COMPANY_ID, '=', $company->id)
             ->where(Quote::SUPPLIER_ID, '=', $supplier->id)
@@ -48,6 +50,7 @@ readonly class ProcessQuotePayloadAction
                     'company_code' => $company->code,
                     'company_code_branch' => $company->code_branch,
                     'quote_number' => $quotePayloadData->quote_number,
+                    'version' => $quotePayloadData->version,
                     'supplier_name' => $supplier->name,
                 ]),
             ]);
@@ -85,6 +88,19 @@ readonly class ProcessQuotePayloadAction
 
         $quote->markAsPending();
         $quote->refresh();
+
+        Quote::query()
+            ->where(Quote::STATUS, '!=', QuoteStatusEnum::REPLACED)
+            ->where(Quote::REPLACED_BY, '=', null)
+            ->where(Quote::VERSION, '!=', $quote->version)
+            ->where(Quote::VERSION, '<', $quote->version)
+            ->where(Quote::QUOTE_NUMBER, '=', $quote->quote_number)
+            ->where(Quote::COMPANY_ID, '=', $quote->company_id)
+            ->where(Quote::SUPPLIER_ID, '=', $quote->supplier_id)
+            ->update([
+                Quote::STATUS => QuoteStatusEnum::REPLACED,
+                Quote::REPLACED_BY => $quote->id,
+            ]);
 
         QuoteCreatedEvent::dispatch($quote->id);
 

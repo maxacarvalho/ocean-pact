@@ -4,6 +4,7 @@ return [
     'quote' => 'quote',
     'quotes' => 'quotes',
     'id' => 'ID',
+    'version' => 'version',
     'company_code' => 'company',
     'company_code_branch' => 'branch',
     'budget_id' => 'budget',
@@ -21,6 +22,7 @@ return [
     'freight_cost' => 'freight cost',
     'freight_type' => 'freight type',
     'currency_id' => 'currency',
+    'replaced_by' => 'replaced by',
     'expenses' => 'expenses',
     'comments' => 'seller comments',
     'created_at' => 'created at',
@@ -29,6 +31,9 @@ return [
     'form_save_action_confirmation' => 'Are you sure you want to do this? You will not be able to edit the quote after sending it.',
     'draft' => 'draft',
     'pending' => 'pending',
+    'replaced' => 'replaced',
+    'replaced_only ' => 'replaced only',
+    'latest_only' => 'latest only',
     'responded' => 'responded',
     'analyzed' => 'analyzed',
     'rejected' => 'rejected',
@@ -44,5 +49,5 @@ return [
     'error_messages' => [
         'error_creating_quote' => 'there was an error creating the quote.',
     ],
-    'validation_duplicated_quote_for_company' => 'a quote from company :company_code-:company_code_branch, with number :quote_number, was already send to the supplier :supplier.',
+    'validation_duplicated_quote_for_company' => 'a quote from company :company_code-:company_code_branch, with number :quote_number and version :version, was already send to the supplier :supplier.',
 ];

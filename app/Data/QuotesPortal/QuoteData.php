@@ -20,6 +20,7 @@ class QuoteData extends Data
 {
     public function __construct(
         public readonly int|Optional $id,
+        public readonly int|Optional $version,
         public readonly int $company_id,
         public readonly int|Optional $supplier_id,
         public readonly int|Optional $payment_condition_id,
@@ -54,6 +55,7 @@ class QuoteData extends Data
     {
         return new self(
             id: $quote->id,
+            version: $quote->version,
             company_id: $quote->company_id,
             supplier_id: $quote->supplier_id,
             payment_condition_id: $quote->payment_condition_id,

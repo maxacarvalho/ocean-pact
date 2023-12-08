@@ -8,6 +8,7 @@ const defaultTheme = require('tailwindcss/defaultTheme')
 module.exports = {
     content: [
         "./resources/**/*.blade.php",
+        './app/Filament/**/*.php',
         "./vendor/filament/**/*.blade.php",
     ],
     darkMode: 'class',
