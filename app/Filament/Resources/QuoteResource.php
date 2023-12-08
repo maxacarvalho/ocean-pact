@@ -33,6 +33,7 @@ use Filament\Tables\Actions\EditAction as TableEditAction;
 use Filament\Tables\Actions\ViewAction as TableViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Enums\FiltersLayout;
+use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\Filter as TableFilter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
@@ -89,6 +90,14 @@ class QuoteResource extends Resource
                         $component->columnSpanFull();
                     })
                     ->schema([
+                        Section::make()
+                            ->columns(3)
+                            ->schema([
+                                Placeholder::make(Quote::VERSION)
+                                    ->label(Str::formatTitle(__('quote.version')))
+                                    ->content(fn (Model|Quote $record) => $record->version),
+                            ])
+                            ->hiddenOn('create'),
                         Section::make()
                             ->columns(3)
                             ->schema([
@@ -206,6 +215,12 @@ class QuoteResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->deferLoading()
+            ->striped()
+            ->recordClasses(fn (Model|Quote $record) => match ($record->status) {
+                QuoteStatusEnum::REPLACED => 'opacity-30',
+                default => null,
+            })
             ->modifyQueryUsing(function (EloquentBuilder $query) {
                 /** @var User $user */
                 $user = Auth::user();
@@ -217,37 +232,15 @@ class QuoteResource extends Resource
                         ],
                         Quote::RELATION_BUDGET,
                     ])
-                    ->select([
-                        Quote::TABLE_NAME.'.'.Quote::ID,
-                        Quote::TABLE_NAME.'.'.Quote::COMPANY_ID,
-                        Quote::TABLE_NAME.'.'.Quote::BUDGET_ID,
-                        Quote::TABLE_NAME.'.'.Quote::SUPPLIER_ID,
-                        Quote::TABLE_NAME.'.'.Quote::PAYMENT_CONDITION_ID,
-                        Quote::TABLE_NAME.'.'.Quote::BUYER_ID,
-                        Quote::TABLE_NAME.'.'.Quote::QUOTE_NUMBER,
-                        Quote::TABLE_NAME.'.'.Quote::VALID_UNTIL,
-                        Quote::TABLE_NAME.'.'.Quote::STATUS,
-                        Quote::TABLE_NAME.'.'.Quote::COMMENTS,
-                        Quote::TABLE_NAME.'.'.Quote::CREATED_AT,
-                        Quote::TABLE_NAME.'.'.Quote::UPDATED_AT,
-                    ])
-                    ->where(Quote::TABLE_NAME.'.'.Quote::STATUS, '!=', QuoteStatusEnum::DRAFT)
+                    ->where(Quote::STATUS, '!=', QuoteStatusEnum::DRAFT)
                     ->addSelect([
                         'company_name' => Company::query()->select(Company::BUSINESS_NAME)
                             ->from(Company::TABLE_NAME)
-                            ->whereColumn(
-                                Company::TABLE_NAME.'.'.Company::ID,
-                                '=',
-                                Quote::TABLE_NAME.'.'.Quote::COMPANY_ID
-                            )
+                            ->whereColumn(Company::ID, '=', Quote::COMPANY_ID)
                             ->limit(1),
                         'company_branch' => Company::query()->select(Company::BRANCH)
                             ->from(Company::TABLE_NAME)
-                            ->whereColumn(
-                                Company::TABLE_NAME.'.'.Company::ID,
-                                '=',
-                                Quote::TABLE_NAME.'.'.Quote::COMPANY_ID
-                            )
+                            ->whereColumn(Company::ID, '=', Quote::COMPANY_ID)
                             ->limit(1),
                     ])
                     ->when($user->isSeller(), function (EloquentBuilder $query) use ($user) {
@@ -260,6 +253,9 @@ class QuoteResource extends Resource
                     });
             })
             ->columns([
+                TextColumn::make(Quote::VERSION)
+                    ->label(Str::formatTitle(__('quote.version'))),
+
                 TextColumn::make(Quote::RELATION_COMPANY.'.'.Company::NAME_AND_BRANCH)
                     ->label(Str::formatTitle(__('quote.company'))),
 
@@ -295,6 +291,15 @@ class QuoteResource extends Resource
                     ->sortable(),
             ])
             ->filters([
+                Filter::make('replaced_only')
+                    ->label(Str::formatTitle(__('quote.replaced_only')))
+                    ->query(fn (Builder $query): Builder => $query->whereNotNull(Quote::REPLACED_BY)->where(Quote::STATUS, QuoteStatusEnum::REPLACED)),
+
+                Filter::make('latest_only')
+                    ->label(Str::formatTitle(__('quote.latest_only')))
+                    ->query(fn (Builder $query): Builder => $query->whereNull(Quote::REPLACED_BY)->where(Quote::STATUS, '!=', QuoteStatusEnum::REPLACED))
+                    ->default(),
+
                 SelectFilter::make(Quote::COMPANY_ID)
                     ->label(Str::formatTitle(__('quote.company')))
                     ->relationship(
