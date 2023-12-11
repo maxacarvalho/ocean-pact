@@ -6,6 +6,8 @@ use App\Enums\QuotesPortal\FreightTypeEnum;
 use App\Enums\QuotesPortal\QuoteStatusEnum;
 use App\Models\Role;
 use App\Models\User;
+use App\Utils\Str;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -14,7 +16,7 @@ use Illuminate\Support\Carbon;
 
 /**
  * @property int                         $id
- * @property int                         $version
+ * @property int                         $proposal_number
  * @property int                         $company_id
  * @property string                      $company_code
  * @property string|null                 $company_code_branch
@@ -49,7 +51,7 @@ class Quote extends Model
 {
     public const TABLE_NAME = 'quotes';
     public const ID = 'id';
-    public const VERSION = 'version';
+    public const PROPOSAL_NUMBER = 'proposal_number';
     public const COMPANY_ID = 'company_id';
     public const COMPANY_CODE = 'company_code';
     public const COMPANY_CODE_BRANCH = 'company_code_branch';
@@ -134,6 +136,14 @@ class Quote extends Model
     public function replacedBy(): BelongsTo
     {
         return $this->belongsTo(self::class, self::REPLACED_BY);
+    }
+
+    protected function proposalNumber(): Attribute
+    {
+        return Attribute::make(
+            get: fn (int $value) => Str::padLeft($value, 2, '0'),
+            set: fn (string $value) => (int) $value,
+        );
     }
 
     public function isResponded(): bool
