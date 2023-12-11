@@ -22,7 +22,7 @@ class CreateQuoteAction
         QuoteData $data
     ): Quote {
         return $budget->quotes()->create([
-            Quote::VERSION => $data->version,
+            Quote::PROPOSAL_NUMBER => $data->proposal_number,
             Quote::COMPANY_ID => $data->company_id,
             Quote::SUPPLIER_ID => $supplier->id,
             Quote::PAYMENT_CONDITION_ID => $paymentCondition->id,

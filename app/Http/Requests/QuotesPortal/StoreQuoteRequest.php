@@ -53,7 +53,7 @@ class StoreQuoteRequest extends FormRequest
                     }
                 },
             ],
-            Quote::VERSION => ['required', 'integer', 'min:1'],
+            Quote::PROPOSAL_NUMBER => ['required', 'string', 'size:2'],
             Quote::QUOTE_NUMBER => ['required'],
 
             Quote::COMMENTS => ['nullable'],

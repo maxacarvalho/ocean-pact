@@ -4,7 +4,7 @@ return [
     'quote' => 'quote',
     'quotes' => 'quotes',
     'id' => 'ID',
-    'version' => 'version',
+    'proposal_number' => 'proposal number',
     'company_code' => 'company',
     'company_code_branch' => 'branch',
     'budget_id' => 'budget',
@@ -49,5 +49,5 @@ return [
     'error_messages' => [
         'error_creating_quote' => 'there was an error creating the quote.',
     ],
-    'validation_duplicated_quote_for_company' => 'a quote from company :company_code-:company_code_branch, with number :quote_number and version :version, was already send to the supplier :supplier.',
+    'validation_duplicated_quote_for_company' => 'a quote from company :company_code-:company_code_branch, with number :quote_number and version :proposal_number, was already send to the supplier :supplier.',
 ];

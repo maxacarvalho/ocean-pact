@@ -93,9 +93,9 @@ class QuoteResource extends Resource
                         Section::make()
                             ->columns(3)
                             ->schema([
-                                Placeholder::make(Quote::VERSION)
-                                    ->label(Str::formatTitle(__('quote.version')))
-                                    ->content(fn (Model|Quote $record) => $record->version),
+                                Placeholder::make(Quote::PROPOSAL_NUMBER)
+                                    ->label(Str::formatTitle(__('quote.proposal_number')))
+                                    ->content(fn (Model|Quote $record) => $record->proposal_number),
                             ])
                             ->hiddenOn('create'),
                         Section::make()
@@ -107,7 +107,7 @@ class QuoteResource extends Resource
                                     ->relationship(Quote::RELATION_CURRENCY, Currency::DESCRIPTION)
                                     ->live()
                                     ->afterStateUpdated(function (?int $state, ?int $old, Model|Quote $record) {
-                                        if (! $state) {
+                                        if (!$state) {
                                             return;
                                         }
 
@@ -253,8 +253,8 @@ class QuoteResource extends Resource
                     });
             })
             ->columns([
-                TextColumn::make(Quote::VERSION)
-                    ->label(Str::formatTitle(__('quote.version'))),
+                TextColumn::make(Quote::PROPOSAL_NUMBER)
+                    ->label(Str::formatTitle(__('quote.proposal_number'))),
 
                 TextColumn::make(Quote::RELATION_COMPANY.'.'.Company::NAME_AND_BRANCH)
                     ->label(Str::formatTitle(__('quote.company'))),
