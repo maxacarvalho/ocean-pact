@@ -6,6 +6,7 @@ use App\Enums\QuotesPortal\FreightTypeEnum;
 use App\Enums\QuotesPortal\QuoteStatusEnum;
 use App\Filament\Resources\QuoteResource\Pages\EditQuote;
 use App\Filament\Resources\QuoteResource\Pages\ListQuotes;
+use App\Filament\Resources\QuoteResource\Pages\QuoteAnalysisPanel;
 use App\Filament\Resources\QuoteResource\Pages\ViewQuote;
 use App\Filament\Resources\QuoteResource\RelationManagers\QuoteItemsRelationManager;
 use App\Filament\Resources\QuoteResource\Widgets\QuotesOverviewWidget;
@@ -29,6 +30,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
+use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
@@ -106,7 +108,7 @@ class QuoteResource extends Resource
                                     ->relationship(Quote::RELATION_CURRENCY, Currency::DESCRIPTION)
                                     ->live()
                                     ->afterStateUpdated(function (?int $state, ?int $old, Model|Quote $record) {
-                                        if (!$state) {
+                                        if (! $state) {
                                             return;
                                         }
 
@@ -272,8 +274,11 @@ class QuoteResource extends Resource
 
                 TextColumn::make(Quote::QUOTE_NUMBER)
                     ->label(Str::formatTitle(__('quote.quote_number')))
+                    ->icon('far-chart-user')
+                    ->iconColor('primary')
                     ->sortable()
-                    ->searchable(),
+                    ->searchable()
+                    ->url(fn (Quote $record) => self::getUrl('quote-analysis-panel', ['quoteNumber' => $record->quote_number])),
 
                 TextColumn::make(Quote::STATUS)
                     ->label(Str::formatTitle(__('quote.status')))
@@ -382,6 +387,10 @@ class QuoteResource extends Resource
             ->actions([
                 EditAction::make(),
                 ViewAction::make(),
+                Action::make('open-quote-analysis-panel')
+                    ->icon('far-chart-user')
+                    ->iconButton()
+                    ->url(fn (Quote $record) => self::getUrl('quote-analysis-panel', ['quoteNumber' => $record->quote_number])),
             ])
             ->bulkActions([
                 ExportBulkAction::make()->exports([
@@ -409,6 +418,7 @@ class QuoteResource extends Resource
             'view' => ViewQuote::route('/{record}'),
             // 'create' => CreateQuote::route('/create'),
             'edit' => EditQuote::route('/{record}/edit'),
+            'quote-analysis-panel' => QuoteAnalysisPanel::route('/{quoteNumber}/quote-analysis-panel'),
         ];
     }
 
