@@ -4,7 +4,6 @@ namespace App\Filament\Resources\IntegrationTypeResource\RelationManagers;
 
 use App\Enums\IntegraHub\IntegrationTypeFieldTypeEnum;
 use App\Models\IntegraHub\IntegrationTypeField;
-use App\Rules\MultipleEmailsRule;
 use App\Utils\Str;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
@@ -70,7 +69,7 @@ class FieldsRelationManager extends RelationManager
                                     ->default(true)
                                     ->reactive()
                                     ->afterStateUpdated(function (\Filament\Forms\Set $set, $state) {
-                                        $set(IntegrationTypeField::FIELD_RULES.'.nullable', ! $state);
+                                        $set(IntegrationTypeField::FIELD_RULES.'.nullable', !$state);
                                     }),
 
                                 Toggle::make(IntegrationTypeField::FIELD_RULES.'.array')
@@ -140,13 +139,6 @@ class FieldsRelationManager extends RelationManager
 
                                 TextInput::make(IntegrationTypeField::FIELD_RULES.'.max')
                                     ->label(Str::formatTitle(__('integration_type_field.max'))),
-
-                                Select::make(IntegrationTypeField::FIELD_RULES.'.custom')
-                                    ->label(Str::formatTitle(__('integration_type_field.max')))
-                                    ->multiple()
-                                    ->options([
-                                        MultipleEmailsRule::class => MultipleEmailsRule::class,
-                                    ]),
                             ]),
                     ]),
             ])
