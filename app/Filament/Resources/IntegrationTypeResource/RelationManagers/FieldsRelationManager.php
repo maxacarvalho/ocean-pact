@@ -69,7 +69,7 @@ class FieldsRelationManager extends RelationManager
                                     ->default(true)
                                     ->reactive()
                                     ->afterStateUpdated(function (\Filament\Forms\Set $set, $state) {
-                                        $set(IntegrationTypeField::FIELD_RULES.'.nullable', !$state);
+                                        $set(IntegrationTypeField::FIELD_RULES.'.nullable', ! $state);
                                     }),
 
                                 Toggle::make(IntegrationTypeField::FIELD_RULES.'.array')

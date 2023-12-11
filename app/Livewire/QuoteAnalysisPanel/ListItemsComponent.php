@@ -1,0 +1,77 @@
+<?php
+
+namespace App\Livewire\QuoteAnalysisPanel;
+
+use App\Models\QuotesPortal\Product;
+use App\Models\QuotesPortal\Quote;
+use App\Models\QuotesPortal\QuoteItem;
+use Filament\Forms\Concerns\InteractsWithForms;
+use Filament\Forms\Contracts\HasForms;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Concerns\InteractsWithTable;
+use Filament\Tables\Contracts\HasTable;
+use Filament\Tables\Table;
+use Illuminate\Contracts\Database\Eloquent\Builder;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
+use Illuminate\Foundation\Application;
+use Livewire\Attributes\Locked;
+use Livewire\Component;
+
+class ListItemsComponent extends Component implements HasForms, HasTable
+{
+    use InteractsWithForms;
+    use InteractsWithTable;
+
+    #[Locked]
+    public string $quoteNumber;
+
+    public function mount(string $quoteNumber): void
+    {
+        $this->quoteNumber = $quoteNumber;
+    }
+
+    public function render(): View|Application|Factory
+    {
+        return view('livewire.quote-analysis-panel.list-items-component');
+    }
+
+    public function table(Table $table): Table
+    {
+        return $table
+            ->paginated(false)
+            ->query(function (): Builder {
+                return QuoteItem::query()
+                    ->distinct()
+                    ->select([
+                        QuoteItem::ITEM.' AS id',
+                        QuoteItem::PRODUCT_ID,
+                        QuoteItem::ITEM,
+                        QuoteItem::DESCRIPTION,
+                    ])
+                    ->with([
+                        QuoteItem::RELATION_PRODUCT,
+                    ])
+                    ->whereHas(QuoteItem::RELATION_QUOTE, function (Builder $query): void {
+                        $query->where(Quote::QUOTE_NUMBER, $this->quoteNumber);
+                    });
+            })
+            ->defaultSort(QuoteItem::ITEM)
+            ->columns([
+                TextColumn::make(QuoteItem::ITEM)
+                    ->label(__('quote_item.item'))
+                    ->searchable(),
+
+                TextColumn::make(QuoteItem::RELATION_PRODUCT.'.'.Product::CODE)
+                    ->label(__('product.code'))
+                    ->searchable(),
+
+                TextColumn::make(QuoteItem::DESCRIPTION)
+                    ->label(__('quote_item.description'))
+                    ->searchable(),
+            ])
+            ->filters([
+                //
+            ]);
+    }
+}
