@@ -29,12 +29,11 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Tables\Actions\EditAction as TableEditAction;
-use Filament\Tables\Actions\ViewAction as TableViewAction;
+use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Filters\Filter;
-use Filament\Tables\Filters\Filter as TableFilter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Contracts\Database\Eloquent\Builder;
@@ -345,7 +344,7 @@ class QuoteResource extends Resource
                     ->label(Str::formatTitle(__('quote.buyer')))
                     ->relationship(Quote::RELATION_BUYER, User::NAME),
 
-                TableFilter::make('created_at')
+                Filter::make('created_at')
                     ->label(Str::formatTitle(__('quote.created_at')))
                     ->indicateUsing(function (array $data): array {
                         $indicators = [];
@@ -381,8 +380,8 @@ class QuoteResource extends Resource
                     }),
             ], layout: FiltersLayout::Modal)
             ->actions([
-                TableEditAction::make(),
-                TableViewAction::make(),
+                EditAction::make(),
+                ViewAction::make(),
             ])
             ->bulkActions([
                 ExportBulkAction::make()->exports([
