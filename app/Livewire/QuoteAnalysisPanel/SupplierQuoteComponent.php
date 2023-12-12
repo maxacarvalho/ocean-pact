@@ -4,6 +4,7 @@ namespace App\Livewire\QuoteAnalysisPanel;
 
 use App\Models\QuotesPortal\Quote;
 use App\Models\QuotesPortal\QuoteItem;
+use App\Utils\Str;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Tables\Columns\TextColumn;
@@ -55,10 +56,13 @@ class SupplierQuoteComponent extends Component implements HasForms, HasTable
             ->defaultSort(QuoteItem::ITEM)
             ->columns([
                 TextColumn::make(QuoteItem::ITEM)
-                    ->label(__('quote_item.item')),
+                    ->label(Str::title(__('quote_item.item'))),
 
                 TextColumn::make(QuoteItem::DESCRIPTION)
-                    ->label(__('quote_item.description')),
+                    ->label(Str::title(__('quote_item.description'))),
+
+                TextColumn::make(QuoteItem::DELIVERY_IN_DAYS)
+                    ->label(Str::title(__('quote_item.delivery_in_days'))),
             ]);
     }
 }
