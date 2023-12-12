@@ -69,13 +69,16 @@ class PurchaseRequestResource extends Resource
                     ->label(Str::ucfirst(__('purchase_request.company'))),
 
                 TextColumn::make(PurchaseRequest::RELATION_QUOTE.'.'.Quote::RELATION_BUDGET.'.'.Budget::BUDGET_NUMBER)
-                    ->label(Str::ucfirst(__('purchase_request.budget'))),
+                    ->label(Str::ucfirst(__('purchase_request.budget')))
+                    ->searchable(),
 
                 TextColumn::make(PurchaseRequest::RELATION_QUOTE.'.'.Quote::QUOTE_NUMBER)
-                    ->label(Str::ucfirst(__('purchase_request.quote'))),
+                    ->label(Str::ucfirst(__('purchase_request.quote')))
+                    ->searchable(),
 
                 TextColumn::make(PurchaseRequest::PURCHASE_REQUEST_NUMBER)
-                    ->label(Str::ucfirst(__('purchase_request.purchase_request_number'))),
+                    ->label(Str::ucfirst(__('purchase_request.purchase_request_number')))
+                    ->searchable(),
 
                 TextColumn::make(PurchaseRequest::SENT_AT)
                     ->label(Str::ucfirst(__('purchase_request.sent_at')))
