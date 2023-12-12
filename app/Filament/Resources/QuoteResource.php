@@ -30,7 +30,6 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
@@ -278,7 +277,10 @@ class QuoteResource extends Resource
                     ->iconColor('primary')
                     ->sortable()
                     ->searchable()
-                    ->url(fn (Quote $record) => self::getUrl('quote-analysis-panel', ['quoteNumber' => $record->quote_number])),
+                    ->url(fn (Quote $record) => self::getUrl('quote-analysis-panel', [
+                        'companyId' => $record->company_id,
+                        'quoteNumber' => $record->quote_number,
+                    ])),
 
                 TextColumn::make(Quote::STATUS)
                     ->label(Str::formatTitle(__('quote.status')))
@@ -297,11 +299,15 @@ class QuoteResource extends Resource
             ->filters([
                 Filter::make('replaced_only')
                     ->label(Str::formatTitle(__('quote.replaced_only')))
-                    ->query(fn (Builder $query): Builder => $query->whereNotNull(Quote::REPLACED_BY)->where(Quote::STATUS, QuoteStatusEnum::REPLACED)),
+                    ->query(fn (Builder $query): Builder => $query
+                        ->whereNotNull(Quote::REPLACED_BY)
+                        ->where(Quote::STATUS, QuoteStatusEnum::REPLACED)),
 
                 Filter::make('latest_only')
                     ->label(Str::formatTitle(__('quote.latest_only')))
-                    ->query(fn (Builder $query): Builder => $query->whereNull(Quote::REPLACED_BY)->where(Quote::STATUS, '!=', QuoteStatusEnum::REPLACED))
+                    ->query(fn (Builder $query): Builder => $query
+                        ->whereNull(Quote::REPLACED_BY)
+                        ->where(Quote::STATUS, '!=', QuoteStatusEnum::REPLACED))
                     ->default(),
 
                 SelectFilter::make(Quote::COMPANY_ID)
@@ -355,11 +361,15 @@ class QuoteResource extends Resource
                         $indicators = [];
 
                         if ($data['created_from'] ?? null) {
-                            $indicators['created_from'] = Str::ucfirst(__('quote.created_from', ['date' => Carbon::parse($data['created_from'])->format('d/m/Y')]));
+                            $indicators['created_from'] = Str::ucfirst(__('quote.created_from', [
+                                'date' => Carbon::parse($data['created_from'])->format('d/m/Y'),
+                            ]));
                         }
 
                         if ($data['created_until'] ?? null) {
-                            $indicators[''] = Str::ucfirst(__('quote.created_until', ['date' => Carbon::parse($data['created_until'])->format('d/m/Y')]));
+                            $indicators[''] = Str::ucfirst(__('quote.created_until', [
+                                'date' => Carbon::parse($data['created_until'])->format('d/m/Y'),
+                            ]));
                         }
 
                         return $indicators;
@@ -376,21 +386,19 @@ class QuoteResource extends Resource
                         return $query
                             ->when(
                                 $data['created_from'],
-                                fn (Builder $query, string $date): Builder => $query->whereDate(Quote::CREATED_AT, '>=', $date)
+                                fn (Builder $query, string $date): Builder => $query
+                                    ->whereDate(Quote::CREATED_AT, '>=', $date)
                             )
                             ->when(
                                 $data['created_until'],
-                                fn (Builder $query, string $date): Builder => $query->whereDate(Quote::CREATED_AT, '<=', $date)
+                                fn (Builder $query, string $date): Builder => $query
+                                    ->whereDate(Quote::CREATED_AT, '<=', $date)
                             );
                     }),
             ], layout: FiltersLayout::Modal)
             ->actions([
                 EditAction::make(),
                 ViewAction::make(),
-                Action::make('open-quote-analysis-panel')
-                    ->icon('far-chart-user')
-                    ->iconButton()
-                    ->url(fn (Quote $record) => self::getUrl('quote-analysis-panel', ['quoteNumber' => $record->quote_number])),
             ])
             ->bulkActions([
                 ExportBulkAction::make()->exports([
@@ -418,7 +426,7 @@ class QuoteResource extends Resource
             'view' => ViewQuote::route('/{record}'),
             // 'create' => CreateQuote::route('/create'),
             'edit' => EditQuote::route('/{record}/edit'),
-            'quote-analysis-panel' => QuoteAnalysisPanel::route('/{quoteNumber}/quote-analysis-panel'),
+            'quote-analysis-panel' => QuoteAnalysisPanel::route('/{companyId}/{quoteNumber}/quote-analysis-panel'),
         ];
     }
 
