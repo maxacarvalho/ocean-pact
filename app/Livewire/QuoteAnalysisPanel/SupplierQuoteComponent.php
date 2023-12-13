@@ -15,6 +15,7 @@ use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Application;
+use Illuminate\Support\Carbon;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
 
@@ -59,10 +60,23 @@ class SupplierQuoteComponent extends Component implements HasForms, HasTable
                     ->label(Str::title(__('quote_item.item'))),
 
                 TextColumn::make(QuoteItem::DESCRIPTION)
-                    ->label(Str::title(__('quote_item.description'))),
+                    ->label(Str::title(__('quote_item.description')))
+                    ->limit(50)
+                    ->tooltip(function (TextColumn $column): ?string {
+                        $state = $column->getState();
+
+                        if (strlen($state) <= $column->getCharacterLimit()) {
+                            return null;
+                        }
+
+                        return $state;
+                    }),
 
                 TextColumn::make(QuoteItem::DELIVERY_IN_DAYS)
-                    ->label(Str::title(__('quote_item.delivery_in_days'))),
+                    ->label(__('quote_analysis_panel.eta'))
+                    ->formatStateUsing(function (int $state): string {
+                        return Carbon::now()->addDays($state)->format('d/m/Y');
+                    }),
             ]);
     }
 }
