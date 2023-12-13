@@ -42,7 +42,6 @@ class UniqueQuoteItems extends Component implements HasForms, HasTable
     public function table(Table $table): Table
     {
         return $table
-            ->paginated(false)
             ->query(function (): Builder {
                 return QuoteItem::query()
                     ->distinct()
@@ -61,6 +60,7 @@ class UniqueQuoteItems extends Component implements HasForms, HasTable
                             ->where(Quote::QUOTE_NUMBER, $this->quoteNumber);
                     });
             })
+            ->queryStringIdentifier("unique-quote-items-{$this->companyId}-{$this->quoteNumber}")
             ->defaultSort(QuoteItem::ITEM)
             ->columns([
                 TextColumn::make(QuoteItem::ITEM)

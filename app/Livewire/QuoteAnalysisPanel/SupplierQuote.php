@@ -19,7 +19,7 @@ use Illuminate\Support\Carbon;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
 
-class SupplierQuoteComponent extends Component implements HasForms, HasTable
+class SupplierQuote extends Component implements HasForms, HasTable
 {
     use InteractsWithForms;
     use InteractsWithTable;
@@ -45,15 +45,15 @@ class SupplierQuoteComponent extends Component implements HasForms, HasTable
 
     public function render(): View|Application|Factory
     {
-        return view('livewire.quote-analysis-panel.supplier-quote-component');
+        return view('livewire.quote-analysis-panel.supplier-quote');
     }
 
     public function table(Table $table): Table
     {
         return $table
             ->heading($this->supplierName)
-            ->paginated(false)
             ->query(fn (): Builder => QuoteItem::query()->where(QuoteItem::QUOTE_ID, $this->quoteId))
+            ->queryStringIdentifier("supplier-quote-{$this->quoteId}")
             ->defaultSort(QuoteItem::ITEM)
             ->columns([
                 TextColumn::make(QuoteItem::ITEM)

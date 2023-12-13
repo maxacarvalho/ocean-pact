@@ -3,7 +3,7 @@
 
     <div class="overflow-x-auto flex space-x-4 p-1">
         @foreach($this->quoteIds as $quoteId)
-            <livewire:quote-analysis-panel.supplier-quote-component :quote-id="$quoteId" :wire:key="$quoteId" />
+            <livewire:quote-analysis-panel.supplier-quote :quote-id="$quoteId" :wire:key="$quoteId" />
         @endforeach
     </div>
 </x-filament-panels::page>
