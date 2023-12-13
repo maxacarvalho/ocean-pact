@@ -15,9 +15,12 @@ use Filament\Resources\Resource;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Filament\Tables\Filters\Filter;
+use Filament\Forms\Components\DatePicker;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Carbon;
 use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
 use pxlrbt\FilamentExcel\Exports\ExcelExport;
 
@@ -108,6 +111,76 @@ class PurchaseRequestResource extends Resource
                     ExcelExport::make()->fromTable()
                         ->withFilename(fn ($resource) => Str::slug($resource::getPluralModelLabel()).'-'.now()->format('Y-m-d')),
                 ]),
+            ])
+            ->filters([
+                Filter::make('sent_at')
+                    ->label(Str::formatTitle(__('purchase_request.sent_at')))
+                    ->indicateUsing(function (array $data): array {
+                        $indicators = [];
+
+                        if ($data['created_from'] ?? null) {
+                            $indicators['created_from'] = Str::ucfirst(__('purchase_request.created_from', ['date' => Carbon::parse($data['created_from'])->format('d/m/Y')]));
+                        }
+
+                        if ($data['created_until'] ?? null) {
+                            $indicators[''] = Str::ucfirst(__('purchase_request.created_until', ['date' => Carbon::parse($data['created_until'])->format('d/m/Y')]));
+                        }
+
+                        return $indicators;
+                    })
+                    ->form([
+                        DatePicker::make('sent_from')
+                            ->label(Str::formatTitle(__('purchase_request.sent_at')))
+                            ->displayFormat('d/m/Y'),
+                        DatePicker::make('sent_until')
+                            ->label(Str::formatTitle(__('purchase_request.sent_at')))
+                            ->displayFormat('d/m/Y'),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['sent_from'],
+                                fn (Builder $query, string $date): Builder => $query->whereDate(PurchaseRequest::SENT_AT, '>=', $date)
+                            )
+                            ->when(
+                                $data['sent_until'],
+                                fn (Builder $query, string $date): Builder => $query->whereDate(PurchaseRequest::SENT_AT, '<=', $date)
+                            );
+                    }),
+                Filter::make('viewed_at')
+                    ->label(Str::formatTitle(__('purchase_request.viewed_at')))
+                    ->indicateUsing(function (array $data): array {
+                        $indicators = [];
+
+                        if ($data['created_from'] ?? null) {
+                            $indicators['created_from'] = Str::ucfirst(__('purchase_request.created_from', ['date' => Carbon::parse($data['created_from'])->format('d/m/Y')]));
+                        }
+
+                        if ($data['created_until'] ?? null) {
+                            $indicators[''] = Str::ucfirst(__('purchase_request.created_until', ['date' => Carbon::parse($data['created_until'])->format('d/m/Y')]));
+                        }
+
+                        return $indicators;
+                    })
+                    ->form([
+                        DatePicker::make('viewed_from')
+                            ->label(Str::formatTitle(__('purchase_request.viewed_at')))
+                            ->displayFormat('d/m/Y'),
+                        DatePicker::make('viewed_until')
+                            ->label(Str::formatTitle(__('purchase_request.viewed_at')))
+                            ->displayFormat('d/m/Y'),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['viewed_from'],
+                                fn (Builder $query, string $date): Builder => $query->whereDate(PurchaseRequest::VIEWED_AT, '>=', $date)
+                            )
+                            ->when(
+                                $data['viewed_until'],
+                                fn (Builder $query, string $date): Builder => $query->whereDate(PurchaseRequest::VIEWED_AT, '<=', $date)
+                            );
+                    }),
             ]);
     }
 
