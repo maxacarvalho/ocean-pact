@@ -9,9 +9,18 @@ class CreatePurchaseRequestAction
 {
     public function handle(PurchaseRequestRequestData $purchaseRequestRequestData): PurchaseRequest
     {
+        $attributes = $purchaseRequestRequestData
+            ->except(PurchaseRequest::CREATED_AT, PurchaseRequest::UPDATED_AT)
+            ->toArray();
+
+        $attributes = [
+            ...$attributes,
+            PurchaseRequest::SENT_AT => now(),
+        ];
+
         /** @var PurchaseRequest $purchaseRequest */
         $purchaseRequest = PurchaseRequest::query()->create(
-            $purchaseRequestRequestData->except(PurchaseRequest::CREATED_AT, PurchaseRequest::UPDATED_AT)->toArray()
+            $attributes
         );
 
         return $purchaseRequest;
