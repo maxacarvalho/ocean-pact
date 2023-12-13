@@ -217,6 +217,7 @@ class QuoteResource extends Resource
         return $table
             ->deferLoading()
             ->striped()
+            ->defaultSort(Quote::UPDATED_AT, 'desc')
             ->recordClasses(fn (Model|Quote $record) => match ($record->status) {
                 QuoteStatusEnum::REPLACED => 'opacity-30',
                 default => null,
@@ -252,150 +253,10 @@ class QuoteResource extends Resource
                         );
                     });
             })
-            ->columns([
-                TextColumn::make(Quote::PROPOSAL_NUMBER)
-                    ->label(Str::formatTitle(__('quote.proposal_number'))),
-
-                TextColumn::make(Quote::RELATION_COMPANY.'.'.Company::NAME_AND_BRANCH)
-                    ->label(Str::formatTitle(__('quote.company'))),
-
-                TextColumn::make(Quote::RELATION_BUDGET.'.'.Budget::BUDGET_NUMBER)
-                    ->label(Str::formatTitle(__('quote.budget_number')))
-                    ->sortable()
-                    ->searchable()
-                    ->visible(fn () => Auth::user()->isSuperAdmin() || Auth::user()->isAdmin() || Auth::user()->isSeller()),
-
-                TextColumn::make(Quote::RELATION_SUPPLIER.'.'.Supplier::NAME)
-                    ->label(Str::formatTitle(__('quote.supplier')))
-                    ->sortable()
-                    ->searchable()
-                    ->visible(fn () => Auth::user()->isSuperAdmin() || Auth::user()->isAdmin() || Auth::user()->isBuyer()),
-
-                TextColumn::make(Quote::QUOTE_NUMBER)
-                    ->label(Str::formatTitle(__('quote.quote_number')))
-                    ->icon('far-chart-user')
-                    ->iconColor('primary')
-                    ->sortable()
-                    ->searchable()
-                    ->url(fn (Quote $record) => self::getUrl('quote-analysis-panel', [
-                        'companyId' => $record->company_id,
-                        'quoteNumber' => $record->quote_number,
-                    ])),
-
-                TextColumn::make(Quote::STATUS)
-                    ->label(Str::formatTitle(__('quote.status')))
-                    ->sortable(),
-
-                TextColumn::make(Quote::CREATED_AT)
-                    ->label(Str::formatTitle(__('quote.created_at')))
-                    ->dateTime('d/m/Y')
-                    ->sortable(),
-
-                TextColumn::make(Quote::UPDATED_AT)
-                    ->label(Str::formatTitle(__('quote.updated_at')))
-                    ->dateTime('d/m/Y')
-                    ->sortable(),
-            ])
-            ->filters([
-                Filter::make('replaced_only')
-                    ->label(Str::formatTitle(__('quote.replaced_only')))
-                    ->query(fn (Builder $query): Builder => $query
-                        ->whereNotNull(Quote::REPLACED_BY)
-                        ->where(Quote::STATUS, QuoteStatusEnum::REPLACED)),
-
-                Filter::make('latest_only')
-                    ->label(Str::formatTitle(__('quote.latest_only')))
-                    ->query(fn (Builder $query): Builder => $query
-                        ->whereNull(Quote::REPLACED_BY)
-                        ->where(Quote::STATUS, '!=', QuoteStatusEnum::REPLACED))
-                    ->default(),
-
-                SelectFilter::make(Quote::COMPANY_ID)
-                    ->label(Str::formatTitle(__('quote.company')))
-                    ->relationship(
-                        name: Quote::RELATION_COMPANY,
-                        titleAttribute: Company::NAME_AND_BRANCH,
-                        modifyQueryUsing: function (Builder $query): Builder {
-                            return $query
-                                ->when(
-                                    Auth::user()->isSeller(),
-                                    fn (Builder $query): Builder => $query->whereIn(
-                                        Company::ID,
-                                        Auth::user()->getSellerCompanies()->pluck(Company::ID)
-                                    )
-                                );
-                        }
-                    ),
-
-                SelectFilter::make(Quote::STATUS)
-                    ->label(Str::formatTitle(__('quote.status')))
-                    ->options(QuoteStatusEnum::class),
-
-                SelectFilter::make(Quote::SUPPLIER_ID)
-                    ->label(Str::formatTitle(__('quote.supplier')))
-                    ->relationship(
-                        name: Quote::RELATION_SUPPLIER,
-                        titleAttribute: Supplier::NAME,
-                        modifyQueryUsing: function (Builder $query): Builder {
-                            return $query
-                                ->when(
-                                    Auth::user()->isSeller(),
-                                    fn (Builder $query): Builder => $query->whereHas(
-                                        Supplier::RELATION_SELLERS,
-                                        fn (Builder $query): Builder => $query->where(
-                                            SupplierUser::USER_ID,
-                                            Auth::user()->id
-                                        )
-                                    )
-                                );
-                        }
-                    ),
-
-                SelectFilter::make(Quote::BUDGET_ID)
-                    ->label(Str::formatTitle(__('quote.buyer')))
-                    ->relationship(Quote::RELATION_BUYER, User::NAME),
-
-                Filter::make('created_at')
-                    ->label(Str::formatTitle(__('quote.created_at')))
-                    ->indicateUsing(function (array $data): array {
-                        $indicators = [];
-
-                        if ($data['created_from'] ?? null) {
-                            $indicators['created_from'] = Str::ucfirst(__('quote.created_from', [
-                                'date' => Carbon::parse($data['created_from'])->format('d/m/Y'),
-                            ]));
-                        }
-
-                        if ($data['created_until'] ?? null) {
-                            $indicators[''] = Str::ucfirst(__('quote.created_until', [
-                                'date' => Carbon::parse($data['created_until'])->format('d/m/Y'),
-                            ]));
-                        }
-
-                        return $indicators;
-                    })
-                    ->form([
-                        DatePicker::make('created_from')
-                            ->label(Str::formatTitle(__('quote.created_at')))
-                            ->displayFormat('d/m/Y'),
-                        DatePicker::make('created_until')
-                            ->label(Str::formatTitle(__('quote.created_at')))
-                            ->displayFormat('d/m/Y'),
-                    ])
-                    ->query(function (Builder $query, array $data): Builder {
-                        return $query
-                            ->when(
-                                $data['created_from'],
-                                fn (Builder $query, string $date): Builder => $query
-                                    ->whereDate(Quote::CREATED_AT, '>=', $date)
-                            )
-                            ->when(
-                                $data['created_until'],
-                                fn (Builder $query, string $date): Builder => $query
-                                    ->whereDate(Quote::CREATED_AT, '<=', $date)
-                            );
-                    }),
-            ], layout: FiltersLayout::Modal)
+            ->columns(
+                self::getColumns()
+            )
+            ->filters(self::getFilters(), layout: FiltersLayout::Modal)
             ->actions([
                 EditAction::make(),
                 ViewAction::make(),
@@ -433,5 +294,157 @@ class QuoteResource extends Resource
     public static function getNavigationGroup(): ?string
     {
         return Str::formatTitle(__('navigation.quotes'));
+    }
+
+    private static function getColumns(): array
+    {
+        return [
+            TextColumn::make(Quote::PROPOSAL_NUMBER)
+                ->label(Str::formatTitle(__('quote.proposal_number'))),
+
+            TextColumn::make(Quote::RELATION_COMPANY.'.'.Company::NAME_AND_BRANCH)
+                ->label(Str::formatTitle(__('quote.company'))),
+
+            TextColumn::make(Quote::RELATION_BUDGET.'.'.Budget::BUDGET_NUMBER)
+                ->label(Str::formatTitle(__('quote.budget_number')))
+                ->sortable()
+                ->searchable()
+                ->visible(fn () => Auth::user()->isSuperAdmin() || Auth::user()->isAdmin() || Auth::user()->isSeller()),
+
+            TextColumn::make(Quote::RELATION_SUPPLIER.'.'.Supplier::NAME)
+                ->label(Str::formatTitle(__('quote.supplier')))
+                ->sortable()
+                ->searchable()
+                ->visible(fn () => Auth::user()->isSuperAdmin() || Auth::user()->isAdmin() || Auth::user()->isBuyer()),
+
+            TextColumn::make(Quote::QUOTE_NUMBER)
+                ->label(Str::formatTitle(__('quote.quote_number')))
+                ->icon('far-chart-user')
+                ->iconColor('primary')
+                ->sortable()
+                ->searchable()
+                ->url(fn (Quote $record) => self::getUrl('quote-analysis-panel', [
+                    'companyId' => $record->company_id,
+                    'quoteNumber' => $record->quote_number,
+                ])),
+
+            TextColumn::make(Quote::STATUS)
+                ->label(Str::formatTitle(__('quote.status')))
+                ->sortable(),
+
+            TextColumn::make(Quote::CREATED_AT)
+                ->label(Str::formatTitle(__('quote.created_at')))
+                ->dateTime('d/m/Y')
+                ->sortable(),
+
+            TextColumn::make(Quote::UPDATED_AT)
+                ->label(Str::formatTitle(__('quote.updated_at')))
+                ->dateTime('d/m/Y')
+                ->sortable(),
+        ];
+    }
+
+    private static function getFilters(): array
+    {
+        return [
+            Filter::make('replaced_only')
+                ->label(Str::formatTitle(__('quote.replaced_only')))
+                ->query(fn (Builder $query): Builder => $query
+                    ->whereNotNull(Quote::REPLACED_BY)
+                    ->where(Quote::STATUS, QuoteStatusEnum::REPLACED)),
+
+            Filter::make('latest_only')
+                ->label(Str::formatTitle(__('quote.latest_only')))
+                ->query(fn (Builder $query): Builder => $query
+                    ->whereNull(Quote::REPLACED_BY)
+                    ->where(Quote::STATUS, '!=', QuoteStatusEnum::REPLACED))
+                ->default(),
+
+            SelectFilter::make(Quote::COMPANY_ID)
+                ->label(Str::formatTitle(__('quote.company')))
+                ->relationship(
+                    name: Quote::RELATION_COMPANY,
+                    titleAttribute: Company::NAME_AND_BRANCH,
+                    modifyQueryUsing: function (Builder $query): Builder {
+                        return $query
+                            ->when(
+                                Auth::user()->isSeller(),
+                                fn (Builder $query): Builder => $query->whereIn(
+                                    Company::ID,
+                                    Auth::user()->getSellerCompanies()->pluck(Company::ID)
+                                )
+                            );
+                    }
+                ),
+
+            SelectFilter::make(Quote::STATUS)
+                ->label(Str::formatTitle(__('quote.status')))
+                ->options(QuoteStatusEnum::class),
+
+            SelectFilter::make(Quote::SUPPLIER_ID)
+                ->label(Str::formatTitle(__('quote.supplier')))
+                ->relationship(
+                    name: Quote::RELATION_SUPPLIER,
+                    titleAttribute: Supplier::NAME,
+                    modifyQueryUsing: function (Builder $query): Builder {
+                        return $query
+                            ->when(
+                                Auth::user()->isSeller(),
+                                fn (Builder $query): Builder => $query->whereHas(
+                                    Supplier::RELATION_SELLERS,
+                                    fn (Builder $query): Builder => $query->where(
+                                        SupplierUser::USER_ID,
+                                        Auth::user()->id
+                                    )
+                                )
+                            );
+                    }
+                ),
+
+            SelectFilter::make(Quote::BUDGET_ID)
+                ->label(Str::formatTitle(__('quote.buyer')))
+                ->relationship(Quote::RELATION_BUYER, User::NAME),
+
+            Filter::make('created_at')
+                ->label(Str::formatTitle(__('quote.created_at')))
+                ->indicateUsing(function (array $data): array {
+                    $indicators = [];
+
+                    if ($data['created_from'] ?? null) {
+                        $indicators['created_from'] = Str::ucfirst(__('quote.created_from', [
+                            'date' => Carbon::parse($data['created_from'])->format('d/m/Y'),
+                        ]));
+                    }
+
+                    if ($data['created_until'] ?? null) {
+                        $indicators[''] = Str::ucfirst(__('quote.created_until', [
+                            'date' => Carbon::parse($data['created_until'])->format('d/m/Y'),
+                        ]));
+                    }
+
+                    return $indicators;
+                })
+                ->form([
+                    DatePicker::make('created_from')
+                        ->label(Str::formatTitle(__('quote.created_at')))
+                        ->displayFormat('d/m/Y'),
+                    DatePicker::make('created_until')
+                        ->label(Str::formatTitle(__('quote.created_at')))
+                        ->displayFormat('d/m/Y'),
+                ])
+                ->query(function (Builder $query, array $data): Builder {
+                    return $query
+                        ->when(
+                            $data['created_from'],
+                            fn (Builder $query, string $date): Builder => $query
+                                ->whereDate(Quote::CREATED_AT, '>=', $date)
+                        )
+                        ->when(
+                            $data['created_until'],
+                            fn (Builder $query, string $date): Builder => $query
+                                ->whereDate(Quote::CREATED_AT, '<=', $date)
+                        );
+                }),
+        ];
     }
 }

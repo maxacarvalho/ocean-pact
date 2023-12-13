@@ -2,6 +2,7 @@
 
 namespace App\Livewire\QuoteAnalysisPanel;
 
+use App\Models\QuotesPortal\Product;
 use App\Models\QuotesPortal\Quote;
 use App\Models\QuotesPortal\QuoteItem;
 use Filament\Forms\Concerns\InteractsWithForms;
@@ -17,7 +18,7 @@ use Illuminate\Foundation\Application;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
 
-class QuoteItemsListNamesOnly extends Component implements HasForms, HasTable
+class UniqueQuoteItems extends Component implements HasForms, HasTable
 {
     use InteractsWithForms;
     use InteractsWithTable;
@@ -35,7 +36,7 @@ class QuoteItemsListNamesOnly extends Component implements HasForms, HasTable
 
     public function render(): View|Application|Factory
     {
-        return view('livewire.quote-analysis-panel.quote-items-list-names-only');
+        return view('livewire.quote-analysis-panel.unique-quote-items');
     }
 
     public function table(Table $table): Table
@@ -62,8 +63,20 @@ class QuoteItemsListNamesOnly extends Component implements HasForms, HasTable
             })
             ->defaultSort(QuoteItem::ITEM)
             ->columns([
+                TextColumn::make(QuoteItem::ITEM)
+                    ->label(__('quote_item.item'))
+                    ->searchable(),
+
+                TextColumn::make(QuoteItem::RELATION_PRODUCT.'.'.Product::CODE)
+                    ->label(__('product.code'))
+                    ->searchable(),
+
                 TextColumn::make(QuoteItem::DESCRIPTION)
-                    ->label(__('quote_item.description')),
+                    ->label(__('quote_item.description'))
+                    ->searchable(),
+            ])
+            ->filters([
+                //
             ]);
     }
 }
