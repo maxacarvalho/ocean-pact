@@ -18,22 +18,25 @@ use Illuminate\Foundation\Application;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
 
-class ListItemsComponent extends Component implements HasForms, HasTable
+class UniqueQuoteItems extends Component implements HasForms, HasTable
 {
     use InteractsWithForms;
     use InteractsWithTable;
 
     #[Locked]
     public string $quoteNumber;
+    #[Locked]
+    public int $companyId;
 
-    public function mount(string $quoteNumber): void
+    public function mount(int $companyId, string $quoteNumber): void
     {
+        $this->companyId = $companyId;
         $this->quoteNumber = $quoteNumber;
     }
 
     public function render(): View|Application|Factory
     {
-        return view('livewire.quote-analysis-panel.list-items-component');
+        return view('livewire.quote-analysis-panel.unique-quote-items');
     }
 
     public function table(Table $table): Table
@@ -53,7 +56,9 @@ class ListItemsComponent extends Component implements HasForms, HasTable
                         QuoteItem::RELATION_PRODUCT,
                     ])
                     ->whereHas(QuoteItem::RELATION_QUOTE, function (Builder $query): void {
-                        $query->where(Quote::QUOTE_NUMBER, $this->quoteNumber);
+                        $query
+                            ->where(Quote::COMPANY_ID, $this->companyId)
+                            ->where(Quote::QUOTE_NUMBER, $this->quoteNumber);
                     });
             })
             ->defaultSort(QuoteItem::ITEM)

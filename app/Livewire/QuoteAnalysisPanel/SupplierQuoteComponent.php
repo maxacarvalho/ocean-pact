@@ -4,6 +4,7 @@ namespace App\Livewire\QuoteAnalysisPanel;
 
 use App\Models\QuotesPortal\Quote;
 use App\Models\QuotesPortal\QuoteItem;
+use App\Utils\Str;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Tables\Columns\TextColumn;
@@ -14,6 +15,7 @@ use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Application;
+use Illuminate\Support\Carbon;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
 
@@ -55,10 +57,26 @@ class SupplierQuoteComponent extends Component implements HasForms, HasTable
             ->defaultSort(QuoteItem::ITEM)
             ->columns([
                 TextColumn::make(QuoteItem::ITEM)
-                    ->label(__('quote_item.item')),
+                    ->label(Str::title(__('quote_item.item'))),
 
                 TextColumn::make(QuoteItem::DESCRIPTION)
-                    ->label(__('quote_item.description')),
+                    ->label(Str::title(__('quote_item.description')))
+                    ->limit(50)
+                    ->tooltip(function (TextColumn $column): ?string {
+                        $state = $column->getState();
+
+                        if (strlen($state) <= $column->getCharacterLimit()) {
+                            return null;
+                        }
+
+                        return $state;
+                    }),
+
+                TextColumn::make(QuoteItem::DELIVERY_IN_DAYS)
+                    ->label(__('quote_analysis_panel.eta'))
+                    ->formatStateUsing(function (int $state): string {
+                        return Carbon::now()->addDays($state)->format('d/m/Y');
+                    }),
             ]);
     }
 }

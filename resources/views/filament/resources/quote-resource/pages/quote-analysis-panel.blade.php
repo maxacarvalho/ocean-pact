@@ -1,13 +1,9 @@
 <x-filament-panels::page>
-    <livewire:quote-analysis-panel.list-items-component :quote-number="$this->quoteNumber" />
+    <livewire:quote-analysis-panel.unique-quote-items :company-id="$this->companyId" :quote-number="$this->quoteNumber" />
 
-    <x-filament::grid
-        :default="1"
-        :sm="2"
-        class="gap-6"
-    >
+    <div class="overflow-x-auto flex space-x-4 p-1">
         @foreach($this->quoteIds as $quoteId)
             <livewire:quote-analysis-panel.supplier-quote-component :quote-id="$quoteId" :wire:key="$quoteId" />
         @endforeach
-    </x-filament::grid>
+    </div>
 </x-filament-panels::page>
