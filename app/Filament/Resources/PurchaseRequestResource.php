@@ -113,7 +113,7 @@ class PurchaseRequestResource extends Resource
                 ]),
             ])
             ->filters([
-                Filter::make('sent_at')
+                Filter::make(PurchaseRequest::SENT_AT)
                     ->label(Str::formatTitle(__('purchase_request.sent_at')))
                     ->indicateUsing(function (array $data): array {
                         $indicators = [];
@@ -147,7 +147,7 @@ class PurchaseRequestResource extends Resource
                                 fn (Builder $query, string $date): Builder => $query->whereDate(PurchaseRequest::SENT_AT, '<=', $date)
                             );
                     }),
-                Filter::make('viewed_at')
+                Filter::make(PurchaseRequest::VIEWED_AT)
                     ->label(Str::formatTitle(__('purchase_request.viewed_at')))
                     ->indicateUsing(function (array $data): array {
                         $indicators = [];
