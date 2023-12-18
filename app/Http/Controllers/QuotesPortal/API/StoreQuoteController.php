@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\QuotesPortal\API;
 
 use App\Actions\QuotesPortal\ProcessQuotePayloadAction;
+use App\Data\QuotesPortal\ErrorResponseData;
 use App\Data\QuotesPortal\QuoteData;
-use App\Data\QuotesPortal\StoreQuoteErrorResponseData;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\QuotesPortal\StoreQuoteRequest;
 use App\Models\QuotesPortal\Quote;
@@ -39,7 +39,7 @@ class StoreQuoteController extends Controller
                 ],
             ]);
 
-            $responseError = StoreQuoteErrorResponseData::from([
+            $responseError = ErrorResponseData::from([
                 'title' => __('quote.error_messages.error_creating_quote'),
                 'errors' => [$exception->getMessage()],
             ]);

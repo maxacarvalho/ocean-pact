@@ -15,6 +15,9 @@ class ProductData extends Data
         public readonly string $code,
         public readonly string $description,
         public readonly string $measurement_unit,
+        public readonly int|Optional $last_price,
+        public readonly int|Optional $smallest_price,
+        public readonly int|Optional $smallest_eta,
         public readonly Carbon|null|Optional $created_at,
         public readonly Carbon|null|Optional $updated_at,
     ) {

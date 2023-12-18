@@ -5,6 +5,8 @@ use App\Http\Controllers\IntegraHub\API\Payload\ListPayloadController;
 use App\Http\Controllers\IntegraHub\API\Payload\MarkPayloadAsCollectedController;
 use App\Http\Controllers\QuotesPortal\API\ApproveQuoteItemsController;
 use App\Http\Controllers\QuotesPortal\API\ListQuotesController;
+use App\Http\Controllers\QuotesPortal\API\Product\StoreProductController;
+use App\Http\Controllers\QuotesPortal\API\Product\UpdateProductController;
 use App\Http\Controllers\QuotesPortal\API\StoreOrUpdatePaymentConditionBatchController;
 use App\Http\Controllers\QuotesPortal\API\StorePurchaseRequestController;
 use App\Http\Controllers\QuotesPortal\API\StoreQuoteController;
@@ -56,6 +58,15 @@ Route::middleware('auth:sanctum')
 
                 $router->put('/quotes/{quote}/approve-items', ApproveQuoteItemsController::class)
                     ->name('approve-quote-items');
+            });
+
+        $router->name('product.')
+            ->group(function (Router $router) {
+                $router->post('/products', StoreProductController::class)
+                    ->name('store');
+
+                $router->put('/products/{code}/{companyCode}/{companyCodeBranch}', UpdateProductController::class)
+                    ->name('update');
             });
 
         $router->name('purchase-request.')

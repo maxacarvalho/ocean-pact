@@ -5,6 +5,7 @@ namespace App\Livewire\QuoteAnalysisPanel;
 use App\Models\QuotesPortal\Product;
 use App\Models\QuotesPortal\Quote;
 use App\Models\QuotesPortal\QuoteItem;
+use App\Utils\Str;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Tables\Columns\TextColumn;
@@ -64,16 +65,35 @@ class UniqueQuoteItems extends Component implements HasForms, HasTable
             ->defaultSort(QuoteItem::ITEM)
             ->columns([
                 TextColumn::make(QuoteItem::ITEM)
-                    ->label(__('quote_item.item'))
+                    ->label(Str::title(__('quote_item.item')))
                     ->searchable(),
 
                 TextColumn::make(QuoteItem::RELATION_PRODUCT.'.'.Product::CODE)
-                    ->label(__('product.code'))
+                    ->label(Str::title(__('product.code')))
                     ->searchable(),
 
                 TextColumn::make(QuoteItem::DESCRIPTION)
-                    ->label(__('quote_item.description'))
-                    ->searchable(),
+                    ->label(Str::title(__('quote_item.description')))
+                    ->searchable()
+                    ->limit(50)
+                    ->tooltip(function (TextColumn $column): ?string {
+                        $state = $column->getState();
+
+                        if (strlen($state) <= $column->getCharacterLimit()) {
+                            return null;
+                        }
+
+                        return $state;
+                    }),
+
+                TextColumn::make(QuoteItem::RELATION_PRODUCT.'.'.Product::LAST_PRICE)
+                    ->label(Str::title(__('product.last_price'))),
+
+                TextColumn::make(QuoteItem::RELATION_PRODUCT.'.'.Product::SMALLEST_PRICE)
+                    ->label(Str::title(__('product.smallest_price'))),
+
+                TextColumn::make(QuoteItem::RELATION_PRODUCT.'.'.Product::SMALLEST_ETA)
+                    ->label(Str::title(__('product.smallest_eta'))),
             ])
             ->filters([
                 //
