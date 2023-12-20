@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Livewire\Synth\MoneySynth;
 use Filament\Support\Assets\Css;
 use Filament\Support\Assets\Js;
 use Filament\Support\Facades\FilamentAsset;
@@ -9,6 +10,7 @@ use Filament\Support\Facades\FilamentView;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
+use Livewire\Livewire;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -19,6 +21,8 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Model::shouldBeStrict();
+
+        Livewire::propertySynthesizer(MoneySynth::class);
 
         if ($this->app->environment('production')) {
             FilamentAsset::register([

@@ -2,9 +2,8 @@
 
 namespace App\Http\Requests\QuotesPortal\Product;
 
-use App\Models\QuotesPortal\Company;
+use App\Models\QuotesPortal\Currency;
 use App\Models\QuotesPortal\Product;
-use Closure;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -13,57 +12,25 @@ class UpdateProductRequest extends FormRequest
     public function rules(): array
     {
         return [
-            Product::COMPANY_CODE => [
-                'required',
-                function (string $attribute, mixed $value, Closure $fail) {
-                    $exists = Company::query()
-                        ->where(Company::CODE, '=', $value)
-                        ->where(Company::CODE_BRANCH, '=', $this->input(Product::COMPANY_CODE_BRANCH))
-                        ->exists();
+            Product::DESCRIPTION => ['sometimes', 'string'],
 
-                    if (! $exists) {
-                        $fail(__('company.validation_error_company_not_found', [
-                            'code' => $value,
-                            'code_branch' => $this->input(Product::COMPANY_CODE_BRANCH),
-                        ]));
-                    }
-                },
+            Product::MEASUREMENT_UNIT => ['sometimes', 'string'],
+
+            Product::LAST_PRICE => ['sometimes', 'array'],
+            Product::LAST_PRICE.'.currency' => [
+                'sometimes',
+                Rule::in(Currency::query()->pluck(Currency::ISO_CODE)->toArray()),
             ],
+            Product::LAST_PRICE.'.amount' => ['sometimes', 'numeric', 'min:0'],
 
-            Product::COMPANY_CODE_BRANCH => [
-                'required',
-                function (string $attribute, mixed $value, Closure $fail) {
-                    $exists = Company::query()
-                        ->where(Company::CODE_BRANCH, '=', $value)
-                        ->where(Company::CODE, '=', $this->input(Product::COMPANY_CODE))
-                        ->exists();
-
-                    if (! $exists) {
-                        $fail(__('company.validation_error_company_not_found', [
-                            'code' => $this->input(Product::COMPANY_CODE),
-                            'code_branch' => $value,
-                        ]));
-                    }
-                },
+            Product::SMALLEST_PRICE => ['sometimes', 'array'],
+            Product::SMALLEST_PRICE.'.currency' => [
+                'sometimes',
+                Rule::in(Currency::query()->pluck(Currency::ISO_CODE)->toArray()),
             ],
+            Product::SMALLEST_PRICE.'.amount' => ['sometimes', 'numeric', 'min:0'],
 
-            Product::CODE => [
-                'required',
-                Rule::unique(Product::TABLE_NAME, Product::CODE)
-                    ->where(Product::COMPANY_CODE, $this->route('companyCode'))
-                    ->where(Product::COMPANY_CODE_BRANCH, $this->route('companyCodeBranch'))
-                    ->ignore($this->route('code')),
-            ],
-
-            Product::DESCRIPTION => ['required'],
-
-            Product::MEASUREMENT_UNIT => ['required'],
-
-            Product::LAST_PRICE => ['required', 'numeric', 'min:0'],
-
-            Product::SMALLEST_PRICE => ['required', 'numeric', 'min:0'],
-
-            Product::SMALLEST_ETA => ['required', 'numeric', 'min:0'],
+            Product::SMALLEST_ETA => ['sometimes', 'numeric', 'min:0'],
         ];
     }
 

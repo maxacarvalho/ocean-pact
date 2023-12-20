@@ -44,6 +44,8 @@ class StoreQuoteController extends Controller
                 'errors' => [$exception->getMessage()],
             ]);
 
+            report($exception);
+
             return response()->json($responseError->toArray(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }

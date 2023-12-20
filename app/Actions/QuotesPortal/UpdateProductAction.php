@@ -9,7 +9,9 @@ class UpdateProductAction
 {
     public function handle(Product $product, ProductData $productData): Product
     {
-        $product->update($productData->toArray());
+        $product->update(
+            $productData->except(Product::ID, Product::CREATED_AT, Product::UPDATED_AT)->toArray()
+        );
 
         return $product;
     }

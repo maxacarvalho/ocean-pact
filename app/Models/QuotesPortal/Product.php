@@ -3,11 +3,10 @@
 namespace App\Models\QuotesPortal;
 
 use App\Casts\QuotesPortal\MoneyFromJsonCast;
-use Brick\Money\Money;
+use App\Utils\Money;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
-use NumberFormatter;
 
 /**
  * @property int               $id
@@ -55,17 +54,6 @@ class Product extends Model
         self::SMALLEST_PRICE => MoneyFromJsonCast::class,
     ];
 
-    protected $attributes = [
-        self::LAST_PRICE => [
-            'currency' => 'BRL',
-            'amount' => 0,
-        ],
-        self::SMALLEST_PRICE => [
-            'currency' => 'BRL',
-            'amount' => 0,
-        ],
-    ];
-
     public function company(): BelongsTo
     {
         return $this->belongsTo(
@@ -73,24 +61,5 @@ class Product extends Model
             self::COMPANY_CODE,
             Company::CODE
         );
-    }
-
-    public function getFormattedPrice(Money $money): string
-    {
-        $currency = $money->getCurrency()->getCurrencyCode();
-
-        if ('BRL' === $currency) {
-            $formatter = new NumberFormatter('pt_BR', NumberFormatter::DECIMAL);
-            $formatter->setSymbol(NumberFormatter::DECIMAL_SEPARATOR_SYMBOL, ',');
-            $formatter->setSymbol(NumberFormatter::GROUPING_SEPARATOR_SYMBOL, '.');
-        } else {
-            $formatter = new NumberFormatter('en_US', NumberFormatter::DECIMAL);
-            $formatter->setSymbol(NumberFormatter::DECIMAL_SEPARATOR_SYMBOL, '.');
-            $formatter->setSymbol(NumberFormatter::GROUPING_SEPARATOR_SYMBOL, ',');
-        }
-
-        $formatter->setAttribute(NumberFormatter::FRACTION_DIGITS, 2);
-
-        return $money->formatWith($formatter);
     }
 }

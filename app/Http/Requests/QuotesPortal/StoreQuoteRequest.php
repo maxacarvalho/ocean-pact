@@ -109,6 +109,13 @@ class StoreQuoteRequest extends FormRequest
             Quote::RELATION_ITEMS.'.*.'.QuoteItem::RELATION_PRODUCT.'.'.Product::CODE => ['required'],
             Quote::RELATION_ITEMS.'.*.'.QuoteItem::RELATION_PRODUCT.'.'.Product::DESCRIPTION => ['required'],
             Quote::RELATION_ITEMS.'.*.'.QuoteItem::RELATION_PRODUCT.'.'.Product::MEASUREMENT_UNIT => ['required'],
+            Quote::RELATION_ITEMS.'.*.'.QuoteItem::RELATION_PRODUCT.'.'.Product::LAST_PRICE => ['required', 'array'],
+            Quote::RELATION_ITEMS.'.*.'.QuoteItem::RELATION_PRODUCT.'.'.Product::LAST_PRICE.'.currency' => ['required', 'in:BRL,EUR,NOK,GBP,USD'],
+            Quote::RELATION_ITEMS.'.*.'.QuoteItem::RELATION_PRODUCT.'.'.Product::LAST_PRICE.'.amount' => ['required', 'integer'],
+            Quote::RELATION_ITEMS.'.*.'.QuoteItem::RELATION_PRODUCT.'.'.Product::SMALLEST_PRICE => ['required', 'array'],
+            Quote::RELATION_ITEMS.'.*.'.QuoteItem::RELATION_PRODUCT.'.'.Product::SMALLEST_PRICE.'.currency' => ['required', 'in:BRL,EUR,NOK,GBP,USD'],
+            Quote::RELATION_ITEMS.'.*.'.QuoteItem::RELATION_PRODUCT.'.'.Product::SMALLEST_PRICE.'.amount' => ['required', 'integer'],
+            Quote::RELATION_ITEMS.'.*.'.QuoteItem::RELATION_PRODUCT.'.'.Product::SMALLEST_ETA => ['required', 'integer'],
         ];
     }
 

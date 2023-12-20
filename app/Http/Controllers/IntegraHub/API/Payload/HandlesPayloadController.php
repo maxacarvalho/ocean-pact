@@ -36,6 +36,8 @@ class HandlesPayloadController extends Controller
     ): PayloadSuccessResponseData|JsonResponse {
         $payloadInput = PayloadInputData::from($request->validated());
 
+        $this->validatePathParameters($integrationType, $payloadInput->pathParameters);
+
         $this->validatePayload($integrationType, $payloadInput->payload);
 
         $payload = null;
@@ -136,5 +138,27 @@ class HandlesPayloadController extends Controller
         if ($duplicatedPayloadExists) {
             throw new DuplicatedPayloadException();
         }
+    }
+
+    private function validatePathParameters(IntegrationType $integrationType, ?array $pathParameters): void
+    {
+        if ($integrationType->path_parameters === null) {
+            return;
+        }
+
+        $validationRules = collect($integrationType->path_parameters)
+            ->mapWithKeys(fn (array $pathParameter) => [$pathParameter['parameter'] => 'required'])
+            ->toArray();
+
+        $validationAttributes = [];
+        foreach (array_keys($validationRules) as $fieldName) {
+            $validationAttributes[$fieldName] = "`$fieldName`";
+        }
+
+        Validator::make(
+            data: $pathParameters ?? [],
+            rules: $validationRules,
+            attributes: $validationAttributes
+        )->validate();
     }
 }

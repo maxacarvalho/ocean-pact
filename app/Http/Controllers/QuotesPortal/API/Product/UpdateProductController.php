@@ -35,7 +35,7 @@ class UpdateProductController extends Controller
                 ->where(Product::COMPANY_CODE_BRANCH, '=', $companyCodeBranch)
                 ->firstOrFail();
 
-            $productData = ProductData::from($product);
+            $productData = ProductData::from($request->validated());
 
             $product = $this->updateProductAction->handle($product, $productData);
 
@@ -45,6 +45,9 @@ class UpdateProductController extends Controller
                 'namespace' => __CLASS__,
                 'exception_message' => $exception->getMessage(),
                 'context' => [
+                    'code' => $code,
+                    'company_code' => $companyCode,
+                    'company_code_branch' => $companyCodeBranch,
                     'request' => $request->validated(),
                 ],
             ]);

@@ -117,16 +117,11 @@ class IntegrationType extends Model
         $inputPathParameters = collect($payload->path_parameters);
         $targetUrl = $this->target_url;
 
-        foreach ($this->path_parameters as $keyParameter) {
-            $parameter = $keyParameter['parameter'];
-
-            if (! $inputPathParameters->has($parameter)) {
-                continue;
-            }
-
-            $targetUrl = Str::replace(":{$parameter}", $inputPathParameters->get($parameter), $targetUrl);
-        }
-
-        return $targetUrl;
+        return collect($this->path_parameters)
+            ->sortByDesc(fn (array $item) => strlen($item['parameter']))
+            ->reduce(
+                fn (string $targetUrl, array $item) => Str::replace(":{$item['parameter']}", $inputPathParameters->get($item['parameter']), $targetUrl),
+                $targetUrl
+            );
     }
 }

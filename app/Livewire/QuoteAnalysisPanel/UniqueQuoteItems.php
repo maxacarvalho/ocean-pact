@@ -5,6 +5,7 @@ namespace App\Livewire\QuoteAnalysisPanel;
 use App\Models\QuotesPortal\Product;
 use App\Models\QuotesPortal\Quote;
 use App\Models\QuotesPortal\QuoteItem;
+use App\Utils\Money;
 use App\Utils\Str;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
@@ -45,11 +46,15 @@ class UniqueQuoteItems extends Component implements HasForms, HasTable
         return $table
             ->query(function (): Builder {
                 return QuoteItem::query()
-                    ->distinct()
                     ->select([
                         QuoteItem::ITEM.' AS id',
                         QuoteItem::PRODUCT_ID,
                         QuoteItem::ITEM,
+                        QuoteItem::DESCRIPTION,
+                    ])
+                    ->groupBy([
+                        QuoteItem::ITEM,
+                        QuoteItem::PRODUCT_ID,
                         QuoteItem::DESCRIPTION,
                     ])
                     ->with([
@@ -87,10 +92,12 @@ class UniqueQuoteItems extends Component implements HasForms, HasTable
                     }),
 
                 TextColumn::make(QuoteItem::RELATION_PRODUCT.'.'.Product::LAST_PRICE)
-                    ->label(Str::title(__('product.last_price'))),
+                    ->label(Str::title(__('product.last_price')))
+                    ->formatStateUsing(fn (Money $state): string => $state->getFormattedAmount()),
 
                 TextColumn::make(QuoteItem::RELATION_PRODUCT.'.'.Product::SMALLEST_PRICE)
-                    ->label(Str::title(__('product.smallest_price'))),
+                    ->label(Str::title(__('product.smallest_price')))
+                    ->formatStateUsing(fn (Money $state): string => $state->getFormattedAmount()),
 
                 TextColumn::make(QuoteItem::RELATION_PRODUCT.'.'.Product::SMALLEST_ETA)
                     ->label(Str::title(__('product.smallest_eta'))),
