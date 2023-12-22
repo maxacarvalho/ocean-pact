@@ -6,7 +6,11 @@ use App\Actions\IntegraHub\UpdateOrCreatePaymentConditionAction;
 use App\Data\QuotesPortal\PaymentConditionData;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\QuotesPortal\StoreOrUpdatePaymentConditionBatchRequest;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
+use Spatie\LaravelData\CursorPaginatedDataCollection;
+use Spatie\LaravelData\DataCollection;
+use Spatie\LaravelData\PaginatedDataCollection;
 use Throwable;
 
 class StoreOrUpdatePaymentConditionBatchController extends Controller
@@ -14,7 +18,7 @@ class StoreOrUpdatePaymentConditionBatchController extends Controller
     public function __invoke(
         StoreOrUpdatePaymentConditionBatchRequest $request,
         UpdateOrCreatePaymentConditionAction $updateOrCreatePaymentConditionAction
-    ) {
+    ): JsonResponse|PaginatedDataCollection|CursorPaginatedDataCollection|DataCollection {
         $payload = $request->validated();
 
         try {
