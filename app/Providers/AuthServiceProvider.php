@@ -2,7 +2,6 @@
 
 namespace App\Providers;
 
-// use Illuminate\Support\Facades\Gate;
 use App\Models\IntegraHub\IntegrationType;
 use App\Models\IntegraHub\Payload;
 use App\Models\QuotesPortal\Budget;
@@ -16,6 +15,7 @@ use App\Policies\PayloadPolicy;
 use App\Policies\QuotePolicy;
 use App\Policies\UserPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
+use Illuminate\Support\Facades\Gate;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -32,5 +32,9 @@ class AuthServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->registerPolicies();
+
+        Gate::define('viewPulse', function (User $user) {
+            return $user->isSuperAdmin();
+        });
     }
 }

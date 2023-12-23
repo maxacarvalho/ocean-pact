@@ -24,6 +24,7 @@
         "jeffgreco13/filament-breezy": "^2.0",
         "lab404/laravel-impersonate": "^1.7",
         "laravel/framework": "^10.0",
+        "laravel/pulse": "^1.0@beta",
         "laravel/sanctum": "^3.0",
         "laravel/tinker": "^2.7",
         "league/flysystem-aws-s3-v3": "^3.0",
@@ -103,11 +104,5 @@
         }
     },
     "minimum-stability": "dev",
-    "prefer-stable": true,
-    "repositories": [
-        {
-            "type": "composer",
-            "url": "https://privato.pub/composer/filament"
-        }
-    ]
+    "prefer-stable": true
 }
