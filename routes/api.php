@@ -5,7 +5,7 @@ use App\Http\Controllers\IntegraHub\API\Payload\ListPayloadController;
 use App\Http\Controllers\IntegraHub\API\Payload\MarkPayloadAsCollectedController;
 use App\Http\Controllers\QuotesPortal\API\ApproveQuoteItemsController;
 use App\Http\Controllers\QuotesPortal\API\ListQuotesController;
-use App\Http\Controllers\QuotesPortal\API\Product\MassUpdateProductsController;
+use App\Http\Controllers\QuotesPortal\API\Product\MassCreateOrUpdateProductsController;
 use App\Http\Controllers\QuotesPortal\API\Product\StoreProductController;
 use App\Http\Controllers\QuotesPortal\API\Product\UpdateProductController;
 use App\Http\Controllers\QuotesPortal\API\StoreOrUpdatePaymentConditionBatchController;
@@ -66,7 +66,7 @@ Route::middleware('auth:sanctum')
                 $router->post('/products', StoreProductController::class)
                     ->name('store');
 
-                $router->put('/products/mass', MassUpdateProductsController::class)
+                $router->post('/products/mass', MassCreateOrUpdateProductsController::class)
                     ->name('mass-update');
 
                 $router->put('/products/{code}/{companyCode}/{companyCodeBranch}', UpdateProductController::class)

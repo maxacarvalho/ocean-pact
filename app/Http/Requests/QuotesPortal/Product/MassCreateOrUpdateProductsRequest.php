@@ -10,7 +10,7 @@ use Closure;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class MassUpdateProductsRequest extends FormRequest
+class MassCreateOrUpdateProductsRequest extends FormRequest
 {
     public function rules(): array
     {
