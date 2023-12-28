@@ -3,19 +3,26 @@
 namespace App\Http\Controllers\QuotesPortal\API\Product;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\QuotesPortal\Product\MassCreateOrUpdateProductsRequest;
 use App\Jobs\QuotesPortal\MassCreateOrUpdateProductPayloadProcessorJob;
+use Cerbero\JsonParser\JsonParser;
+use Cerbero\JsonParser\Tokens\Parser;
+use Cerbero\JsonParser\Tokens\Token;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
 class MassCreateOrUpdateProductsController extends Controller
 {
-    public function __invoke(MassCreateOrUpdateProductsRequest $request): JsonResponse
+    public function __invoke(Request $request): JsonResponse
     {
-        $productsPayload = $request->validated('products');
+        $json = JsonParser::parse($request->getContent())->lazyPointer('/products');
 
-        foreach ($productsPayload as $productPayload) {
-            MassCreateOrUpdateProductPayloadProcessorJob::dispatch($productPayload);
+        /** @var Token $value */
+        foreach ($json as $key => $value) {
+            /** @var Parser $item */
+            foreach ($value as $item) {
+                MassCreateOrUpdateProductPayloadProcessorJob::dispatch($item->toArray());
+            }
         }
 
         return response()->json([], Response::HTTP_NO_CONTENT);
