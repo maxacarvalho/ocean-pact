@@ -39,22 +39,25 @@ class BatchMassCreateOrUpdateProductsPayloadJob implements ShouldQueue
 
                 if (count($jobs) === 1000) {
                     Bus::batch($jobs)
-                        ->then(fn () => Storage::disk('local')->delete($this->filename))
-                        ->catch(fn (Batch $batch, Throwable $e) => Log::error('BatchMassCreateOrUpdateProductsPayloadJob exception', [
-                            'exception_message' => $e->getMessage(),
-                            'product_payload' => $item->toArray(),
-                        ]))
+                        ->catch(function (Batch $batch, Throwable $exception) {
+                            Log::error('BatchMassCreateOrUpdateProductsPayloadJob exception', [
+                                'exception_message' => $exception->getMessage(),
+                            ]);
+                        })
                         ->dispatch();
                 }
             }
 
             if (count($jobs) > 0) {
                 Bus::batch($jobs)
-                    ->then(fn () => Storage::disk('local')->delete($this->filename))
-                    ->catch(fn (Batch $batch, Throwable $e) => Log::error('BatchMassCreateOrUpdateProductsPayloadJob exception', [
-                        'exception_message' => $e->getMessage(),
-                        'product_payload' => $item->toArray(),
-                    ]))
+                    ->then(function () {
+                        Storage::disk('local')->delete($this->filename);
+                    })
+                    ->catch(function (Batch $batch, Throwable $exception) {
+                        Log::error('BatchMassCreateOrUpdateProductsPayloadJob exception', [
+                            'exception_message' => $exception->getMessage(),
+                        ]);
+                    })
                     ->dispatch();
             }
         }
