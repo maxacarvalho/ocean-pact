@@ -45,6 +45,8 @@ class BatchMassCreateOrUpdateProductsPayloadJob implements ShouldQueue
                             ]);
                         })
                         ->dispatch();
+
+                    $jobs = [];
                 }
             }
 
