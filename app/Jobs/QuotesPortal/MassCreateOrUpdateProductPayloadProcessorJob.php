@@ -6,6 +6,7 @@ use App\Actions\QuotesPortal\CreateProductAction;
 use App\Actions\QuotesPortal\UpdateProductAction;
 use App\Data\QuotesPortal\ProductData;
 use App\Models\QuotesPortal\Product;
+use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -16,7 +17,7 @@ use Throwable;
 
 class MassCreateOrUpdateProductPayloadProcessorJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public function __construct(
         private readonly array $productPayload,

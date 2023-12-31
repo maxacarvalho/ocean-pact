@@ -17,6 +17,7 @@
         "blade-ui-kit/blade-heroicons": "^2.1",
         "brick/money": "^0.8.0",
         "cerbero/json-parser": "^1.1",
+        "cerbero/lazy-json": "^2.0",
         "doctrine/dbal": "^3.6",
         "filament/filament": "^3.0-stable",
         "guzzlehttp/guzzle": "^7.2",

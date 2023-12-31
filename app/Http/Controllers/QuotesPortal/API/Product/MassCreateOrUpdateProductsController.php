@@ -3,10 +3,7 @@
 namespace App\Http\Controllers\QuotesPortal\API\Product;
 
 use App\Http\Controllers\Controller;
-use App\Jobs\QuotesPortal\MassCreateOrUpdateProductPayloadProcessorJob;
-use Cerbero\JsonParser\JsonParser;
-use Cerbero\JsonParser\Tokens\Parser;
-use Cerbero\JsonParser\Tokens\Token;
+use App\Jobs\QuotesPortal\BatchMassCreateOrUpdateProductsPayloadJob;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -15,16 +12,13 @@ class MassCreateOrUpdateProductsController extends Controller
 {
     public function __invoke(Request $request): JsonResponse
     {
-        $json = JsonParser::parse($request->getContent())->lazyPointer('/products');
+        $timestamp = now()->format('Y-m-d-H-i-s');
+        $filename = "mass-create-or-update-products-{$timestamp}.json";
 
-        /** @var Token $value */
-        foreach ($json as $key => $value) {
-            /** @var Parser $item */
-            foreach ($value as $item) {
-                MassCreateOrUpdateProductPayloadProcessorJob::dispatch($item->toArray());
-            }
-        }
+        BatchMassCreateOrUpdateProductsPayloadJob::dispatchAfterResponse($filename);
 
-        return response()->json([], Response::HTTP_NO_CONTENT);
+        return response()->json([
+            'message' => 'Products are being processed',
+        ], Response::HTTP_ACCEPTED);
     }
 }
