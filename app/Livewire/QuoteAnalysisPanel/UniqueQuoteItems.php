@@ -101,6 +101,9 @@ class UniqueQuoteItems extends Component implements HasForms, HasTable
 
                 TextColumn::make(QuoteItem::RELATION_PRODUCT.'.'.Product::SMALLEST_ETA)
                     ->label(Str::title(__('product.smallest_eta'))),
+
+                TextColumn::make(QuoteItem::RELATION_PRODUCT.'.'.Product::MEASUREMENT_UNIT)
+                    ->label(Str::title(__('product.measurement_unit'))),
             ])
             ->filters([
                 //
