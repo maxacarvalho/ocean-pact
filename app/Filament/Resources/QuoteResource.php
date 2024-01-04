@@ -319,14 +319,26 @@ class QuoteResource extends Resource
 
             TextColumn::make(Quote::QUOTE_NUMBER)
                 ->label(Str::formatTitle(__('quote.quote_number')))
-                ->icon('far-chart-user')
+                ->icon(function () {
+                    if (! Auth::user()->isBuyer() && ! Auth::user()->isAdmin() && ! Auth::user()->isSuperAdmin()) {
+                        return false;
+                    }
+
+                    return 'far-chart-user';
+                })
                 ->iconColor('primary')
                 ->sortable()
                 ->searchable()
-                ->url(fn (Quote $record) => self::getUrl('quote-analysis-panel', [
-                    'companyId' => $record->company_id,
-                    'quoteNumber' => $record->quote_number,
-                ])),
+                ->url(function (Quote $record) {
+                    if (! Auth::user()->isBuyer() && ! Auth::user()->isAdmin() && ! Auth::user()->isSuperAdmin()) {
+                        return false;
+                    }
+
+                    return self::getUrl('quote-analysis-panel', [
+                        'companyId' => $record->company_id,
+                        'quoteNumber' => $record->quote_number,
+                    ]);
+                }),
 
             TextColumn::make(Quote::STATUS)
                 ->label(Str::formatTitle(__('quote.status')))
