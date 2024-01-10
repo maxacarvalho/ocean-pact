@@ -42,6 +42,11 @@ class Money implements Castable
         );
     }
 
+    public function getCurrency(): string
+    {
+        return $this->currency;
+    }
+
     public function getMinorAmount(): int
     {
         return $this->getBrickMoney()->getMinorAmount()->toInt();
