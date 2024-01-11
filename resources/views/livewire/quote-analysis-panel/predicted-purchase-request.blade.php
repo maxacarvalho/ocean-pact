@@ -1,4 +1,4 @@
-<div class="grid grid-cols-3 gap-4">
+<div class="grid grid-cols-4 gap-4">
     <div class="rounded-xl bg-white shadow-sm ring-1 ring-gray-950/5 dark:bg-gray-900 dark:ring-white/10">
         <div class="p-4 sm:px-6">
             <div>
@@ -20,7 +20,7 @@
             </div>
         </div>
     </div>
-    <div class="col-span-2">
+    <div class="col-span-3">
         {{ $this->table }}
     </div>
 </div>
