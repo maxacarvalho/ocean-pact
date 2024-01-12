@@ -50,10 +50,12 @@ class UniqueQuoteItems extends Component implements HasForms, HasTable
                         QuoteItem::ITEM.' AS id',
                         QuoteItem::PRODUCT_ID,
                         QuoteItem::ITEM,
+                        QuoteItem::MEASUREMENT_UNIT,
                         QuoteItem::DESCRIPTION,
                     ])
                     ->groupBy([
                         QuoteItem::ITEM,
+                        QuoteItem::MEASUREMENT_UNIT,
                         QuoteItem::PRODUCT_ID,
                         QuoteItem::DESCRIPTION,
                     ])
@@ -76,6 +78,9 @@ class UniqueQuoteItems extends Component implements HasForms, HasTable
                 TextColumn::make(QuoteItem::RELATION_PRODUCT.'.'.Product::CODE)
                     ->label(Str::title(__('product.code')))
                     ->searchable(),
+
+                TextColumn::make(QuoteItem::MEASUREMENT_UNIT)
+                    ->label(Str::title(__('quote_item.measurement_unit'))),
 
                 TextColumn::make(QuoteItem::DESCRIPTION)
                     ->label(Str::title(__('quote_item.description')))
