@@ -67,11 +67,10 @@ class PredictedPurchaseRequest extends Component implements HasForms, HasTable
                     ->default(true),
                 Toggle::make('lower_eta')
                     ->label(Str::ucfirst(__('quote_analysis_panel.quick_actions_panel_lower_eta'))),
-
                 Toggle::make('last_price')
                     ->label(Str::ucfirst(__('quote_analysis_panel.quick_actions_panel_last_price'))),
                 Toggle::make('necessity')
-                    ->label(Str::ucfirst(__('quote_analysis_panel.quick_actions_panel_necessity'))),
+                    ->label(Str::ucfirst(__('quote_analysis_panel.quick_actions_panel_necessity')))
             ])
             ->statePath('data');
     }
@@ -278,6 +277,14 @@ class PredictedPurchaseRequest extends Component implements HasForms, HasTable
 
     public function update(): void
     {
+        $filtering = $this->form->getState();
+
+        if(!$filtering['lower_price'] && !$filtering['lower_eta'] && !$filtering['last_price'] && !$filtering['necessity'] )
+        {
+            $this->addError('allTogglesDisabledProperty', Str::ucfirst(__('quote_analysis_panel.quick_actions_panel_required')));
+            return;
+        }
+
         $allQuoteItems = QuoteItem::query()
             ->with([QuoteItem::RELATION_QUOTE, QuoteItem::RELATION_PRODUCT])
             ->whereHas(QuoteItem::RELATION_QUOTE, function (Builder $query): void {
@@ -286,7 +293,14 @@ class PredictedPurchaseRequest extends Component implements HasForms, HasTable
                     ->where(Quote::QUOTE_NUMBER, $this->quoteNumber);
             })
             ->where(QuoteItem::UNIT_PRICE, '>', 0)
-            ->orderBy(QuoteItem::ITEM)
+            ->when($filtering['lower_price'], function (Builder $query): void {
+                $query
+                    ->orderBy(QuoteItem::UNIT_PRICE);
+            })
+            ->when($filtering['lower_eta'], function (Builder $query): void {
+                $query
+                    ->orderBy(QuoteItem::DELIVERY_IN_DAYS, 'DESC');
+            })
             ->get();
 
         $uniqueQuoteItems = $allQuoteItems->pluck('item')->unique()->values();
@@ -337,5 +351,6 @@ class PredictedPurchaseRequest extends Component implements HasForms, HasTable
 
             PredictedPurchaseRequestModel::query()->create($data->toArray());
         }
+
     }
 }
