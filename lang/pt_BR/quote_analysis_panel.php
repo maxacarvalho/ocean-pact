@@ -11,4 +11,5 @@ return [
     'quick_actions_panel_last_price' => 'último preço',
     'quick_actions_panel_necessity' => 'necessidade',
     'quick_actions_panel_load_products' => 'carregar produtos',
+    'is_selected' => 'Selecionar',
 ];
