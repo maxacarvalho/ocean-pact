@@ -338,4 +338,8 @@ class PredictedPurchaseRequest extends Component implements HasForms, HasTable
             PredictedPurchaseRequestModel::query()->create($data->toArray());
         }
     }
+
+    public function finishQuote(){}
+
+    public function addNewSupplierToQuote(){}
 }

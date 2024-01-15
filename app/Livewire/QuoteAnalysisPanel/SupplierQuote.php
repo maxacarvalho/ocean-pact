@@ -5,6 +5,7 @@ namespace App\Livewire\QuoteAnalysisPanel;
 use App\Models\QuotesPortal\Quote;
 use App\Models\QuotesPortal\QuoteItem;
 use App\Utils\Str;
+use App\Mail\SupplierQuoteAnalysisNewContact;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Tables\Columns\CheckboxColumn;
@@ -17,6 +18,7 @@ use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Mail;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
 
@@ -84,5 +86,18 @@ class SupplierQuote extends Component implements HasForms, HasTable
 
                 CheckboxColumn::make('is_selected')->label(__('quote_analysis_panel.is_selected'))
             ]);
+    }
+
+    public function requestNewOffer(){}
+
+    public function requestContact(){
+        Mail::to($seller->email)->send(
+            new SupplierQuoteAnalysisNewContact(
+                $supplier->name,
+                $quote->company->business_name,
+                $quote->quote_number,
+                $url
+            )
+        );
     }
 }
