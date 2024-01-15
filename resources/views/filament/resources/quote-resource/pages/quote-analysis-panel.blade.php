@@ -1,5 +1,13 @@
 <x-filament-panels::page>
-    <livewire:quote-analysis-panel.unique-quote-items :company-id="$this->companyId" :quote-number="$this->quoteNumber" />
+    <livewire:quote-analysis-panel.unique-quote-items
+        :company-id="$this->companyId"
+        :quote-number="$this->quoteNumber"
+    />
+
+    <livewire:quote-analysis-panel.predicted-purchase-request
+        :company-id="$this->companyId"
+        :quote-number="$this->quoteNumber"
+    />
 
     <div class="overflow-x-auto flex space-x-4 p-1">
         @foreach($this->quoteIds as $quoteId)
