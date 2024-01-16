@@ -19,6 +19,8 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Carbon;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
+use App\Mail\SupplierQuoteAnalysisNewContact;
+use Illuminate\Support\Facades\Mail;
 
 class SupplierQuote extends Component implements HasForms, HasTable
 {
@@ -84,5 +86,18 @@ class SupplierQuote extends Component implements HasForms, HasTable
 
                 CheckboxColumn::make('is_selected')->label(__('quote_analysis_panel.is_selected')),
             ]);
+    }
+
+    public function requestNewOffer(){}
+
+    public function requestContact(){
+        Mail::to($seller->email)->send(
+            new SupplierQuoteAnalysisNewContact(
+                $supplier->name,
+                $quote->company->business_name,
+                $quote->quote_number,
+                $url
+            )
+        );
     }
 }

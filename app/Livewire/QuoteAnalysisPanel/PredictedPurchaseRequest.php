@@ -64,36 +64,35 @@ class PredictedPurchaseRequest extends Component implements HasForms, HasTable
     public function form(Form $form): Form
     {
         return $form
-            ->columns([
-                'md' => 4,
-                'xl' => 6
-            ])
             ->schema([
                 Toggle::make('lower_price')
                     ->label(Str::ucfirst(__('quote_analysis_panel.quick_actions_panel_lower_price')))
-                    ->default(true),
+                    ->default(true)
+                    ->columnSpan(1),
                 Toggle::make('lower_eta')
-                    ->label(Str::ucfirst(__('quote_analysis_panel.quick_actions_panel_lower_eta'))),
+                    ->label(Str::ucfirst(__('quote_analysis_panel.quick_actions_panel_lower_eta')))
+                    ->columnSpan(1),
                 Toggle::make('last_price')
-                    ->label(Str::ucfirst(__('quote_analysis_panel.quick_actions_panel_last_price'))),
+                    ->label(Str::ucfirst(__('quote_analysis_panel.quick_actions_panel_last_price')))
+                    ->columnSpan(1),
                 Toggle::make('necessity')
-                    ->label(Str::ucfirst(__('quote_analysis_panel.quick_actions_panel_necessity'))),
+                    ->label(Str::ucfirst(__('quote_analysis_panel.quick_actions_panel_necessity')))
+                    ->columnSpan(1),
                 Select::make('supplier')
                     ->label(Str::ucfirst(__('quote_analysis_panel.quick_actions_panel_suppliers')))
-                    ->options(  Quote::join('suppliers', 'quotes.supplier_id','=','suppliers.id')
-                                                                                ->where('quotes.quote_number', '=', $this->quoteNumber)
-                                                                                // ->where(Supplier::BUSINESS_NAME, 'like', "%{$search}%")
-                                                                                ->limit(10)
-                                                                                ->orderBy(Supplier::BUSINESS_NAME)
-                                                                                ->pluck(Supplier::TABLE_NAME.".".Supplier::BUSINESS_NAME, Supplier::TABLE_NAME.".".Supplier::ID)
-                                                                                ->toArray()
-                                                                            )
-                    // ->getOptionLabelFromRecordUsing(fn (Model $record) => "{$record->business_name} {$record->id}")
-                    // ->getOptionLabelUsing(fn (string $value): string => dd($value))
+                    ->options(
+                        Quote::join('suppliers', 'quotes.supplier_id','=','suppliers.id')
+                            ->where('quotes.quote_number', '=', $this->quoteNumber)
+                            ->orderBy(Supplier::BUSINESS_NAME)
+                            ->pluck(Supplier::TABLE_NAME.".".Supplier::BUSINESS_NAME, Supplier::TABLE_NAME.".".Supplier::ID)
+                            ->toArray()
+                    )
                     ->searchable()
                     ->multiple()
+                    ->columnSpan(['md' => 1, 'xl' => 2])
             ])
-            ->statePath('data');
+            ->statePath('data')
+            ->columns(['md' => 1, 'xl' => 4]);
     }
 
     public function table(Table $table): Table
@@ -341,9 +340,9 @@ class PredictedPurchaseRequest extends Component implements HasForms, HasTable
             })
             ->get();
 
-            $uniqueQuoteItems = $allQuoteItems->pluck('item')->unique()->values();
-
-
+            //$uniqueQuoteItems = $allQuoteItems->pluck('item')->unique()->values();
+            $uniqueQuoteItems = $allQuoteItems->pluck('item');
+            dd($allQuoteItems);
 
         PredictedPurchaseRequestModel::query()
             ->where(PredictedPurchaseRequestModel::QUOTE_NUMBER, $this->quoteNumber)
@@ -393,4 +392,8 @@ class PredictedPurchaseRequest extends Component implements HasForms, HasTable
         }
 
     }
+
+    public function finishQuote(){}
+
+    public function addNewSupplierToQuote(){}
 }
