@@ -80,14 +80,16 @@ class PredictedPurchaseRequest extends Component implements HasForms, HasTable
                     ->label(Str::ucfirst(__('quote_analysis_panel.quick_actions_panel_necessity'))),
                 Select::make('supplier')
                     ->label(Str::ucfirst(__('quote_analysis_panel.quick_actions_panel_suppliers')))
-                    ->getSearchResultsUsing(fn (string $search): array =>  Quote::join('suppliers', 'quotes.supplier_id','=','suppliers.id')
+                    ->options(  Quote::join('suppliers', 'quotes.supplier_id','=','suppliers.id')
                                                                                 ->where('quotes.quote_number', '=', $this->quoteNumber)
-                                                                                ->where('name', 'like', "%{$search}%")
-                                                                                ->limit(5)
-                                                                                ->orderBy('name')
-                                                                                ->pluck('suppliers.name')
+                                                                                // ->where(Supplier::BUSINESS_NAME, 'like', "%{$search}%")
+                                                                                ->limit(10)
+                                                                                ->orderBy(Supplier::BUSINESS_NAME)
+                                                                                ->pluck(Supplier::TABLE_NAME.".".Supplier::BUSINESS_NAME, Supplier::TABLE_NAME.".".Supplier::ID)
                                                                                 ->toArray()
                                                                             )
+                    // ->getOptionLabelFromRecordUsing(fn (Model $record) => "{$record->business_name} {$record->id}")
+                    // ->getOptionLabelUsing(fn (string $value): string => dd($value))
                     ->searchable()
                     ->multiple()
             ])
@@ -321,10 +323,10 @@ class PredictedPurchaseRequest extends Component implements HasForms, HasTable
                     ->orderBy(QuoteItem::DELIVERY_IN_DAYS, 'DESC');
             })
             ->when($filtering['last_price'], function (Builder $query): void {
-                    $query->join(Quote::TABLE_NAME, 'quotes.id', '=', 'quote_items.quote_id')
-                        ->join('products', 'quote_items.product_id', '=', 'products.id')
-                        ->select('products.id', 'products.last_price','quote_items.quote_id', 'quote_items.*')
-                        ->addSelect(DB::raw('TRUNCATE(CAST(json_extract(last_price, "$.amount") AS DECIMAL(10,2)), 0) AS last_price_int'))
+                    $query->join(Quote::TABLE_NAME, Quote::TABLE_NAME.'.'.Quote::ID, '=', QuoteItem::TABLE_NAME.'.'.QuoteItem::QUOTE_ID)
+                        ->join(Product::TABLE_NAME, QuoteItem::TABLE_NAME.'.'.QuoteItem::PRODUCT_ID, '=', Product::TABLE_NAME.".".Product::ID)
+                        ->select(Product::TABLE_NAME.'.*', QuoteItem::TABLE_NAME.'.*')
+                        ->addSelect(DB::raw('TRUNCATE(CAST(json_extract('.Product::TABLE_NAME.'.'.Product::LAST_PRICE.', "$.amount") AS DECIMAL(10,2)), 0) AS last_price_int'))
                         ->orderBy('last_price_int', 'asc');
             })
             ->when($filtering['necessity'], function (Builder $query): void {
@@ -332,6 +334,7 @@ class PredictedPurchaseRequest extends Component implements HasForms, HasTable
                     ->orderBy(QuoteItem::RELATION_PRODUCT, 'DESC');
             })
             ->when(count($filtering['supplier']) > 0, function (Builder $query) use ($filtering): void {
+                dd($filtering['supplier']);
                 $query
                     ->join(Quote::TABLE_NAME, Quote::TABLE_NAME.'.'.Quote::ID , '=', QuoteItem::TABLE_NAME.".".QuoteItem::QUOTE_ID )
                     ->whereIn(Quote::TABLE_NAME.".".Quote::SUPPLIER_ID, $filtering['supplier']);
