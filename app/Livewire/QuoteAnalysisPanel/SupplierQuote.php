@@ -7,6 +7,7 @@ use App\Models\QuotesPortal\QuoteItem;
 use App\Utils\Str;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
+use Filament\Tables\Columns\CheckboxColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
@@ -72,11 +73,16 @@ class SupplierQuote extends Component implements HasForms, HasTable
                         return $state;
                     }),
 
+                TextColumn::make(QuoteItem::UNIT_PRICE)
+                    ->label(Str::title(__('quote_item.unit_price'))),
+
                 TextColumn::make(QuoteItem::DELIVERY_IN_DAYS)
                     ->label(__('quote_analysis_panel.eta'))
                     ->formatStateUsing(function (int $state): string {
                         return Carbon::now()->addDays($state)->format('d/m/Y');
                     }),
+
+                CheckboxColumn::make('is_selected')->label(__('quote_analysis_panel.is_selected'))
             ]);
     }
 }

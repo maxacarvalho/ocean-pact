@@ -13,4 +13,5 @@ return [
     'quick_actions_panel_load_products' => 'load products',
     'quick_actions_panel_required' => 'You must select an item',
     'quick_actions_panel_suppliers' => 'suppliers',
+    'is_selected' => 'Select',
 ];

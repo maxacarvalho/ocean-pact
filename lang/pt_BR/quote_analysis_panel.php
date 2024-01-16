@@ -13,4 +13,5 @@ return [
     'quick_actions_panel_load_products' => 'carregar produtos',
     'quick_actions_panel_required' => 'é obrigatório que selecione um item',
     'quick_actions_panel_suppliers' => 'fornecedores',
+    'is_selected' => 'Selecionar',
 ];
