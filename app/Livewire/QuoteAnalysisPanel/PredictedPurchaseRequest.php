@@ -64,6 +64,10 @@ class PredictedPurchaseRequest extends Component implements HasForms, HasTable
     public function form(Form $form): Form
     {
         return $form
+            ->columns([
+                'md' => 4,
+                'xl' => 6
+            ])
             ->schema([
                 Toggle::make('lower_price')
                     ->label(Str::ucfirst(__('quote_analysis_panel.quick_actions_panel_lower_price')))
@@ -81,6 +85,8 @@ class PredictedPurchaseRequest extends Component implements HasForms, HasTable
                                                                                 ->where('name', 'like', "%{$search}%")
                                                                                 ->limit(5)
                                                                                 ->orderBy('name')
+                                                                                ->pluck('suppliers.name')
+                                                                                ->toArray()
                                                                             )
                     ->searchable()
                     ->multiple()
@@ -332,9 +338,9 @@ class PredictedPurchaseRequest extends Component implements HasForms, HasTable
             })
             ->get();
 
-            //$uniqueQuoteItems = $allQuoteItems->pluck('item')->unique()->values();
-            $uniqueQuoteItems = $allQuoteItems->pluck('item');
-            dd($allQuoteItems);
+            $uniqueQuoteItems = $allQuoteItems->pluck('item')->unique()->values();
+
+
 
         PredictedPurchaseRequestModel::query()
             ->where(PredictedPurchaseRequestModel::QUOTE_NUMBER, $this->quoteNumber)
