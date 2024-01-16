@@ -333,16 +333,14 @@ class PredictedPurchaseRequest extends Component implements HasForms, HasTable
                     ->orderBy(QuoteItem::RELATION_PRODUCT, 'DESC');
             })
             ->when(count($filtering['supplier']) > 0, function (Builder $query) use ($filtering): void {
-                dd($filtering['supplier']);
                 $query
-                    ->join(Quote::TABLE_NAME, Quote::TABLE_NAME.'.'.Quote::ID , '=', QuoteItem::TABLE_NAME.".".QuoteItem::QUOTE_ID )
+                    ->join(Quote::TABLE_NAME, Quote::TABLE_NAME.'.'.Quote::ID, '=', QuoteItem::TABLE_NAME.'.'.QuoteItem::QUOTE_ID)
                     ->whereIn(Quote::TABLE_NAME.".".Quote::SUPPLIER_ID, $filtering['supplier']);
             })
             ->get();
 
-            //$uniqueQuoteItems = $allQuoteItems->pluck('item')->unique()->values();
-            $uniqueQuoteItems = $allQuoteItems->pluck('item');
-            dd($allQuoteItems);
+            $uniqueQuoteItems = $allQuoteItems->pluck('item')->unique()->values();
+
 
         PredictedPurchaseRequestModel::query()
             ->where(PredictedPurchaseRequestModel::QUOTE_NUMBER, $this->quoteNumber)
