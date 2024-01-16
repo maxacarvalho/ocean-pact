@@ -8,8 +8,10 @@ use App\Models\QuotesPortal\Product;
 use App\Models\QuotesPortal\Quote;
 use App\Models\QuotesPortal\QuoteItem;
 use App\Models\QuotesPortal\Supplier;
+use App\Models\User;
 use App\Utils\Money;
 use App\Utils\Str;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
@@ -26,6 +28,7 @@ use Illuminate\Database\Eloquent\Casts\Json;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Application;
+use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
 use stdClass;
@@ -70,7 +73,17 @@ class PredictedPurchaseRequest extends Component implements HasForms, HasTable
                 Toggle::make('last_price')
                     ->label(Str::ucfirst(__('quote_analysis_panel.quick_actions_panel_last_price'))),
                 Toggle::make('necessity')
-                    ->label(Str::ucfirst(__('quote_analysis_panel.quick_actions_panel_necessity')))
+                    ->label(Str::ucfirst(__('quote_analysis_panel.quick_actions_panel_necessity'))),
+                Select::make('supplier')
+                    ->label(Str::ucfirst(__('quote_analysis_panel.quick_actions_panel_suppliers')))
+                    ->getSearchResultsUsing(fn (string $search): array =>  Quote::join('suppliers', 'quotes.supplier_id','=','suppliers.id')
+                                                                                ->where('quotes.quote_number', '=', $this->quoteNumber)
+                                                                                ->where('name', 'like', "%{$search}%")
+                                                                                ->limit(5)
+                                                                                ->orderBy('name')
+                                                                            )
+                    ->searchable()
+                    ->multiple()
             ])
             ->statePath('data');
     }
@@ -301,9 +314,27 @@ class PredictedPurchaseRequest extends Component implements HasForms, HasTable
                 $query
                     ->orderBy(QuoteItem::DELIVERY_IN_DAYS, 'DESC');
             })
+            ->when($filtering['last_price'], function (Builder $query): void {
+                    $query->join(Quote::TABLE_NAME, 'quotes.id', '=', 'quote_items.quote_id')
+                        ->join('products', 'quote_items.product_id', '=', 'products.id')
+                        ->select('products.id', 'products.last_price','quote_items.quote_id', 'quote_items.*')
+                        ->addSelect(DB::raw('TRUNCATE(CAST(json_extract(last_price, "$.amount") AS DECIMAL(10,2)), 0) AS last_price_int'))
+                        ->orderBy('last_price_int', 'asc');
+            })
+            ->when($filtering['necessity'], function (Builder $query): void {
+                $query
+                    ->orderBy(QuoteItem::RELATION_PRODUCT, 'DESC');
+            })
+            ->when(count($filtering['supplier']) > 0, function (Builder $query) use ($filtering): void {
+                $query
+                    ->join(Quote::TABLE_NAME, Quote::TABLE_NAME.'.'.Quote::ID , '=', QuoteItem::TABLE_NAME.".".QuoteItem::QUOTE_ID )
+                    ->whereIn(Quote::TABLE_NAME.".".Quote::SUPPLIER_ID, $filtering['supplier']);
+            })
             ->get();
 
-        $uniqueQuoteItems = $allQuoteItems->pluck('item')->unique()->values();
+            //$uniqueQuoteItems = $allQuoteItems->pluck('item')->unique()->values();
+            $uniqueQuoteItems = $allQuoteItems->pluck('item');
+            dd($allQuoteItems);
 
         PredictedPurchaseRequestModel::query()
             ->where(PredictedPurchaseRequestModel::QUOTE_NUMBER, $this->quoteNumber)
