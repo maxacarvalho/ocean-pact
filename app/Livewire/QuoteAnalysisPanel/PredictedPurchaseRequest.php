@@ -89,7 +89,7 @@ class PredictedPurchaseRequest extends Component implements HasForms, HasTable
                     )
                     ->searchable()
                     ->multiple()
-                    ->columnSpan(['md' => 1, 'xl' => 2])
+                    ->columnSpan(['md' => 4])
             ])
             ->statePath('data')
             ->columns(['md' => 1, 'xl' => 4]);
@@ -322,15 +322,15 @@ class PredictedPurchaseRequest extends Component implements HasForms, HasTable
                     ->orderBy(QuoteItem::DELIVERY_IN_DAYS, 'DESC');
             })
             ->when($filtering['last_price'], function (Builder $query): void {
-                    $query->join(Quote::TABLE_NAME, Quote::TABLE_NAME.'.'.Quote::ID, '=', QuoteItem::TABLE_NAME.'.'.QuoteItem::QUOTE_ID)
-                        ->join(Product::TABLE_NAME, QuoteItem::TABLE_NAME.'.'.QuoteItem::PRODUCT_ID, '=', Product::TABLE_NAME.".".Product::ID)
-                        ->select(Product::TABLE_NAME.'.*', QuoteItem::TABLE_NAME.'.*')
-                        ->addSelect(DB::raw('TRUNCATE(CAST(json_extract('.Product::TABLE_NAME.'.'.Product::LAST_PRICE.', "$.amount") AS DECIMAL(10,2)), 0) AS last_price_int'))
-                        ->orderBy('last_price_int', 'asc');
+                $query
+                    ->join(Quote::TABLE_NAME, Quote::TABLE_NAME.'.'.Quote::ID, '=', QuoteItem::TABLE_NAME.'.'.QuoteItem::QUOTE_ID)
+                    ->join(Product::TABLE_NAME, QuoteItem::TABLE_NAME.'.'.QuoteItem::PRODUCT_ID, '=', Product::TABLE_NAME.".".Product::ID)
+                    ->select(Product::TABLE_NAME.'.*', QuoteItem::TABLE_NAME.'.*')
+                    ->addSelect(DB::raw('TRUNCATE(CAST(json_extract('.Product::TABLE_NAME.'.'.Product::LAST_PRICE.', "$.amount") AS DECIMAL(10,2)), 0) AS last_price_int'))
+                    ->orderBy('last_price_int', 'asc');
             })
             ->when($filtering['necessity'], function (Builder $query): void {
-                $query
-                    ->orderBy(QuoteItem::RELATION_PRODUCT, 'DESC');
+                // aguardando campo data necessidade
             })
             ->when(count($filtering['supplier']) > 0, function (Builder $query) use ($filtering): void {
                 $query
@@ -340,7 +340,6 @@ class PredictedPurchaseRequest extends Component implements HasForms, HasTable
             ->get();
 
             $uniqueQuoteItems = $allQuoteItems->pluck('item')->unique()->values();
-
 
         PredictedPurchaseRequestModel::query()
             ->where(PredictedPurchaseRequestModel::QUOTE_NUMBER, $this->quoteNumber)
