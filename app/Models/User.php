@@ -133,7 +133,7 @@ class User extends Authenticatable implements FilamentUser
 
     public function isNotSuperAdmin(): bool
     {
-        return ! $this->isSuperAdmin();
+        return !$this->isSuperAdmin();
     }
 
     public function isAdmin(): bool

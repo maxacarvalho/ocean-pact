@@ -5,8 +5,8 @@ namespace App\Models\QuotesPortal;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 
 /**
- * @property int    $company_id
- * @property int    $supplier_id
+ * @property int $company_id
+ * @property int $supplier_id
  */
 class CompanySupplier extends Pivot
 {
