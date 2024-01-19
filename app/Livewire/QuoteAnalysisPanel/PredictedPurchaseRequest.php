@@ -326,7 +326,7 @@ class PredictedPurchaseRequest extends Component implements HasForms, HasTable
                     ->join(Quote::TABLE_NAME, Quote::TABLE_NAME.'.'.Quote::ID, '=', QuoteItem::TABLE_NAME.'.'.QuoteItem::QUOTE_ID)
                     ->join(Product::TABLE_NAME, QuoteItem::TABLE_NAME.'.'.QuoteItem::PRODUCT_ID, '=', Product::TABLE_NAME.".".Product::ID)
                     ->select(Product::TABLE_NAME.'.*', QuoteItem::TABLE_NAME.'.*')
-                    ->addSelect(DB::raw('TRUNCATE(CAST(json_extract('.Product::TABLE_NAME.'.'.Product::LAST_PRICE.', "$.amount") AS DECIMAL(10,2)), 0) AS last_price_int'))
+                    ->addSelect(DB::raw('json_extract('.Product::TABLE_NAME.'.'.Product::LAST_PRICE.', "$.amount") AS last_price_int'))
                     ->orderBy('last_price_int', 'asc');
             })
             ->when($filtering['necessity'], function (Builder $query): void {
