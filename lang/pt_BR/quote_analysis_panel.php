@@ -11,5 +11,12 @@ return [
     'quick_actions_panel_last_price' => 'último preço',
     'quick_actions_panel_necessity' => 'necessidade',
     'quick_actions_panel_load_products' => 'carregar produtos',
-    'is_selected' => 'Selecionar',
+    'quick_actions_panel_required' => 'é obrigatório que selecione um item',
+    'quick_actions_panel_suppliers' => 'fornecedores',
+    'is_selected' => 'selecionar',
+    'finish_quote' => 'finalizar cotação',
+    'finish_quote_selected_products' => 'finalizar cotação',
+    'add_new_supplier' => 'novo participante',
+    'request_new_offer' => 'solicitar nova proposta',
+    'request_contact' => 'solicitar contato',
 ];

@@ -70,4 +70,9 @@ class QuoteAnalysisPanel extends Page
             })
             ->get();
     }
+
+    public function finishQuoteWithSelectedProducts()
+    {
+        //
+    }
 }

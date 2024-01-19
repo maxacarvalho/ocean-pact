@@ -85,4 +85,9 @@ class SupplierQuote extends Component implements HasForms, HasTable
                 CheckboxColumn::make('is_selected')->label(__('quote_analysis_panel.is_selected')),
             ]);
     }
+
+    public function requestNewOffer()
+    {
+        //
+    }
 }

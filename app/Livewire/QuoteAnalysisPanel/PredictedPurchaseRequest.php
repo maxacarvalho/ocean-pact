@@ -10,10 +10,12 @@ use App\Models\QuotesPortal\QuoteItem;
 use App\Models\QuotesPortal\Supplier;
 use App\Utils\Money;
 use App\Utils\Str;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Tables\Columns\Summarizers\Summarizer;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Concerns\InteractsWithTable;
@@ -26,6 +28,7 @@ use Illuminate\Database\Eloquent\Casts\Json;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Application;
+use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
 use stdClass;
@@ -67,13 +70,26 @@ class PredictedPurchaseRequest extends Component implements HasForms, HasTable
                     ->default(true),
                 Toggle::make('lower_eta')
                     ->label(Str::ucfirst(__('quote_analysis_panel.quick_actions_panel_lower_eta'))),
-
                 Toggle::make('last_price')
                     ->label(Str::ucfirst(__('quote_analysis_panel.quick_actions_panel_last_price'))),
                 Toggle::make('necessity')
                     ->label(Str::ucfirst(__('quote_analysis_panel.quick_actions_panel_necessity'))),
+                Select::make('supplier')
+                    ->label(Str::ucfirst(__('quote_analysis_panel.quick_actions_panel_suppliers')))
+                    ->options(
+                        Supplier::query()
+                            ->whereHas(Supplier::RELATION_QUOTES, function (Builder $query): void {
+                                $query->where(Quote::TABLE_NAME.'.'.Quote::QUOTE_NUMBER, $this->quoteNumber);
+                            })
+                            ->orderBy(Supplier::BUSINESS_NAME)
+                            ->pluck(Supplier::TABLE_NAME.'.'.Supplier::BUSINESS_NAME, Supplier::TABLE_NAME.'.'.Supplier::ID)
+                            ->toArray()
+                    )
+                    ->searchable()
+                    ->multiple(),
             ])
-            ->statePath('data');
+            ->statePath('data')
+            ->columns(['sm' => 2, 'md' => 4]);
     }
 
     public function table(Table $table): Table
@@ -200,11 +216,7 @@ class PredictedPurchaseRequest extends Component implements HasForms, HasTable
                         }
                     })
                     ->formatStateUsing(function (float $state): string {
-                        return number_format(
-                            num: $state,
-                            decimals: 2,
-                            decimal_separator: ','
-                        ).'%';
+                        return number_format(num: $state, decimals: 2, decimal_separator: ',').'%';
                     })
                     ->badge()
                     ->color(function (float $state): string {
@@ -253,11 +265,9 @@ class PredictedPurchaseRequest extends Component implements HasForms, HasTable
                                     return '0%';
                                 }
 
-                                return number_format(
-                                    num: 100 - (($sumPrice / $sumLastPrice) * 100),
-                                    decimals: 2,
-                                    decimal_separator: ','
-                                ).'%';
+                                $savings = 100 - (($sumPrice / $sumLastPrice) * 100);
+
+                                return number_format(num: $savings, decimals: 2, decimal_separator: ',').'%';
                             })
                     ),
 
@@ -278,15 +288,45 @@ class PredictedPurchaseRequest extends Component implements HasForms, HasTable
 
     public function update(): void
     {
+        $filtering = $this->form->getState();
+
+        if (!$filtering['lower_price'] && !$filtering['lower_eta'] && !$filtering['last_price'] && !$filtering['necessity']) {
+            Notification::make()
+                ->title(Str::ucfirst(__('quote_analysis_panel.quick_actions_panel_required')))
+                ->danger()
+                ->persistent()
+                ->send();
+
+            return;
+        }
+
         $allQuoteItems = QuoteItem::query()
             ->with([QuoteItem::RELATION_QUOTE, QuoteItem::RELATION_PRODUCT])
             ->whereHas(QuoteItem::RELATION_QUOTE, function (Builder $query): void {
-                $query
-                    ->where(Quote::COMPANY_ID, $this->companyId)
+                $query->where(Quote::COMPANY_ID, $this->companyId)
                     ->where(Quote::QUOTE_NUMBER, $this->quoteNumber);
             })
             ->where(QuoteItem::UNIT_PRICE, '>', 0)
-            ->orderBy(QuoteItem::ITEM)
+            ->when($filtering['lower_price'], function (Builder $query): void {
+                $query->orderBy(QuoteItem::UNIT_PRICE);
+            })
+            ->when($filtering['lower_eta'], function (Builder $query): void {
+                $query->orderBy(QuoteItem::DELIVERY_IN_DAYS, 'DESC');
+            })
+            ->when($filtering['last_price'], function (Builder $query): void {
+                $query->join(Quote::TABLE_NAME, Quote::TABLE_NAME.'.'.Quote::ID, '=', QuoteItem::TABLE_NAME.'.'.QuoteItem::QUOTE_ID)
+                    ->join(Product::TABLE_NAME, QuoteItem::TABLE_NAME.'.'.QuoteItem::PRODUCT_ID, '=', Product::TABLE_NAME.'.'.Product::ID)
+                    ->select(Product::TABLE_NAME.'.*', QuoteItem::TABLE_NAME.'.*')
+                    ->addSelect(DB::raw('json_extract('.Product::TABLE_NAME.'.'.Product::LAST_PRICE.', "$.amount") AS last_price_int'))
+                    ->orderBy('last_price_int', 'asc');
+            })
+            ->when($filtering['necessity'], function (Builder $query): void {
+                // aguardando campo data necessidade
+            })
+            ->when(count($filtering['supplier']) > 0, function (Builder $query) use ($filtering): void {
+                $query->join(Quote::TABLE_NAME, Quote::TABLE_NAME.'.'.Quote::ID, '=', QuoteItem::TABLE_NAME.'.'.QuoteItem::QUOTE_ID)
+                    ->whereIn(Quote::TABLE_NAME.'.'.Quote::SUPPLIER_ID, $filtering['supplier']);
+            })
             ->get();
 
         $uniqueQuoteItems = $allQuoteItems->pluck('item')->unique()->values();
@@ -337,5 +377,15 @@ class PredictedPurchaseRequest extends Component implements HasForms, HasTable
 
             PredictedPurchaseRequestModel::query()->create($data->toArray());
         }
+    }
+
+    public function finishQuote()
+    {
+        //
+    }
+
+    public function addNewSupplierToQuote()
+    {
+        //
     }
 }
