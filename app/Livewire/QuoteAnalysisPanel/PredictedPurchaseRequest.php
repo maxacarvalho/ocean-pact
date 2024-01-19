@@ -31,6 +31,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
+use phpDocumentor\Reflection\Types\Void_;
 use stdClass;
 use Throwable;
 
@@ -81,8 +82,9 @@ class PredictedPurchaseRequest extends Component implements HasForms, HasTable
                 Select::make('supplier')
                     ->label(Str::ucfirst(__('quote_analysis_panel.quick_actions_panel_suppliers')))
                     ->options(
-                        Quote::join('suppliers', 'quotes.supplier_id','=','suppliers.id')
-                            ->where('quotes.quote_number', '=', $this->quoteNumber)
+                        Supplier::whereHas(Supplier::RELATION_QUOTES, function(Builder $query):void {
+                                $query->where(Quote::TABLE_NAME.".".Quote::QUOTE_NUMBER, $this->quoteNumber);
+                            })
                             ->orderBy(Supplier::BUSINESS_NAME)
                             ->pluck(Supplier::TABLE_NAME.".".Supplier::BUSINESS_NAME, Supplier::TABLE_NAME.".".Supplier::ID)
                             ->toArray()
@@ -338,7 +340,7 @@ class PredictedPurchaseRequest extends Component implements HasForms, HasTable
             })
             ->get();
 
-            $uniqueQuoteItems = $allQuoteItems->pluck('item')->unique()->values();
+        $uniqueQuoteItems = $allQuoteItems->pluck('item')->unique()->values();
 
         PredictedPurchaseRequestModel::query()
             ->where(PredictedPurchaseRequestModel::QUOTE_NUMBER, $this->quoteNumber)

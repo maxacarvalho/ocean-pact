@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 
 /**
@@ -62,6 +63,7 @@ class Supplier extends Model
     public const RELATION_USERS = 'users';
     public const RELATION_COMPANIES = 'companies';
     public const RELATION_SELLERS = 'sellers';
+    public const RELATION_QUOTES = 'quotes';
 
     protected $table = self::TABLE_NAME;
 
@@ -112,6 +114,11 @@ class Supplier extends Model
             ->as('supplier_user')
             ->withPivot(SupplierUser::CODE)
             ->withTimestamps();
+    }
+
+    public function quotes(): HasMany
+    {
+        return $this->hasMany(Quote::class);
     }
 
     protected function cnpjCpf(): Attribute
