@@ -15,6 +15,7 @@ use Filament\Forms\Components\Toggle;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Tables\Columns\Summarizers\Summarizer;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Concerns\InteractsWithTable;
@@ -66,17 +67,13 @@ class PredictedPurchaseRequest extends Component implements HasForms, HasTable
             ->schema([
                 Toggle::make('lower_price')
                     ->label(Str::ucfirst(__('quote_analysis_panel.quick_actions_panel_lower_price')))
-                    ->default(true)
-                    ->columnSpan(1),
+                    ->default(true),
                 Toggle::make('lower_eta')
-                    ->label(Str::ucfirst(__('quote_analysis_panel.quick_actions_panel_lower_eta')))
-                    ->columnSpan(1),
+                    ->label(Str::ucfirst(__('quote_analysis_panel.quick_actions_panel_lower_eta'))),
                 Toggle::make('last_price')
-                    ->label(Str::ucfirst(__('quote_analysis_panel.quick_actions_panel_last_price')))
-                    ->columnSpan(1),
+                    ->label(Str::ucfirst(__('quote_analysis_panel.quick_actions_panel_last_price'))),
                 Toggle::make('necessity')
-                    ->label(Str::ucfirst(__('quote_analysis_panel.quick_actions_panel_necessity')))
-                    ->columnSpan(1),
+                    ->label(Str::ucfirst(__('quote_analysis_panel.quick_actions_panel_necessity'))),
                 Select::make('supplier')
                     ->label(Str::ucfirst(__('quote_analysis_panel.quick_actions_panel_suppliers')))
                     ->options(
@@ -89,11 +86,10 @@ class PredictedPurchaseRequest extends Component implements HasForms, HasTable
                             ->toArray()
                     )
                     ->searchable()
-                    ->multiple()
-                    ->columnSpan(['md' => 4]),
+                    ->multiple(),
             ])
             ->statePath('data')
-            ->columns(['md' => 1, 'xl' => 4]);
+            ->columns(['sm' => 2, 'md' => 4]);
     }
 
     public function table(Table $table): Table
@@ -295,7 +291,11 @@ class PredictedPurchaseRequest extends Component implements HasForms, HasTable
         $filtering = $this->form->getState();
 
         if (!$filtering['lower_price'] && !$filtering['lower_eta'] && !$filtering['last_price'] && !$filtering['necessity']) {
-            $this->addError('allTogglesDisabledProperty', Str::ucfirst(__('quote_analysis_panel.quick_actions_panel_required')));
+            Notification::make()
+                ->title(Str::ucfirst(__('quote_analysis_panel.quick_actions_panel_required')))
+                ->danger()
+                ->persistent()
+                ->send();
 
             return;
         }
