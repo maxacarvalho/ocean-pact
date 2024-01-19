@@ -97,7 +97,7 @@ class QuoteItem extends Model
 
     public function cannotBeResponded(): bool
     {
-        return ! $this->canBeResponded();
+        return !$this->canBeResponded();
     }
 
     public function getFormattedUnitPrice(): string

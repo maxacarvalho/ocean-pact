@@ -84,7 +84,7 @@ class SupplierQuote extends Component implements HasForms, HasTable
                         return Carbon::now()->addDays($state)->format('d/m/Y');
                     }),
 
-                CheckboxColumn::make('is_selected')->label(__('quote_analysis_panel.is_selected'))
+                CheckboxColumn::make('is_selected')->label(__('quote_analysis_panel.is_selected')),
             ]);
     }
 
