@@ -220,11 +220,7 @@ class PredictedPurchaseRequest extends Component implements HasForms, HasTable
                         }
                     })
                     ->formatStateUsing(function (float $state): string {
-                        return number_format(
-                                num: $state,
-                                decimals: 2,
-                                decimal_separator: ','
-                            ).'%';
+                        return number_format(num: $state, decimals: 2, decimal_separator: ',').'%';
                     })
                     ->badge()
                     ->color(function (float $state): string {
@@ -273,11 +269,8 @@ class PredictedPurchaseRequest extends Component implements HasForms, HasTable
                                     return '0%';
                                 }
 
-                                return number_format(
-                                        num: 100 - (($sumPrice / $sumLastPrice) * 100),
-                                        decimals: 2,
-                                        decimal_separator: ','
-                                    ).'%';
+                                $savings = 100 - (($sumPrice / $sumLastPrice) * 100);
+                                return number_format(num: $savings, decimals: 2, decimal_separator: ',').'%';
                             })
                     ),
 
