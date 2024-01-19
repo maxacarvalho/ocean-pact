@@ -19,8 +19,6 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Carbon;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
-use App\Mail\SupplierQuoteAnalysisNewContact;
-use Illuminate\Support\Facades\Mail;
 
 class SupplierQuote extends Component implements HasForms, HasTable
 {
@@ -88,16 +86,8 @@ class SupplierQuote extends Component implements HasForms, HasTable
             ]);
     }
 
-    public function requestNewOffer(){}
-
-    public function requestContact(){
-        Mail::to($seller->email)->send(
-            new SupplierQuoteAnalysisNewContact(
-                $supplier->name,
-                $quote->company->business_name,
-                $quote->quote_number,
-                $url
-            )
-        );
+    public function requestNewOffer()
+    {
+        //
     }
 }

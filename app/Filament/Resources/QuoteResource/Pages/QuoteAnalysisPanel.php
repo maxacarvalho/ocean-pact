@@ -71,5 +71,8 @@ class QuoteAnalysisPanel extends Page
             ->get();
     }
 
-    public function finishQuoteWithSelectedProducts(){}
+    public function finishQuoteWithSelectedProducts()
+    {
+        //
+    }
 }

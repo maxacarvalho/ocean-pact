@@ -18,5 +18,5 @@ return [
     'finish_quote_selected_products' => 'finalizar cotação',
     'add_new_supplier' => 'novo participante',
     'request_new_offer' => 'solicitar nova proposta',
-    'request_contact' => 'solicitar contato'
+    'request_contact' => 'solicitar contato',
 ];
