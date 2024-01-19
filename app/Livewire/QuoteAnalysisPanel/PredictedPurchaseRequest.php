@@ -299,8 +299,7 @@ class PredictedPurchaseRequest extends Component implements HasForms, HasTable
     {
         $filtering = $this->form->getState();
 
-        if(!$filtering['lower_price'] && !$filtering['lower_eta'] && !$filtering['last_price'] && !$filtering['necessity'] )
-        {
+        if(!$filtering['lower_price'] && !$filtering['lower_eta'] && !$filtering['last_price'] && !$filtering['necessity'] ) {
             $this->addError('allTogglesDisabledProperty', Str::ucfirst(__('quote_analysis_panel.quick_actions_panel_required')));
             return;
         }
