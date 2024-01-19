@@ -270,6 +270,7 @@ class PredictedPurchaseRequest extends Component implements HasForms, HasTable
                                 }
 
                                 $savings = 100 - (($sumPrice / $sumLastPrice) * 100);
+
                                 return number_format(num: $savings, decimals: 2, decimal_separator: ',').'%';
                             })
                     ),
