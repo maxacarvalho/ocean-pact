@@ -27,12 +27,14 @@ class SupplierQuote extends Component implements HasForms, HasTable
 
     #[Locked]
     public int $quoteId;
+    public bool $isQuoteBuyerOwner;
 
     public string $supplierName;
 
-    public function mount(int $quoteId): void
+    public function mount(int $quoteId, bool $isQuoteBuyerOwner): void
     {
         $this->quoteId = $quoteId;
+        $this->isQuoteBuyerOwner = $isQuoteBuyerOwner;
 
         /** @var Quote $quote */
         $quote = Quote::query()

@@ -48,11 +48,14 @@ class PredictedPurchaseRequest extends Component implements HasForms, HasTable
     public int $companyId;
     #[Locked]
     public string $quoteNumber;
+    public bool $isQuoteBuyerOwner;
 
-    public function mount(int $companyId, string $quoteNumber): void
+    public function mount(int $companyId, string $quoteNumber, bool $isQuoteBuyerOwner): void
     {
         $this->companyId = $companyId;
         $this->quoteNumber = $quoteNumber;
+        $this->isQuoteBuyerOwner = $isQuoteBuyerOwner;
+
         $this->form->fill();
     }
 
@@ -359,6 +362,7 @@ class PredictedPurchaseRequest extends Component implements HasForms, HasTable
             $data = PredictedPurchaseRequestData::from([
                 PredictedPurchaseRequestModel::COMPANY_ID => $this->companyId,
                 PredictedPurchaseRequestModel::QUOTE_NUMBER => $this->quoteNumber,
+                PredictedPurchaseRequestModel::BUYER_ID => $quoteItemWithTheLowestPrice->quote->buyer_id,
                 PredictedPurchaseRequestModel::QUOTE_ID => $quoteItemWithTheLowestPrice->quote_id,
                 PredictedPurchaseRequestModel::SUPPLIER_ID => $quoteItemWithTheLowestPrice->quote->supplier_id,
                 PredictedPurchaseRequestModel::PRODUCT_ID => $product->id,

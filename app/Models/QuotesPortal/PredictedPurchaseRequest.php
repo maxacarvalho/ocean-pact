@@ -3,6 +3,7 @@
 namespace App\Models\QuotesPortal;
 
 use App\Casts\QuotesPortal\MoneyFromJsonCast;
+use App\Models\User;
 use App\Utils\Money;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -12,6 +13,7 @@ use Illuminate\Support\Carbon;
  * @property int            $id
  * @property int            $company_id
  * @property string         $quote_number
+ * @property int            $buyer_id
  * @property int            $quote_id
  * @property int            $supplier_id
  * @property int            $product_id
@@ -26,6 +28,7 @@ use Illuminate\Support\Carbon;
  *
  * Relations
  * @property-read Company   $company
+ * @property-read User      $buyer
  * @property-read Quote     $quote
  * @property-read Supplier  $supplier
  * @property-read Product   $product
@@ -37,6 +40,7 @@ class PredictedPurchaseRequest extends Model
     public const ID = 'id';
     public const COMPANY_ID = 'company_id';
     public const QUOTE_NUMBER = 'quote_number';
+    public const BUYER_ID = 'buyer_id';
     public const QUOTE_ID = 'quote_id';
     public const SUPPLIER_ID = 'supplier_id';
     public const PRODUCT_ID = 'product_id';
@@ -51,6 +55,7 @@ class PredictedPurchaseRequest extends Model
 
     // Relations
     public const RELATION_COMPANY = 'company';
+    public const RELATION_BUYER = 'buyer';
     public const RELATION_QUOTE = 'quote';
     public const RELATION_SUPPLIER = 'supplier';
     public const RELATION_PRODUCT = 'product';
@@ -74,6 +79,15 @@ class PredictedPurchaseRequest extends Model
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
+    }
+
+    public function buyer(): BelongsTo
+    {
+        return $this->belongsTo(
+            User::class,
+            self::BUYER_ID,
+            User::ID
+        );
     }
 
     public function quote(): BelongsTo
