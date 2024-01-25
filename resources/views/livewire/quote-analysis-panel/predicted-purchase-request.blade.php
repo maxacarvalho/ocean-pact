@@ -33,7 +33,7 @@
         <div class="rounded-xl bg-white shadow-sm ring-1 ring-gray-950/5 dark:bg-gray-900 dark:ring-white/10 mt-4">
             <div class="w-full flex p-2 justify-center gap-4">
                 @if ($this->isQuoteBuyerOwner)
-                    {{ $this->getAcceptPredictedPurchaseRequestActionButton() }}
+                    {{ $this->acceptPredictedPurchaseRequestAction() }}
 
                     <x-filament::button wire:click="addNewSupplierToQuote">
                         {{ Str::ucfirst(__('quote_analysis_panel.add_new_supplier')) }}

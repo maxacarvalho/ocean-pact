@@ -69,20 +69,15 @@ class PredictedPurchaseRequest extends Component implements HasActions, HasForms
         return view('livewire.quote-analysis-panel.predicted-purchase-request');
     }
 
-    public function getAcceptPredictedPurchaseRequestActionButton(): Action
+    public function acceptPredictedPurchaseRequestAction(): Action
     {
-        return Action::make('accept_predicted_purchase_request_action')
+        return Action::make('acceptPredictedPurchaseRequestAction')
             ->label(Str::ucfirst(__('quote_analysis_panel.finish_quote_selected_products')))
             ->requiresConfirmation()
-            ->action('executeAcceptPredictedPurchaseRequestAction');
-    }
-
-    public function executeAcceptPredictedPurchaseRequestAction(): void
-    {
-        (new AcceptPredictedPurchaseRequestAction())->handle(
-            $this->companyId,
-            $this->quoteNumber
-        );
+            ->action(fn () => (new AcceptPredictedPurchaseRequestAction())->handle(
+                $this->companyId,
+                $this->quoteNumber
+            ));
     }
 
     public function form(Form $form): Form
