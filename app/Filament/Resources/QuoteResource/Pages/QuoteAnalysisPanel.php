@@ -40,6 +40,17 @@ class QuoteAnalysisPanel extends Page
         );
     }
 
+    public function isQuoteBuyerOwner(): bool
+    {
+        $quoteBuyerIds = Quote::query()
+            ->where(Quote::COMPANY_ID, $this->companyId)
+            ->where(Quote::QUOTE_NUMBER, $this->quoteNumber)
+            ->pluck(Quote::BUYER_ID)
+            ->toArray();
+
+        return in_array(auth()->user()->id, $quoteBuyerIds, true);
+    }
+
     private function getQuoteIds(): array
     {
         return Quote::query()

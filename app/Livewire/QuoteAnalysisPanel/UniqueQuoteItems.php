@@ -29,11 +29,13 @@ class UniqueQuoteItems extends Component implements HasForms, HasTable
     public string $quoteNumber;
     #[Locked]
     public int $companyId;
+    public bool $isQuoteBuyerOwner;
 
-    public function mount(int $companyId, string $quoteNumber): void
+    public function mount(int $companyId, string $quoteNumber, bool $isQuoteBuyerOwner): void
     {
         $this->companyId = $companyId;
         $this->quoteNumber = $quoteNumber;
+        $this->isQuoteBuyerOwner = $isQuoteBuyerOwner;
     }
 
     public function render(): View|Application|Factory

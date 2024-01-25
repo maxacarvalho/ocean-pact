@@ -14,6 +14,7 @@ class PredictedPurchaseRequestData extends Data
         public readonly int|Optional $id,
         public readonly int $company_id,
         public readonly string $quote_number,
+        public readonly int $buyer_id,
         public readonly int $quote_id,
         public readonly int $supplier_id,
         public readonly int $product_id,
