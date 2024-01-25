@@ -44,6 +44,10 @@ class QuoteAnalysisPanel extends Page
 
     public function isQuoteBuyerOwner(): bool
     {
+        if (auth()->user()->isSuperAdmin() || auth()->user()->isAdmin()) {
+            return true;
+        }
+
         $quoteBuyerIds = Quote::query()
             ->where(Quote::COMPANY_ID, $this->companyId)
             ->where(Quote::QUOTE_NUMBER, $this->quoteNumber)
