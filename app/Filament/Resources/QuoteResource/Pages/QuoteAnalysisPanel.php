@@ -2,10 +2,12 @@
 
 namespace App\Filament\Resources\QuoteResource\Pages;
 
+use App\Actions\QuotesPortal\AcceptPredictedPurchaseRequestAction;
 use App\Filament\Resources\QuoteResource;
 use App\Models\QuotesPortal\Quote;
 use App\Models\QuotesPortal\QuoteItem;
 use App\Utils\Str;
+use Filament\Actions\Action;
 use Filament\Resources\Pages\Page;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Contracts\Support\Htmlable;
@@ -82,8 +84,19 @@ class QuoteAnalysisPanel extends Page
             ->get();
     }
 
-    public function finishQuoteWithSelectedProducts()
+    public function getAcceptPredictedPurchaseRequestActionButton(): Action
     {
-        //
+        return Action::make('accept_predicted_purchase_request_action')
+            ->label(Str::ucfirst(__('quote_analysis_panel.finish_quote_selected_products')))
+            ->requiresConfirmation()
+            ->action('executeAcceptPredictedPurchaseRequestAction');
+    }
+
+    public function executeAcceptPredictedPurchaseRequestAction(): void
+    {
+        (new AcceptPredictedPurchaseRequestAction())->handle(
+            $this->companyId,
+            $this->quoteNumber
+        );
     }
 }

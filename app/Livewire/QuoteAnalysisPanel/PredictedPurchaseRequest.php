@@ -2,6 +2,7 @@
 
 namespace App\Livewire\QuoteAnalysisPanel;
 
+use App\Actions\QuotesPortal\AcceptPredictedPurchaseRequestAction;
 use App\Data\QuotesPortal\PredictedPurchaseRequestData;
 use App\Models\QuotesPortal\PredictedPurchaseRequest as PredictedPurchaseRequestModel;
 use App\Models\QuotesPortal\Product;
@@ -10,6 +11,9 @@ use App\Models\QuotesPortal\QuoteItem;
 use App\Models\QuotesPortal\Supplier;
 use App\Utils\Money;
 use App\Utils\Str;
+use Filament\Actions\Action;
+use Filament\Actions\Concerns\InteractsWithActions;
+use Filament\Actions\Contracts\HasActions;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Concerns\InteractsWithForms;
@@ -37,8 +41,9 @@ use Throwable;
 /**
  * @property Form $form
  */
-class PredictedPurchaseRequest extends Component implements HasForms, HasTable
+class PredictedPurchaseRequest extends Component implements HasActions, HasForms, HasTable
 {
+    use InteractsWithActions;
     use InteractsWithForms;
     use InteractsWithTable;
 
@@ -62,6 +67,22 @@ class PredictedPurchaseRequest extends Component implements HasForms, HasTable
     public function render(): View|Application|Factory
     {
         return view('livewire.quote-analysis-panel.predicted-purchase-request');
+    }
+
+    public function getAcceptPredictedPurchaseRequestActionButton(): Action
+    {
+        return Action::make('accept_predicted_purchase_request_action')
+            ->label(Str::ucfirst(__('quote_analysis_panel.finish_quote_selected_products')))
+            ->requiresConfirmation()
+            ->action('executeAcceptPredictedPurchaseRequestAction');
+    }
+
+    public function executeAcceptPredictedPurchaseRequestAction(): void
+    {
+        (new AcceptPredictedPurchaseRequestAction())->handle(
+            $this->companyId,
+            $this->quoteNumber
+        );
     }
 
     public function form(Form $form): Form
