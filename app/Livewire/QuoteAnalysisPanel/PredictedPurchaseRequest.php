@@ -64,17 +64,6 @@ class PredictedPurchaseRequest extends Component implements HasForms, HasTable
         return view('livewire.quote-analysis-panel.predicted-purchase-request');
     }
 
-    public function isQuoteBuyerOwner(): bool
-    {
-        $quoteBuyerIds = Quote::query()
-            ->where(Quote::COMPANY_ID, $this->companyId)
-            ->where(Quote::QUOTE_NUMBER, $this->quoteNumber)
-            ->pluck(Quote::BUYER_ID)
-            ->toArray();
-
-        return in_array(auth()->user()->id, $quoteBuyerIds, true);
-    }
-
     public function form(Form $form): Form
     {
         return $form
