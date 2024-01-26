@@ -3,6 +3,8 @@
 return [
     'companies' => 'companies',
     'company' => 'company',
+    'sellers' => 'sellers',
+    'seller' => 'seller',
     'ID' => 'ID',
     'code' => 'code',
     'code_branch' => 'branch code',

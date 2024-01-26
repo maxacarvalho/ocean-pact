@@ -23,4 +23,5 @@ return [
     'user_type' => 'user type',
     'is_seller' => 'seller',
     'is_buyer' => 'buyer',
+    'edit' => 'edit',
 ];

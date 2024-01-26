@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\SupplierResource\Pages\CreateSupplier;
 use App\Filament\Resources\SupplierResource\Pages\EditSupplier;
 use App\Filament\Resources\SupplierResource\Pages\ListSuppliers;
+use App\Filament\Resources\SupplierResource\RelationManagers\SellersRelationManager;
 use App\Filament\Resources\SupplierResource\RelationManagers\CompaniesRelationManager;
 use App\Models\QuotesPortal\Supplier;
 use App\Rules\CnpjRule;
@@ -72,18 +73,6 @@ class SupplierResource extends Resource
                             ->rules([new CnpjRule()])
                             ->mask('99.999.999/9999-99'),
                     ]),
-
-                Grid::make()
-                    ->schema([
-                        TextInput::make(Supplier::CONTACT)
-                            ->label(Str::formatTitle(__('supplier.contact')))
-                            ->required(),
-
-                        TextInput::make(Supplier::EMAIL)
-                            ->label(Str::formatTitle(__('supplier.email')))
-                            ->required()
-                            ->email(),
-                    ]),
             ]);
     }
 
@@ -124,6 +113,7 @@ class SupplierResource extends Resource
     public static function getRelations(): array
     {
         return [
+            SellersRelationManager::class,
             CompaniesRelationManager::class,
         ];
     }

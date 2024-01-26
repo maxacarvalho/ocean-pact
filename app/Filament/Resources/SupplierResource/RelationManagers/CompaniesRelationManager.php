@@ -13,6 +13,7 @@ use Filament\Tables\Actions\AttachAction as TableAttachAction;
 use Filament\Tables\Actions\DetachAction as TableDetachAction;
 use Filament\Tables\Actions\DetachBulkAction as TableDetachBulkAction;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
 
 class CompaniesRelationManager extends RelationManager
 {
@@ -20,14 +21,9 @@ class CompaniesRelationManager extends RelationManager
 
     protected static ?string $recordTitleAttribute = Company::CODE_CODE_BRANCH_AND_BRANCH;
 
-    public static function getModelLabel(): ?string
+    public static function getTitle(Model $ownerRecord, string $pageClass): string
     {
-        return Str::formatTitle(__('company.company'));
-    }
-
-    public static function getPluralModelLabel(): string
-    {
-        return Str::formatTitle(__('company.companies'));
+        return Str::title(__('company.companies'));
     }
 
     public function form(Form $form): Form
