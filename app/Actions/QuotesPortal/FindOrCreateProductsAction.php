@@ -15,10 +15,6 @@ class FindOrCreateProductsAction
 
         /** @var QuoteItemData $item */
         foreach ($data->items as $item) {
-
-            ray($item->toArray());
-            ray()->pause();
-
             /** @var Product $newProduct */
             $newProduct = Product::query()->firstOrCreate([
                 Product::COMPANY_CODE => $company->code,
