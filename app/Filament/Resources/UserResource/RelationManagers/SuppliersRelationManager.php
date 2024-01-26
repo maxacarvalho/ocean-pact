@@ -12,10 +12,17 @@ use Filament\Tables\Actions\DetachAction;
 use Filament\Tables\Actions\DetachBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Table;
+use App\Utils\Str;
+use Illuminate\Database\Eloquent\Model;
 
 class SuppliersRelationManager extends RelationManager
 {
     protected static string $relationship = 'suppliers';
+
+    public static function getTitle(Model $ownerRecord, string $pageClass): string
+    {
+        return Str::title(__('supplier.suppliers'));
+    }
 
     public function form(Form $form): Form
     {

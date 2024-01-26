@@ -24,6 +24,7 @@ use Filament\Tables\Table;
 use Illuminate\Support\HtmlString;
 use Illuminate\Validation\Rule;
 use Throwable;
+use Illuminate\Database\Eloquent\Model;
 
 class FieldsRelationManager extends RelationManager
 {
@@ -31,7 +32,7 @@ class FieldsRelationManager extends RelationManager
 
     protected static ?string $recordTitleAttribute = 'field_name';
 
-    public static function getNavigationLabel(): string
+    public static function getTitle(Model $ownerRecord, string $pageClass): string
     {
         return Str::title(__('integration_type_field.integration_type_fields'));
     }
