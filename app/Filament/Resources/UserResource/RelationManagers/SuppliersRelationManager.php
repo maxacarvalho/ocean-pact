@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\UserResource\RelationManagers;
 
 use App\Models\QuotesPortal\SupplierUser;
+use App\Utils\Str;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
@@ -12,7 +13,6 @@ use Filament\Tables\Actions\DetachAction;
 use Filament\Tables\Actions\DetachBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Table;
-use App\Utils\Str;
 use Illuminate\Database\Eloquent\Model;
 
 class SuppliersRelationManager extends RelationManager

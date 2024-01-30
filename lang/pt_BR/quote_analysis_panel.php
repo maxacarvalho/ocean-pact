@@ -19,4 +19,8 @@ return [
     'add_new_supplier' => 'novo participante',
     'request_new_offer' => 'solicitar nova proposta',
     'request_contact' => 'solicitar contato',
+    'cannot_finalize_quote' => 'não é possível finalizar a cotação',
+    'missing_predicted_purchase_request_items' => 'parece que nenhum item foi selecionado',
+    'cannot_finalize_quote_unknown_error' => 'erro desconhecido',
+    'predicted_purchase_request_already_accepted' => 'itens já aceitos previamente',
 ];

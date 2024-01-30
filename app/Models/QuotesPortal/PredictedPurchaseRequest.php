@@ -3,6 +3,7 @@
 namespace App\Models\QuotesPortal;
 
 use App\Casts\QuotesPortal\MoneyFromJsonCast;
+use App\Enums\QuotesPortal\PredictedPurchaseRequestStatusEnum;
 use App\Models\User;
 use App\Utils\Money;
 use Illuminate\Database\Eloquent\Model;
@@ -10,29 +11,30 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 
 /**
- * @property int            $id
- * @property int            $company_id
- * @property string         $quote_number
- * @property int            $buyer_id
- * @property int            $quote_id
- * @property int            $supplier_id
- * @property int            $product_id
- * @property string         $item
- * @property int            $quote_item_id
- * @property Carbon         $delivery_date
- * @property Money          $price
- * @property Money          $last_price
- * @property Carbon         $necessity_date
- * @property Carbon|null    $created_at
- * @property Carbon|null    $updated_at
+ * @property int                                $id
+ * @property int                                $company_id
+ * @property string                             $quote_number
+ * @property int                                $buyer_id
+ * @property int                                $quote_id
+ * @property int                                $supplier_id
+ * @property int                                $product_id
+ * @property string                             $item
+ * @property int                                $quote_item_id
+ * @property Carbon                             $delivery_date
+ * @property Money                              $price
+ * @property Money                              $last_price
+ * @property Carbon                             $necessity_date
+ * @property PredictedPurchaseRequestStatusEnum $status
+ * @property Carbon|null                        $created_at
+ * @property Carbon|null                        $updated_at
  *
  * Relations
- * @property-read Company   $company
- * @property-read User      $buyer
- * @property-read Quote     $quote
- * @property-read Supplier  $supplier
- * @property-read Product   $product
- * @property-read QuoteItem $quoteItem
+ * @property-read Company                       $company
+ * @property-read User                          $buyer
+ * @property-read Quote                         $quote
+ * @property-read Supplier                      $supplier
+ * @property-read Product                       $product
+ * @property-read QuoteItem                     $quoteItem
  */
 class PredictedPurchaseRequest extends Model
 {
@@ -50,6 +52,7 @@ class PredictedPurchaseRequest extends Model
     public const PRICE = 'price';
     public const LAST_PRICE = 'last_price';
     public const NECESSITY_DATE = 'necessity_date';
+    public const STATUS = 'status';
     public const CREATED_AT = 'created_at';
     public const UPDATED_AT = 'updated_at';
 
@@ -74,6 +77,7 @@ class PredictedPurchaseRequest extends Model
         self::NECESSITY_DATE => 'date',
         self::PRICE => MoneyFromJsonCast::class,
         self::LAST_PRICE => MoneyFromJsonCast::class,
+        self::STATUS => PredictedPurchaseRequestStatusEnum::class,
     ];
 
     public function company(): BelongsTo

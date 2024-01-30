@@ -8,4 +8,6 @@ return [
     'last_price' => 'último preço',
     'savings' => '% de economia',
     'necessity_date' => 'data de necessidade',
+    'status_draft' => 'rascunho',
+    'status_accepted' => 'aceita',
 ];

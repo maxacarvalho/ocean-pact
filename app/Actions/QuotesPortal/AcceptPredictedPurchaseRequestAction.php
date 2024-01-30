@@ -3,17 +3,22 @@
 namespace App\Actions\QuotesPortal;
 
 use App\Data\QuotesPortal\FinalizedPredictedPurchaseRequestData;
+use App\Enums\QuotesPortal\PredictedPurchaseRequestStatusEnum;
+use App\Exceptions\QuotesPortal\MissingPredictedPurchaseRequestItemsException;
+use App\Exceptions\QuotesPortal\PredictedPurchaseRequestAlreadyAcceptedException;
 use App\Models\QuotesPortal\Company;
 use App\Models\QuotesPortal\PredictedPurchaseRequest;
 use App\Models\QuotesPortal\Product;
 use App\Models\QuotesPortal\QuoteItem;
 use App\Models\QuotesPortal\Supplier;
 use App\Models\User;
+use App\Utils\Str;
 use Illuminate\Database\Eloquent\Collection;
 use Spatie\WebhookServer\WebhookCall;
 
 class AcceptPredictedPurchaseRequestAction
 {
+    /** @throws MissingPredictedPurchaseRequestItemsException|PredictedPurchaseRequestAlreadyAcceptedException */
     public function handle(int $companyId, string $quoteNumber): void
     {
         /** @var PredictedPurchaseRequest[]|Collection $purchaseRequestItems */
@@ -34,6 +39,18 @@ class AcceptPredictedPurchaseRequestAction
             ->orderBy(PredictedPurchaseRequest::SUPPLIER_ID)
             ->orderBy(PredictedPurchaseRequest::ITEM)
             ->get();
+
+        if ($purchaseRequestItems->isEmpty()) {
+            throw new MissingPredictedPurchaseRequestItemsException(
+                Str::ucfirst(__('quote_analysis_panel.missing_predicted_purchase_request_items'))
+            );
+        }
+
+        if ($purchaseRequestItems->contains(PredictedPurchaseRequest::STATUS, PredictedPurchaseRequestStatusEnum::ACCEPTED)) {
+            throw new PredictedPurchaseRequestAlreadyAcceptedException(
+                Str::ucfirst(__('quote_analysis_panel.predicted_purchase_request_already_accepted'))
+            );
+        }
 
         $suppliers = [];
 
@@ -91,6 +108,13 @@ class AcceptPredictedPurchaseRequestAction
             ],
             'suppliers' => array_values($suppliers),
         ]);
+
+        PredictedPurchaseRequest::query()
+            ->where(PredictedPurchaseRequest::COMPANY_ID, $companyId)
+            ->where(PredictedPurchaseRequest::QUOTE_NUMBER, $quoteNumber)
+            ->update([
+                PredictedPurchaseRequest::STATUS => PredictedPurchaseRequestStatusEnum::ACCEPTED,
+            ]);
 
         WebhookCall::create()
             ->url(config('integra-hub.base_url').'/integra-hub/webhooks/payload?integration-type-code=analise-cotacao-finalizada')

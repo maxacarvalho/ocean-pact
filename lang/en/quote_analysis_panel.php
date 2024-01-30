@@ -19,4 +19,8 @@ return [
     'add_new_supplier' => 'add new supplier',
     'request_new_offer' => 'request new offer',
     'request_contact' => 'request contact',
+    'cannot_finalize_quote' => 'cannot finalize quote',
+    'missing_predicted_purchase_request_items' => 'it seems that no items have been selected',
+    'cannot_finalize_quote_unknown_error' => 'unknown error',
+    'predicted_purchase_request_already_accepted' => 'items already previously accepted',
 ];

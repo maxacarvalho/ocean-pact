@@ -21,10 +21,10 @@ use Filament\Tables\Actions\DeleteBulkAction as TableDeleteBulkAction;
 use Filament\Tables\Actions\EditAction as TableEditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\HtmlString;
 use Illuminate\Validation\Rule;
 use Throwable;
-use Illuminate\Database\Eloquent\Model;
 
 class FieldsRelationManager extends RelationManager
 {
