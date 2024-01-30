@@ -4,6 +4,8 @@ namespace App\Livewire\QuoteAnalysisPanel;
 
 use App\Actions\QuotesPortal\AcceptPredictedPurchaseRequestAction;
 use App\Data\QuotesPortal\PredictedPurchaseRequestData;
+use App\Exceptions\QuotesPortal\MissingPredictedPurchaseRequestItemsException;
+use App\Exceptions\QuotesPortal\PredictedPurchaseRequestAlreadyAcceptedException;
 use App\Models\QuotesPortal\PredictedPurchaseRequest as PredictedPurchaseRequestModel;
 use App\Models\QuotesPortal\Product;
 use App\Models\QuotesPortal\Quote;
@@ -54,6 +56,7 @@ class PredictedPurchaseRequest extends Component implements HasActions, HasForms
     #[Locked]
     public string $quoteNumber;
     public bool $isQuoteBuyerOwner;
+    public ?string $cannotAcceptPredictedPurchaseRequestModalContent = null;
 
     public function mount(int $companyId, string $quoteNumber, bool $isQuoteBuyerOwner): void
     {
@@ -74,10 +77,20 @@ class PredictedPurchaseRequest extends Component implements HasActions, HasForms
         return Action::make('acceptPredictedPurchaseRequestAction')
             ->label(Str::ucfirst(__('quote_analysis_panel.finish_quote_selected_products')))
             ->requiresConfirmation()
-            ->action(fn () => (new AcceptPredictedPurchaseRequestAction())->handle(
-                $this->companyId,
-                $this->quoteNumber
-            ));
+            ->action(function () {
+                try {
+                    (new AcceptPredictedPurchaseRequestAction())->handle(
+                        $this->companyId,
+                        $this->quoteNumber
+                    );
+                } catch (MissingPredictedPurchaseRequestItemsException|PredictedPurchaseRequestAlreadyAcceptedException $exception) {
+                    $this->cannotAcceptPredictedPurchaseRequestModalContent = $exception->getMessage();
+                    $this->dispatch('open-modal', id: 'cannot-accept-predicted-purchase-request-modal');
+                } catch (Throwable $exception) {
+                    $this->cannotAcceptPredictedPurchaseRequestModalContent = Str::ucfirst(__('quote_analysis_panel.cannot_finalize_quote_unknown_error'));
+                    $this->dispatch('open-modal', id: 'cannot-accept-predicted-purchase-request-modal');
+                }
+            });
     }
 
     public function form(Form $form): Form

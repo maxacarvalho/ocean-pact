@@ -2,15 +2,15 @@
 
 namespace App\Filament\Resources\SupplierResource\RelationManagers;
 
-use App\Models\QuotesPortal\Supplier;
-use App\Utils\Str;
-use App\Models\User;
-use Filament\Resources\RelationManagers\RelationManager;
-use Filament\Tables\Table;
-use Filament\Tables\Columns\TextColumn;
-use Illuminate\Database\Eloquent\Model;
-use Filament\Tables\Actions\Action;
 use App\Filament\Resources\UserResource;
+use App\Models\QuotesPortal\Supplier;
+use App\Models\User;
+use App\Utils\Str;
+use Filament\Resources\RelationManagers\RelationManager;
+use Filament\Tables\Actions\Action;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
 
 class SellersRelationManager extends RelationManager
 {
@@ -38,9 +38,8 @@ class SellersRelationManager extends RelationManager
                 Action::make('user_edit')
                     ->label(Str::formatTitle(__('user.edit')))
                     ->icon('fas-pen-to-square')
-                    ->url(fn($record): string => 
-                        UserResource::getUrl('edit', ['record' => $record])
-                    )
+                    ->url(fn ($record): string => UserResource::getUrl('edit', ['record' => $record])
+                    ),
             ]);
     }
 }

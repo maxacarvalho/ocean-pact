@@ -2,12 +2,10 @@
 
 namespace App\Filament\Resources\QuoteResource\Pages;
 
-use App\Actions\QuotesPortal\AcceptPredictedPurchaseRequestAction;
 use App\Filament\Resources\QuoteResource;
 use App\Models\QuotesPortal\Quote;
 use App\Models\QuotesPortal\QuoteItem;
 use App\Utils\Str;
-use Filament\Actions\Action;
 use Filament\Resources\Pages\Page;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Contracts\Support\Htmlable;
@@ -18,13 +16,11 @@ class QuoteAnalysisPanel extends Page
 {
     public int $companyId;
     public string $quoteNumber;
-
     #[Locked]
     public array $quoteIds = [];
     public Collection|array $quoteItems = [];
 
     protected static string $resource = QuoteResource::class;
-
     protected static string $view = 'filament.resources.quote-resource.pages.quote-analysis-panel';
 
     public function mount(int $companyId, string $quoteNumber): void
@@ -60,10 +56,10 @@ class QuoteAnalysisPanel extends Page
     private function getQuoteIds(): array
     {
         return Quote::query()
-            ->select('id')
+            ->select(Quote::ID)
             ->where(Quote::COMPANY_ID, $this->companyId)
             ->where(Quote::QUOTE_NUMBER, $this->quoteNumber)
-            ->pluck('id')
+            ->pluck(Quote::ID)
             ->toArray();
     }
 
@@ -86,16 +82,5 @@ class QuoteAnalysisPanel extends Page
                     ->where(Quote::QUOTE_NUMBER, $this->quoteNumber);
             })
             ->get();
-    }
-
-    public function acceptPredictedPurchaseRequestAction(): Action
-    {
-        return Action::make('acceptPredictedPurchaseRequestAction')
-            ->label(Str::ucfirst(__('quote_analysis_panel.finish_quote_selected_products')))
-            ->requiresConfirmation()
-            ->action(fn () => (new AcceptPredictedPurchaseRequestAction())->handle(
-                $this->companyId,
-                $this->quoteNumber
-            ));
     }
 }
