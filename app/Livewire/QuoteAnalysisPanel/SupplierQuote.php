@@ -3,10 +3,10 @@
 namespace App\Livewire\QuoteAnalysisPanel;
 
 use App\Actions\QuotesPortal\RequestNewOfferAction;
+use App\Enums\QuotesPortal\QuoteStatusEnum;
 use App\Models\QuotesPortal\Quote;
 use App\Models\QuotesPortal\QuoteItem;
 use App\Utils\Str;
-use Filament\Actions\Action;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Tables\Columns\CheckboxColumn;
@@ -29,8 +29,8 @@ class SupplierQuote extends Component implements HasForms, HasTable
 
     #[Locked]
     public int $quoteId;
+    public QuoteStatusEnum $quoteStatus;
     public bool $isQuoteBuyerOwner;
-
     public string $supplierName;
 
     public function mount(int $quoteId, bool $isQuoteBuyerOwner): void
@@ -44,6 +44,7 @@ class SupplierQuote extends Component implements HasForms, HasTable
                 Quote::RELATION_SUPPLIER,
             ])
             ->findOrFail($quoteId);
+        $this->quoteStatus = $quote->status;
 
         $this->supplierName = $quote->supplier->name;
     }
@@ -90,16 +91,29 @@ class SupplierQuote extends Component implements HasForms, HasTable
             ]);
     }
 
-    public function requestNewOfferAction(): Action
+    public function canRequestNewProposal(): bool
     {
-        return Action::make('requestNewOffer')
-            ->label(Str::ucfirst(__('quote_analysis_panel.request_new_offer')))
-            ->action('requestNewOffer');
+        return !$this->quoteStatus->equals(QuoteStatusEnum::PROPOSAL);
     }
 
-    public function requestNewOffer(): void
+    public function requestNewOfferConfirmModal(): void
+    {
+        $this->dispatch('open-modal', id: "request-new-offer-modal-{$this->quoteId}");
+    }
+
+    public function requestNewOfferExecute(): void
     {
         (new RequestNewOfferAction())->handle($this->quoteId);
+
+        Quote::query()
+            ->where(Quote::ID, $this->quoteId)
+            ->update([
+                Quote::STATUS => QuoteStatusEnum::PROPOSAL,
+            ]);
+
+        $this->quoteStatus = QuoteStatusEnum::PROPOSAL;
+
+        $this->dispatch('close-modal', id: "request-new-offer-modal-{$this->quoteId}");
     }
 
     public function requestContact()

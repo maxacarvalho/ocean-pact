@@ -23,4 +23,8 @@ return [
     'missing_predicted_purchase_request_items' => 'it seems that no items have been selected',
     'cannot_finalize_quote_unknown_error' => 'unknown error',
     'predicted_purchase_request_already_accepted' => 'items already previously accepted',
+    'request_new_offer_modal_header' => 'request new offer',
+    'request_new_offer_modal_description' => 'this action will invalidate the current proposal. This action cannot be undone. Are you sure?',
+    'request_new_offer_modal_cancel_btn' => 'cancel',
+    'request_new_offer_modal_confirm_btn' => 'confirm',
 ];

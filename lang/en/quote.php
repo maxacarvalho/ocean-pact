@@ -32,6 +32,7 @@ return [
     'draft' => 'draft',
     'pending' => 'pending',
     'replaced' => 'replaced',
+    'proposal' => 'proposal',
     'replaced_only ' => 'replaced only',
     'latest_only' => 'latest only',
     'responded' => 'responded',
