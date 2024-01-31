@@ -23,4 +23,8 @@ return [
     'missing_predicted_purchase_request_items' => 'parece que nenhum item foi selecionado',
     'cannot_finalize_quote_unknown_error' => 'erro desconhecido',
     'predicted_purchase_request_already_accepted' => 'itens já aceitos previamente',
+    'request_new_offer_modal_header' => 'solicitação de nova proposta',
+    'request_new_offer_modal_description' => 'a solicitação de uma nova proposta irá invalidar a proposta atual. Essa ação não poderá ser desfeita. Deseja continuar?',
+    'request_new_offer_modal_cancel_btn' => 'cancelar',
+    'request_new_offer_modal_confirm_btn' => 'confirmar',
 ];

@@ -33,6 +33,7 @@ return [
     'draft' => 'rascunho',
     'pending' => 'pendente',
     'replaced' => 'substituída',
+    'proposal' => 'proposta',
     'replaced_only' => 'apenas substituídas',
     'latest_only' => 'apenas a últimas',
     'responded' => 'respondida',
