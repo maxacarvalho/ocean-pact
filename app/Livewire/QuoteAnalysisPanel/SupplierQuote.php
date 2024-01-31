@@ -2,9 +2,11 @@
 
 namespace App\Livewire\QuoteAnalysisPanel;
 
+use App\Actions\QuotesPortal\RequestNewOfferAction;
 use App\Models\QuotesPortal\Quote;
 use App\Models\QuotesPortal\QuoteItem;
 use App\Utils\Str;
+use Filament\Actions\Action;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Tables\Columns\CheckboxColumn;
@@ -88,8 +90,20 @@ class SupplierQuote extends Component implements HasForms, HasTable
             ]);
     }
 
-    public function requestNewOffer()
+    public function requestNewOfferAction(): Action
     {
-        //
+        return Action::make('requestNewOffer')
+            ->label(Str::ucfirst(__('quote_analysis_panel.request_new_offer')))
+            ->action('requestNewOffer');
+    }
+
+    public function requestNewOffer(): void
+    {
+        (new RequestNewOfferAction())->handle($this->quoteId);
+    }
+
+    public function requestContact()
+    {
+
     }
 }
