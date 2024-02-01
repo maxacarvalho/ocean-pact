@@ -314,8 +314,7 @@ class QuoteResource extends Resource
             TextColumn::make(Quote::RELATION_SUPPLIER.'.'.Supplier::NAME)
                 ->label(Str::formatTitle(__('quote.supplier')))
                 ->sortable()
-                ->searchable()
-                ->visible(fn () => Auth::user()->isSuperAdmin() || Auth::user()->isAdmin() || Auth::user()->isBuyer()),
+                ->searchable(),
 
             TextColumn::make(Quote::QUOTE_NUMBER)
                 ->label(Str::formatTitle(__('quote.quote_number')))
