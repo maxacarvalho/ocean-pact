@@ -9,19 +9,15 @@
                         {{ Str::title(__('quote_analysis_panel.quick_actions_panel_title')) }}
                     </h3>
 
-                    <form wire:submit="update" class="grid gap-6">
+                    <form wire:submit="loadProducts" class="grid gap-6">
                         <div>
                             {{ $this->form }}
                         </div>
 
                         <div>
-                            <x-filament::button wire:click="update">
-                                {{ Str::ucfirst(__('quote_analysis_panel.quick_actions_panel_load_products')) }}
-                            </x-filament::button>
+                            {{ $this->loadProductsAction() }}
                         </div>
                     </form>
-
-                    <x-filament-actions::modals />
                 </div>
             </div>
         </div>

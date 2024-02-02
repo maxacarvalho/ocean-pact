@@ -56,6 +56,7 @@ class PredictedPurchaseRequest extends Component implements HasActions, HasForms
     #[Locked]
     public string $quoteNumber;
     public bool $isQuoteBuyerOwner;
+    public int $predictedPurchaseRequestCount = 0;
     public ?string $cannotAcceptPredictedPurchaseRequestModalContent = null;
 
     public function mount(int $companyId, string $quoteNumber, bool $isQuoteBuyerOwner): void
@@ -63,6 +64,7 @@ class PredictedPurchaseRequest extends Component implements HasActions, HasForms
         $this->companyId = $companyId;
         $this->quoteNumber = $quoteNumber;
         $this->isQuoteBuyerOwner = $isQuoteBuyerOwner;
+        $this->predictedPurchaseRequestCount = $this->getTableQuery()->count();
 
         $this->form->fill();
     }
@@ -76,6 +78,7 @@ class PredictedPurchaseRequest extends Component implements HasActions, HasForms
     {
         return Action::make('acceptPredictedPurchaseRequestAction')
             ->label(Str::ucfirst(__('quote_analysis_panel.finish_quote_selected_products')))
+            ->disabled($this->predictedPurchaseRequestCount === 0)
             ->requiresConfirmation()
             ->action(function () {
                 try {
@@ -129,9 +132,7 @@ class PredictedPurchaseRequest extends Component implements HasActions, HasForms
         return $table
             ->heading(Str::title(__('quote_analysis_panel.predicted_purchase_request')))
             ->query(
-                PredictedPurchaseRequestModel::query()
-                    ->where(PredictedPurchaseRequestModel::COMPANY_ID, $this->companyId)
-                    ->where(PredictedPurchaseRequestModel::QUOTE_NUMBER, $this->quoteNumber)
+                $this->getTableQuery()
             )
             ->columns([
                 TextColumn::make(PredictedPurchaseRequestModel::RELATION_SUPPLIER.'.'.Supplier::BUSINESS_NAME)
@@ -318,7 +319,14 @@ class PredictedPurchaseRequest extends Component implements HasActions, HasForms
             ]);
     }
 
-    public function update(): void
+    public function loadProductsAction(): Action
+    {
+        return Action::make('loadProductsAction')
+            ->label(Str::ucfirst(__('quote_analysis_panel.quick_actions_panel_load_products')))
+            ->submit('loadProducts');
+    }
+
+    public function loadProducts(): void
     {
         $filtering = $this->form->getState();
 
@@ -410,6 +418,8 @@ class PredictedPurchaseRequest extends Component implements HasActions, HasForms
 
             PredictedPurchaseRequestModel::query()->create($data->toArray());
         }
+
+        $this->predictedPurchaseRequestCount = $this->getTableQuery()->count();
     }
 
     public function finishQuote()
@@ -420,5 +430,12 @@ class PredictedPurchaseRequest extends Component implements HasActions, HasForms
     public function addNewSupplierToQuote()
     {
         //
+    }
+
+    private function getTableQuery(): \Illuminate\Database\Eloquent\Builder
+    {
+        return PredictedPurchaseRequestModel::query()
+            ->where(PredictedPurchaseRequestModel::COMPANY_ID, $this->companyId)
+            ->where(PredictedPurchaseRequestModel::QUOTE_NUMBER, $this->quoteNumber);
     }
 }

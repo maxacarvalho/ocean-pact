@@ -27,6 +27,7 @@ class SupplierQuote extends Component implements HasForms, HasTable
     use InteractsWithForms;
     use InteractsWithTable;
 
+    public Quote $quote;
     #[Locked]
     public int $quoteId;
     public QuoteStatusEnum $quoteStatus;
@@ -38,15 +39,10 @@ class SupplierQuote extends Component implements HasForms, HasTable
         $this->quoteId = $quoteId;
         $this->isQuoteBuyerOwner = $isQuoteBuyerOwner;
 
-        /** @var Quote $quote */
-        $quote = Quote::query()
-            ->with([
-                Quote::RELATION_SUPPLIER,
-            ])
-            ->findOrFail($quoteId);
-        $this->quoteStatus = $quote->status;
+        $this->quote = $this->getQuote($quoteId);
 
-        $this->supplierName = $quote->supplier->name;
+        $this->quoteStatus = $this->quote->status;
+        $this->supplierName = $this->quote->supplier->name;
     }
 
     public function render(): View|Application|Factory
@@ -58,6 +54,7 @@ class SupplierQuote extends Component implements HasForms, HasTable
     {
         return $table
             ->heading($this->supplierName)
+            ->description(Str::ucfirst(__('quote.quote_version', ['version' => $this->quote->proposal_number])))
             ->query(fn (): Builder => QuoteItem::query()->where(QuoteItem::QUOTE_ID, $this->quoteId))
             ->queryStringIdentifier("supplier-quote-{$this->quoteId}")
             ->defaultSort(QuoteItem::ITEM)
@@ -119,5 +116,17 @@ class SupplierQuote extends Component implements HasForms, HasTable
     public function requestContact()
     {
 
+    }
+
+    private function getQuote(int $quoteId): Quote
+    {
+        /** @var Quote $quote */
+        $quote = Quote::query()
+            ->with([
+                Quote::RELATION_SUPPLIER,
+            ])
+            ->findOrFail($quoteId);
+
+        return $quote;
     }
 }
