@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\QuoteResource\Pages;
 
+use App\Enums\QuotesPortal\QuoteStatusEnum;
 use App\Filament\Resources\QuoteResource;
 use App\Models\QuotesPortal\Quote;
 use App\Models\QuotesPortal\QuoteItem;
@@ -59,6 +60,12 @@ class QuoteAnalysisPanel extends Page
             ->select(Quote::ID)
             ->where(Quote::COMPANY_ID, $this->companyId)
             ->where(Quote::QUOTE_NUMBER, $this->quoteNumber)
+            ->whereIn(Quote::STATUS, [
+                QuoteStatusEnum::PROPOSAL,
+                QuoteStatusEnum::PENDING,
+                QuoteStatusEnum::RESPONDED,
+                QuoteStatusEnum::ANALYZED,
+            ])
             ->pluck(Quote::ID)
             ->toArray();
     }
