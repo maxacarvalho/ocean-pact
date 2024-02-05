@@ -20,8 +20,9 @@
 8. Compile os arquivo do front-end com o comando `docker-compose exec node npm run build`
 9. Rode as migrations com o comando `docker-compose exec app php artisan migrate`
 10. Crie um usuário para acesso `docker-compose exec app php artisan make:filament-user`
-11. Adicione o domínio `oceanpact.test` no arquivo `/etc/hosts` apontando para o IP `127.0.0.1`
-12. Acesse o sistema em `https://oceanpact.test`
+11. Gere a APP_KEY com o comando `docker-compose exec app php artisan key:generate`
+12. Adicione o domínio `oceanpact.test` no arquivo `/etc/hosts` apontando para o IP `127.0.0.1`
+13. Acesse o sistema em `https://oceanpact.test`
 
 #### Arquivo .npmrc
 ```
