@@ -39,6 +39,7 @@ class CreateAndSendSupplierInvitationAction
                     $supplier->name,
                     $quote->company->business_name,
                     $quote->quote_number,
+                    $quote->proposal_number,
                     $url
                 )
             );

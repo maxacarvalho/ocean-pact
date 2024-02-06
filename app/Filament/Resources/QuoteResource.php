@@ -316,6 +316,11 @@ class QuoteResource extends Resource
                 ->sortable()
                 ->searchable(),
 
+            TextColumn::make(Quote::RELATION_SUPPLIER.'.'.Supplier::STORE)
+                ->label(Str::formatTitle(__('quote.company_code_branch')))
+                ->sortable()
+                ->searchable(),
+
             TextColumn::make(Quote::QUOTE_NUMBER)
                 ->label(Str::formatTitle(__('quote.quote_number')))
                 ->icon(function () {

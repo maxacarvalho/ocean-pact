@@ -54,7 +54,7 @@ class SupplierQuote extends Component implements HasForms, HasTable
     {
         return $table
             ->heading($this->supplierName)
-            ->description(Str::ucfirst(__('quote.quote_version', ['version' => $this->quote->proposal_number])))
+            ->description(Str::ucfirst(__('quote.quote_proposal', ['version' => $this->quote->proposal_number])))
             ->query(fn (): Builder => QuoteItem::query()->where(QuoteItem::QUOTE_ID, $this->quoteId))
             ->queryStringIdentifier("supplier-quote-{$this->quoteId}")
             ->defaultSort(QuoteItem::ITEM)

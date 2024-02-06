@@ -52,4 +52,5 @@ return [
     ],
     'validation_duplicated_quote_for_company' => 'a quote from company :company_code-:company_code_branch, with number :quote_number and version :proposal_number, was already send to the supplier :supplier.',
     'quote_version' => 'version :version',
+    'quote_proposal' => 'proposal :version'
 ];

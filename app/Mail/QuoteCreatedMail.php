@@ -18,6 +18,7 @@ class QuoteCreatedMail extends Mailable implements ShouldQueue
         public readonly string $supplier_name,
         public readonly string $company_business_name,
         public readonly string $quote_number,
+        public readonly string $quote_version,
         public readonly string $url
     ) {
     }
@@ -40,6 +41,7 @@ class QuoteCreatedMail extends Mailable implements ShouldQueue
                 'url' => $this->url,
                 'company_name' => $this->company_business_name,
                 'quote' => Str::ucfirst(__('invitation.quote_number', ['quote_number' => $this->quote_number])),
+                'quote_version' => Str::ucfirst(__('invitation.quote_number', ['quote_number' => $this->quote_version])),
             ],
         );
     }
