@@ -67,6 +67,7 @@ class PredictedPurchaseRequest extends Component implements HasActions, HasForms
         $this->predictedPurchaseRequestCount = $this->getTableQuery()->count();
 
         $this->form->fill();
+        $this->loadProducts();
     }
 
     public function render(): View|Application|Factory
