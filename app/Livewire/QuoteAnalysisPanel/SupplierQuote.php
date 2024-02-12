@@ -53,8 +53,18 @@ class SupplierQuote extends Component implements HasForms, HasTable
     public function table(Table $table): Table
     {
         return $table
-            ->heading($this->supplierName)
-            ->description(Str::ucfirst(__('quote.quote_version', ['version' => $this->quote->proposal_number])))
+            ->header(
+                view('livewire.quote-analysis-panel.supplier-quote.supplier-quote-table-header', [
+                    'supplierName' => $this->supplierName,
+                    'proposal' => $this->quote->proposal_number,
+                    'statusColor' => match ($this->quoteStatus) {
+                        QuoteStatusEnum::PENDING => 'warning',
+                        QuoteStatusEnum::RESPONDED => 'success',
+                        default => 'gray',
+                    },
+                    'statusLabel' => $this->quoteStatus->getLabel(),
+                ])
+            )
             ->query(fn (): Builder => QuoteItem::query()->where(QuoteItem::QUOTE_ID, $this->quoteId))
             ->queryStringIdentifier("supplier-quote-{$this->quoteId}")
             ->defaultSort(QuoteItem::ITEM)
@@ -90,7 +100,7 @@ class SupplierQuote extends Component implements HasForms, HasTable
 
     public function canRequestNewProposal(): bool
     {
-        return !$this->quoteStatus->equals(QuoteStatusEnum::PROPOSAL);
+        return $this->quoteStatus->equals(QuoteStatusEnum::RESPONDED);
     }
 
     public function requestNewOfferConfirmModal(): void
