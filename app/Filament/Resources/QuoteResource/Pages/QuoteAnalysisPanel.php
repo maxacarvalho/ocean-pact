@@ -12,6 +12,7 @@ use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Collection;
 use Livewire\Attributes\Locked;
+use Livewire\Attributes\On;
 
 class QuoteAnalysisPanel extends Page
 {
@@ -30,6 +31,12 @@ class QuoteAnalysisPanel extends Page
         $this->quoteNumber = $quoteNumber;
         $this->quoteIds = $this->getQuoteIds();
         $this->quoteItems = $this->getQuoteItems();
+    }
+
+    #[On('new-supplier-added-to-quote')]
+    public function newSupplierAddedToQuote(): void
+    {
+        $this->quoteIds = $this->getQuoteIds();
     }
 
     public function getTitle(): Htmlable|string

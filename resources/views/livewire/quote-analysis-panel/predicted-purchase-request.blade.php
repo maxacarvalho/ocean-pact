@@ -49,9 +49,7 @@
                         <x-slot name="footer"><p></p></x-slot>
                     </x-filament::modal>
 
-                    <x-filament::button wire:click="addNewSupplierToQuote">
-                        {{ Str::ucfirst(__('quote_analysis_panel.add_new_supplier')) }}
-                    </x-filament::button>
+                    {{ $this->addNewSupplierToQuoteAction() }}
                 </div>
             </div>
         @endif

@@ -52,5 +52,5 @@ return [
         'error_creating_quote' => 'houve um erro ao criar a cotação.',
     ],
     'validation_duplicated_quote_for_company' => 'uma cotação da empresa :company_code-:company_code_branch, com o número :quote_number e versão :proposal_number, já foi enviada ao fornecedor :supplier.',
-    'quote_version' => 'versão :version',
+    'quote_proposal' => 'proposta :proposal',
 ];

@@ -3,6 +3,7 @@
 namespace App\Livewire\QuoteAnalysisPanel;
 
 use App\Actions\QuotesPortal\AcceptPredictedPurchaseRequestAction;
+use App\Actions\QuotesPortal\AddNewSupplierToQuoteAction;
 use App\Data\QuotesPortal\PredictedPurchaseRequestData;
 use App\Exceptions\QuotesPortal\MissingPredictedPurchaseRequestItemsException;
 use App\Exceptions\QuotesPortal\PredictedPurchaseRequestAlreadyAcceptedException;
@@ -427,9 +428,60 @@ class PredictedPurchaseRequest extends Component implements HasActions, HasForms
         //
     }
 
+    public function addNewSupplierToQuoteAction(): Action
+    {
+        return Action::make('addNewSupplierToQuoteAction')
+            ->label(Str::ucfirst(__('quote_analysis_panel.add_new_supplier')))
+            ->requiresConfirmation()
+            ->form([
+                Select::make('newSupplier')
+                    ->label(Str::ucfirst(__('supplier.name')))
+                    ->required()
+                    ->selectablePlaceholder(false)
+                    ->searchable()
+                    ->getSearchResultsUsing(fn (string $search): array => Supplier::query()
+                        ->whereNotIn(Supplier::ID, $this->getIncludedSupplierIds())
+                        ->where(function (\Illuminate\Database\Eloquent\Builder $query) use ($search) {
+                            $query->where(Supplier::NAME, 'like', '%'.$search.'%')
+                                ->orWhere(Supplier::BUSINESS_NAME, 'like', '%'.$search.'%')
+                                ->orWhere(Supplier::CODE, 'like', '%'.$search.'%');
+                        })
+                        ->orderBy(Supplier::NAME)
+                        ->pluck(Supplier::NAME, Supplier::ID)
+                        ->toArray()
+                    )
+                    ->options(
+                        fn () => Supplier::query()
+                            ->whereNotIn(Supplier::ID, $this->getIncludedSupplierIds())
+                            ->orderBy(Supplier::NAME)
+                            ->pluck(Supplier::NAME, Supplier::ID)
+                    ),
+            ])
+            ->action(function (array $data, AddNewSupplierToQuoteAction $addNewSupplierToQuoteAction): void {
+                $newSupplierId = $data['newSupplier'];
+
+                $addNewSupplierToQuoteAction->handle(
+                    $this->companyId,
+                    $this->quoteNumber,
+                    $newSupplierId
+                );
+
+                $this->dispatch('new-supplier-added-to-quote');
+            });
+    }
+
     public function addNewSupplierToQuote()
     {
         //
+    }
+
+    private function getIncludedSupplierIds(): array
+    {
+        return Quote::query()
+            ->where(Quote::COMPANY_ID, $this->companyId)
+            ->where(Quote::QUOTE_NUMBER, $this->quoteNumber)
+            ->pluck(Quote::SUPPLIER_ID)
+            ->toArray();
     }
 
     private function getTableQuery(): \Illuminate\Database\Eloquent\Builder
