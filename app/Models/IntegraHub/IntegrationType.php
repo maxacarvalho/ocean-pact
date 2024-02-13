@@ -29,7 +29,8 @@ use Illuminate\Support\Str;
  * @property Carbon|null                             $created_at
  * @property Carbon|null                             $updated_at
  * Relations
- * @property-read Company|null                       $company
+ * @property-read  Company|null                      $company
+ * @property-read  IntegrationTypeFrequency|null     $frequency
  * @property-read  IntegrationTypeField[]|Collection $fields
  * @property-read  Payload[]|Collection              $payloads
  */
@@ -55,6 +56,7 @@ class IntegrationType extends Model
     // Relations
     public const RELATION_COMPANY = 'company';
     public const RELATION_FIELDS = 'fields';
+    public const RELATION_FREQUENCY = 'frequency';
     public const RELATION_PAYLOADS = 'payloads';
 
     protected $table = self::TABLE_NAME;
@@ -91,6 +93,11 @@ class IntegrationType extends Model
     public function fields(): HasMany
     {
         return $this->hasMany(IntegrationTypeField::class);
+    }
+
+    public function frequency(): BelongsTo
+    {
+        return $this->belongsTo(IntegrationTypeFrequency::class);
     }
 
     public function payloads(): HasMany
