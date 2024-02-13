@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 
@@ -30,8 +31,8 @@ use Illuminate\Support\Str;
  * @property Carbon|null                             $updated_at
  * Relations
  * @property-read  Company|null                      $company
- * @property-read  IntegrationTypeFrequency|null     $frequency
  * @property-read  IntegrationTypeField[]|Collection $fields
+ * @property-read  IntegrationTypeFrequency|null     $frequency
  * @property-read  Payload[]|Collection              $payloads
  */
 class IntegrationType extends Model
@@ -95,9 +96,9 @@ class IntegrationType extends Model
         return $this->hasMany(IntegrationTypeField::class);
     }
 
-    public function frequency(): BelongsTo
+    public function frequency(): HasOne
     {
-        return $this->belongsTo(IntegrationTypeFrequency::class);
+        return $this->hasOne(IntegrationTypeFrequency::class);
     }
 
     public function payloads(): HasMany

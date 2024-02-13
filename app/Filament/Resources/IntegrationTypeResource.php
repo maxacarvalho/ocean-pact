@@ -11,13 +11,16 @@ use App\Filament\Resources\IntegrationTypeResource\RelationManagers\FieldsRelati
 use App\Models\IntegraHub\IntegrationType;
 use App\Models\QuotesPortal\Company;
 use App\Utils\Str;
+use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\KeyValue;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\TimePicker;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
 use Filament\Resources\Resource;
 use Filament\Tables\Actions\DeleteBulkAction as TableDeleteBulkAction;
 use Filament\Tables\Actions\EditAction as TableEditAction;
@@ -111,6 +114,36 @@ class IntegrationTypeResource extends Resource
                             ->label(Str::formatTitle(__('integration_type.allows_duplicates')))
                             ->default(fn () => false),
                     ]),
+
+                Fieldset::make(Str::formatTitle(__('integration_type.frequency')))
+                    ->visible(fn () => Auth::user()->isSuperAdmin())
+                    ->relationship(
+                        IntegrationType::RELATION_FREQUENCY
+                    )
+                    ->columns(5)
+                    ->schema([
+                        // add fields to be saved in the 'settings' array in the database
+                        Select::make('settings.frequency')
+                            ->options([
+                                'weekly' => 'Weekly',
+                                'daily' => 'Daily',
+                                // 'custom' => 'Custom',
+                            ])
+                            ->live(),
+                        CheckboxList::make('settings.day')
+                            ->hidden(fn (Get $get): bool => $get('settings.frequency') !== 'weekly')
+                            ->options([
+                                0 => 'Dom',
+                                1 => 'Seg',
+                                2 => 'Ter',
+                                3 => 'Qua',
+                                4 => 'Qui',
+                                5 => 'Sex',
+                                6 => 'Sab',
+                            ])
+                            ->columns(2),
+                        TimePicker::make('settings.at'),
+                    ])
             ]);
     }
 

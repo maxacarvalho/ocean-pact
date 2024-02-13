@@ -15,7 +15,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property-read IntegrationType $integrationType
  */
 class IntegrationTypeFrequency extends Model {
-    public const TABLE_NAME = 'integration_type_fields';
+    public const TABLE_NAME = 'integration_type_frequencies';
     public const ID = 'id';
     public const INTEGRATION_TYPE_ID = 'integration_type_id';
     public const SETTINGS = 'settings';
@@ -31,7 +31,7 @@ class IntegrationTypeFrequency extends Model {
     ];
 
     protected $casts = [
-        self::SETTINGS => 'array',
+        self::SETTINGS => 'json',
     ];
 
     public function integrationType(): BelongsTo
