@@ -20,17 +20,36 @@ class AddNewSupplierToQuoteAction
             ->firstOrFail();
 
         $newQuote = $quoteSample->replicate();
-        $newQuote->supplier_id = $newSupplierId;
-        $newQuote->proposal_number = 1;
-        $newQuote->status = QuoteStatusEnum::PENDING;
-        $newQuote->save();
+
+        $newQuote->forceFill([
+            Quote::PROPOSAL_NUMBER => 1,
+            Quote::SUPPLIER_ID => $newSupplierId,
+            Quote::STATUS => QuoteStatusEnum::PENDING,
+            Quote::COMMENTS => null,
+            Quote::EXPENSES => 0,
+            Quote::FREIGHT_COST => 0,
+            Quote::FREIGHT_TYPE => null,
+            Quote::REPLACED_BY => null,
+            Quote::CREATED_AT => now(),
+            Quote::UPDATED_AT => now(),
+        ])->save();
 
         $quoteSample->load(Quote::RELATION_ITEMS);
 
         /** @var QuoteItem $item */
         foreach ($quoteSample->items as $item) {
-            $itemData = array_merge($item->toArray(), [QuoteItem::ID => $newQuote->id]);
-            unset($itemData[QuoteItem::ID], $itemData[QuoteItem::CREATED_AT], $itemData[QuoteItem::UPDATED_AT]);
+            $itemData = $item->only([
+                QuoteItem::PRODUCT_ID,
+                QuoteItem::DESCRIPTION,
+                QuoteItem::MEASUREMENT_UNIT,
+                QuoteItem::ITEM,
+                QuoteItem::QUANTITY,
+                QuoteItem::CURRENCY,
+                QuoteItem::UNIT_PRICE,
+                QuoteItem::ICMS,
+                QuoteItem::IPI,
+            ]);
+            $itemData[QuoteItem::UNIT_PRICE] = 0;
 
             $newQuote->items()->create($itemData);
         }
