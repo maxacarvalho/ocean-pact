@@ -2,7 +2,7 @@
 
 namespace App\Livewire\QuoteAnalysisPanel;
 
-use App\Actions\QuotesPortal\RequestNewOfferAction;
+use App\Actions\QuotesPortal\RequestNewProposalAction;
 use App\Enums\QuotesPortal\QuoteStatusEnum;
 use App\Models\QuotesPortal\Quote;
 use App\Models\QuotesPortal\QuoteItem;
@@ -103,24 +103,18 @@ class SupplierQuote extends Component implements HasForms, HasTable
         return $this->quoteStatus->equals(QuoteStatusEnum::RESPONDED);
     }
 
-    public function requestNewOfferConfirmModal(): void
+    public function requestNewProposalConfirmationModal(): void
     {
-        $this->dispatch('open-modal', id: "request-new-offer-modal-{$this->quoteId}");
+        $this->dispatch('open-modal', id: "request-new-proposal-confirmation-modal-{$this->quoteId}");
     }
 
-    public function requestNewOfferExecute(): void
+    public function requestNewProposal(RequestNewProposalAction $requestNewProposalAction): void
     {
-        (new RequestNewOfferAction())->handle($this->quoteId);
+        $requestNewProposalAction->handle($this->quoteId);
 
-        Quote::query()
-            ->where(Quote::ID, $this->quoteId)
-            ->update([
-                Quote::STATUS => QuoteStatusEnum::PROPOSAL,
-            ]);
+        $this->dispatch('newQuoteProposalRequested');
 
-        $this->quoteStatus = QuoteStatusEnum::PROPOSAL;
-
-        $this->dispatch('close-modal', id: "request-new-offer-modal-{$this->quoteId}");
+        $this->dispatch('close-modal', id: "request-new-proposal-confirmation-modal-{$this->quoteId}");
     }
 
     public function requestContact()

@@ -52,4 +52,12 @@ return [
     ],
     'validation_duplicated_quote_for_company' => 'a quote from company :company_code-:company_code_branch, with number :quote_number and version :proposal_number, was already send to the supplier :supplier.',
     'quote_proposal' => 'proposal :proposal',
+    'emails' => [
+        'greetings' => 'hello, :name',
+        'click_below_to_reply_the_quote' => 'click below to reply the quote',
+        'reply_quote' => 'reply quote',
+        'quote_number' => 'quote: :quote_number',
+        'new_quote_ready_for_reply' => 'new quote ready for reply - :company',
+        'new_quote_proposal_requested' => 'new proposal for quote :quote requested - :company',
+    ],
 ];

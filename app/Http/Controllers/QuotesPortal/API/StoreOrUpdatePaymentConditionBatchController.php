@@ -22,7 +22,7 @@ class StoreOrUpdatePaymentConditionBatchController extends Controller
         $payload = $request->validated();
 
         try {
-            $paymentConditionInputCollection = PaymentConditionData::collection($payload);
+            $paymentConditionInputCollection = PaymentConditionData::collect($payload);
 
             $updatedOrCreatedPaymentConditions = [];
 
@@ -31,7 +31,7 @@ class StoreOrUpdatePaymentConditionBatchController extends Controller
                 $updatedOrCreatedPaymentConditions[] = $updateOrCreatePaymentConditionAction->handle($paymentConditionInput);
             }
 
-            return PaymentConditionData::collection($updatedOrCreatedPaymentConditions);
+            return PaymentConditionData::collect($updatedOrCreatedPaymentConditions);
         } catch (Throwable $exception) {
             return response()->json([
                 'title' => __('general.unexpected_error'),

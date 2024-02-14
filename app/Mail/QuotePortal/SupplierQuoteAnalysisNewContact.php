@@ -1,8 +1,7 @@
 <?php
 
-namespace App\Mail;
+namespace App\Mail\QuotePortal;
 
-use App\Utils\Str;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;

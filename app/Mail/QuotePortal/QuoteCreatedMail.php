@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Mail;
+namespace App\Mail\QuotePortal;
 
 use App\Utils\Str;
 use Illuminate\Bus\Queueable;
@@ -20,6 +20,7 @@ class QuoteCreatedMail extends Mailable implements ShouldQueue
         public readonly string $quote_number,
         public readonly string $url
     ) {
+        //
     }
 
     public function envelope(): Envelope
