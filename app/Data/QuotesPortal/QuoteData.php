@@ -78,7 +78,7 @@ class QuoteData extends Data
             paymentCondition: Lazy::whenLoaded(Quote::RELATION_PAYMENT_CONDITION, $quote, static fn () => PaymentConditionData::from($quote->paymentCondition)),
             buyer: Lazy::whenLoaded(Quote::RELATION_BUYER, $quote, static fn () => BuyerData::fromQuote($quote)),
             currency: Lazy::whenLoaded(Quote::RELATION_CURRENCY, $quote, static fn () => CurrencyData::from($quote->currency)),
-            items: Lazy::whenLoaded(Quote::RELATION_ITEMS, $quote, static fn () => QuoteItemData::collection($quote->items)),
+            items: Lazy::whenLoaded(Quote::RELATION_ITEMS, $quote, static fn () => QuoteItemData::collect($quote->items)),
         );
     }
 

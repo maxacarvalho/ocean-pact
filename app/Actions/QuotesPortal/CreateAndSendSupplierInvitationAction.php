@@ -3,7 +3,7 @@
 namespace App\Actions\QuotesPortal;
 
 use App\Enums\QuotesPortal\InvitationStatusEnum;
-use App\Mail\QuoteCreatedMail;
+use App\Mail\QuotePortal\QuoteCreatedMail;
 use App\Models\QuotesPortal\Quote;
 use App\Models\QuotesPortal\SupplierInvitation;
 use App\Utils\Str;

@@ -2,8 +2,8 @@
 
 namespace App\Actions\QuotesPortal;
 
-use App\Mail\QuoteCreatedMail;
-use App\Mail\UserInvitationMail;
+use App\Mail\QuotePortal\QuoteCreatedMail;
+use App\Mail\QuotePortal\UserInvitationMail;
 use App\Models\QuotesPortal\Quote;
 use App\Models\QuotesPortal\Supplier;
 use App\Models\QuotesPortal\UserInvitation;

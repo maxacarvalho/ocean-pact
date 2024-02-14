@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Mail;
+namespace App\Mail\QuotePortal;
 
 use App\Utils\Str;
 use Illuminate\Bus\Queueable;

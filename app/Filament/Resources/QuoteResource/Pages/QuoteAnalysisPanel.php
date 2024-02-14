@@ -33,8 +33,14 @@ class QuoteAnalysisPanel extends Page
         $this->quoteItems = $this->getQuoteItems();
     }
 
-    #[On('new-supplier-added-to-quote')]
+    #[On('newSupplierAddedToQuote')]
     public function newSupplierAddedToQuote(): void
+    {
+        $this->quoteIds = $this->getQuoteIds();
+    }
+
+    #[On('newQuoteProposalRequested')]
+    public function newQuoteProposalRequested(): void
     {
         $this->quoteIds = $this->getQuoteIds();
     }

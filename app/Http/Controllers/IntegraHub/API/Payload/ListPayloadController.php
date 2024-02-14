@@ -32,7 +32,7 @@ class ListPayloadController extends Controller
             ->paginate($perPage)
             ->appends($request->query());
 
-        return PayloadData::collection(
+        return PayloadData::collect(
             $payloads
         );
     }

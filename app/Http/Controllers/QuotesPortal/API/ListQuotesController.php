@@ -40,6 +40,6 @@ class ListQuotesController extends Controller
             ->paginate(100)
             ->appends($request->query());
 
-        return QuoteData::collection($quotes);
+        return QuoteData::collect($quotes);
     }
 }

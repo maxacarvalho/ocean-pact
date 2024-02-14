@@ -466,7 +466,7 @@ class PredictedPurchaseRequest extends Component implements HasActions, HasForms
                     $newSupplierId
                 );
 
-                $this->dispatch('new-supplier-added-to-quote');
+                $this->dispatch('newSupplierAddedToQuote');
             });
     }
 
