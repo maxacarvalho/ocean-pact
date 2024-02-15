@@ -51,14 +51,13 @@
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.8",
         "fakerphp/faker": "^1.9.1",
-        "filament/upgrade": "^3.0-stable",
         "laravel/pint": "^1.4",
         "mockery/mockery": "^1.4.4",
         "nunomaduro/collision": "^7.0",
         "pestphp/pest": "^2.6",
         "phpunit/phpunit": "^10.0",
         "spatie/laravel-ignition": "^2.0",
-        "spatie/laravel-ray": "^1.33"
+        "spatie/laravel-ray": "^1.35"
     },
     "autoload": {
         "psr-4": {
