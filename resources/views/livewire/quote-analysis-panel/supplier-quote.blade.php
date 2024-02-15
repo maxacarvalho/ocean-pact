@@ -41,7 +41,35 @@
                     </x-slot>
                 </x-filament::modal>
 
-                <x-filament::button wire:click="requestContact">
+                <x-filament::modal
+                    id="request-contact-modal-{{ $this->quoteId }}"
+                    alignment="center"
+                    icon="fas-envelope"
+                    footer-actions-alignment="center"
+                    width="md"
+                >
+                    <x-slot name="heading">
+                        {{ Str::ucfirst(__('quote_analysis_panel.request_contact_modal_header')) }}
+                    </x-slot>
+
+                    <x-slot name="description">
+                        <form wire:submit="requestContact">
+                            {{ $this->contactRequestForm }}
+                        </form>
+                    </x-slot>
+
+                    <x-slot name="footerActions">
+                        <x-filament::button x-on:click="close()" color="gray">
+                            {{ Str::ucfirst(__('quote_analysis_panel.request_contact_modal_cancel_btn')) }}
+                        </x-filament::button>
+
+                        <x-filament::button wire:click="requestContact">
+                            {{ Str::ucfirst(__('quote_analysis_panel.request_contact_modal_send_btn')) }}
+                        </x-filament::button>
+                    </x-slot>
+                </x-filament::modal>
+
+                <x-filament::button wire:click="openRequestContactModal">
                     {{ Str::ucfirst(__('quote_analysis_panel.request_contact')) }}
                 </x-filament::button>
             </div>

@@ -2,13 +2,17 @@
 
 namespace App\Livewire\QuoteAnalysisPanel;
 
+use App\Actions\QuotesPortal\CreateQuoteContactRequestAction;
 use App\Actions\QuotesPortal\RequestNewProposalAction;
 use App\Enums\QuotesPortal\QuoteStatusEnum;
 use App\Models\QuotesPortal\Quote;
 use App\Models\QuotesPortal\QuoteItem;
 use App\Utils\Str;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
+use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Tables\Columns\CheckboxColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Concerns\InteractsWithTable;
@@ -22,6 +26,9 @@ use Illuminate\Support\Carbon;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
 
+/**
+ * @property-read Form $contactRequestForm
+ */
 class SupplierQuote extends Component implements HasForms, HasTable
 {
     use InteractsWithForms;
@@ -33,6 +40,7 @@ class SupplierQuote extends Component implements HasForms, HasTable
     public QuoteStatusEnum $quoteStatus;
     public bool $isQuoteBuyerOwner;
     public string $supplierName;
+    public ?array $contactRequestFormData = [];
 
     public function mount(int $quoteId, bool $isQuoteBuyerOwner): void
     {
@@ -117,9 +125,46 @@ class SupplierQuote extends Component implements HasForms, HasTable
         $this->dispatch('close-modal', id: "request-new-proposal-confirmation-modal-{$this->quoteId}");
     }
 
-    public function requestContact()
+    protected function getForms(): array
     {
+        return [
+            'contactRequestForm',
+        ];
+    }
 
+    public function contactRequestForm(Form $form): Form
+    {
+        return $form
+            ->schema([
+                Textarea::make('body')
+                    ->label(Str::ucfirst(__('quote_analysis_panel.request_contact_form_body_label')))
+                    ->required()
+                    ->rows(5)
+                    ->autosize(),
+            ])
+            ->statePath('contactRequestFormData');
+    }
+
+    public function openRequestContactModal(): void
+    {
+        $this->dispatch('open-modal', id: "request-contact-modal-{$this->quoteId}");
+    }
+
+    public function requestContact(CreateQuoteContactRequestAction $createQuoteContactRequestAction): void
+    {
+        /** @var array{body: string} $data */
+        $data = $this->contactRequestForm->getState();
+
+        $createQuoteContactRequestAction->handle($this->quoteId, auth()->id(), $data['body']);
+
+        $this->contactRequestForm->fill();
+
+        Notification::make()
+            ->title(Str::ucfirst(__('quote_analysis_panel.request_contact_sent_successfully')))
+            ->success()
+            ->send();
+
+        $this->dispatch('close-modal', id: "request-contact-modal-{$this->quoteId}");
     }
 
     private function getQuote(int $quoteId): Quote

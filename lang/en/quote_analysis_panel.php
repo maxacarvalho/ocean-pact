@@ -27,4 +27,9 @@ return [
     'request_new_proposal_modal_description' => 'this action will invalidate the current proposal. This action cannot be undone. Are you sure?',
     'request_new_proposal_modal_cancel_btn' => 'cancel',
     'request_new_proposal_modal_confirm_btn' => 'confirm',
+    'request_contact_modal_header' => 'contact request',
+    'request_contact_modal_cancel_btn' => 'cancel',
+    'request_contact_modal_send_btn' => 'send',
+    'request_contact_form_body_label' => 'message',
+    'request_contact_sent_successfully' => 'contact request sent successfully',
 ];

@@ -27,4 +27,9 @@ return [
     'request_new_proposal_modal_description' => 'a solicitação de uma nova proposta irá invalidar a proposta atual. Essa ação não poderá ser desfeita. Deseja continuar?',
     'request_new_proposal_modal_cancel_btn' => 'cancelar',
     'request_new_proposal_modal_confirm_btn' => 'confirmar',
+    'request_contact_modal_header' => 'solicitação de contato',
+    'request_contact_modal_cancel_btn' => 'cancelar',
+    'request_contact_modal_send_btn' => 'enviar',
+    'request_contact_form_body_label' => 'mensagem',
+    'request_contact_sent_successfully' => 'solicitação de contato enviada com sucesso',
 ];
