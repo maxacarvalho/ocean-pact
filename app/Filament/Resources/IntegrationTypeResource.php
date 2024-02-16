@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Enums\IntegraHub\IntegrationHandlingTypeEnum;
 use App\Enums\IntegraHub\IntegrationTypeEnum;
+use App\Enums\IntegraHub\IntegrationTypeSchedulingOptionsEnum;
 use App\Filament\Resources\IntegrationTypeResource\Pages\CreateIntegrationType;
 use App\Filament\Resources\IntegrationTypeResource\Pages\EditIntegrationType;
 use App\Filament\Resources\IntegrationTypeResource\Pages\ListIntegrationTypes;
@@ -121,19 +122,15 @@ class IntegrationTypeResource extends Resource
                     ->schema([
                         Select::make('scheduling_settings.frequency')
                             ->label(Str::formatTitle(__('integration_type.scheduling_settings.frequency')))
-                            ->options([
-                                'daily' => 'Daily',
-                                'hourly' => 'Hourly',
-                                'custom' => 'Custom',
-                            ])
+                            ->options(IntegrationTypeSchedulingOptionsEnum::class)
                             ->live(),
                         TextInput::make('scheduling_settings.expression')
                             ->label(Str::formatTitle(__('integration_type.scheduling_settings.expression')))
-                            ->visible(fn (Get $get) => $get('scheduling_settings.frequency') === 'custom')
+                            ->visible(fn (Get $get) => $get('scheduling_settings.frequency') === IntegrationTypeSchedulingOptionsEnum::custom->value)
                             ->rules([new CronExpressionRule()]),
                         TimePicker::make('scheduling_settings.time')
                             ->label(Str::formatTitle(__('integration_type.scheduling_settings.time')))
-                            ->visible(fn (Get $get) => $get('scheduling_settings.frequency') === 'daily'),
+                            ->visible(fn (Get $get) => $get('scheduling_settings.frequency') === IntegrationTypeSchedulingOptionsEnum::daily->value),
                     ])
             ]);
     }

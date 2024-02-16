@@ -28,9 +28,9 @@ return [
     'parameter' => 'parâmetro',
     'scheduling_settings' => 'configurações de agendamento',
     'scheduling_settings.frequency' => 'frequência',
-    'scheduling_settings.frequency.daily' => 'diariamente',
-    'scheduling_settings.frequency.hourly' => 'hora em hora',
-    'scheduling_settings.frequency.custom' => 'personalizado',
+    'scheduling_settings.daily' => 'diariamente',
+    'scheduling_settings.hourly' => 'hora em hora',
+    'scheduling_settings.custom' => 'personalizado',
     'scheduling_settings.expression' => 'expressão cron',
     'scheduling_settings.time' => 'hora',
 ];

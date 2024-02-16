@@ -28,9 +28,9 @@ return [
     'parameter' => 'parameter',
     'scheduling_settings' => 'scheduling settings',
     'scheduling_settings.frequency' => 'frequency',
-    'scheduling_settings.frequency.daily' => 'daily',
-    'scheduling_settings.frequency.hourly' => 'hourly',
-    'scheduling_settings.frequency.custom' => 'custom',
+    'scheduling_settings.daily' => 'daily',
+    'scheduling_settings.hourly' => 'hourly',
+    'scheduling_settings.custom' => 'custom',
     'scheduling_settings.expression' => 'cron expression',
     'scheduling_settings.time' => 'time',
 ];
