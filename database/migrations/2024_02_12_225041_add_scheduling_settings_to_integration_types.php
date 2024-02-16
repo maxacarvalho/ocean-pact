@@ -11,11 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('integration_type_frequencies', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('integration_type_id')->constrained();
-            $table->json('settings');
-            $table->timestamps();
+        Schema::table('integration_types', function (Blueprint $table) {
+            $table->json('scheduling_settings')->nullable()->after('path_parameters');
         });
     }
 
@@ -24,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('integration_type_frequencies');
+        Schema::table('integration_types', function (Blueprint $table) {
+            $table->dropColumn('scheduling_settings');
+        });
     }
 };
