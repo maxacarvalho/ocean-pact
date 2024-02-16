@@ -10,6 +10,7 @@ use App\Filament\Resources\IntegrationTypeResource\Pages\ListIntegrationTypes;
 use App\Filament\Resources\IntegrationTypeResource\RelationManagers\FieldsRelationManager;
 use App\Models\IntegraHub\IntegrationType;
 use App\Models\QuotesPortal\Company;
+use App\Rules\CronExpressionRule;
 use App\Utils\Str;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\KeyValue;
@@ -128,7 +129,8 @@ class IntegrationTypeResource extends Resource
                             ->live(),
                         TextInput::make('scheduling_settings.expression')
                             ->label(Str::formatTitle(__('integration_type.scheduling_settings.expression')))
-                            ->visible(fn (Get $get) => $get('scheduling_settings.frequency') === 'custom'),
+                            ->visible(fn (Get $get) => $get('scheduling_settings.frequency') === 'custom')
+                            ->rules([new CronExpressionRule()]),
                         TimePicker::make('scheduling_settings.time')
                             ->label(Str::formatTitle(__('integration_type.scheduling_settings.time')))
                             ->visible(fn (Get $get) => $get('scheduling_settings.frequency') === 'daily'),
