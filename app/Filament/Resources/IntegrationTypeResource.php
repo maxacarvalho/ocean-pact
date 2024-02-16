@@ -11,7 +11,6 @@ use App\Filament\Resources\IntegrationTypeResource\RelationManagers\FieldsRelati
 use App\Models\IntegraHub\IntegrationType;
 use App\Models\QuotesPortal\Company;
 use App\Utils\Str;
-use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\KeyValue;
 use Filament\Forms\Components\Repeater;
@@ -115,34 +114,24 @@ class IntegrationTypeResource extends Resource
                             ->default(fn () => false),
                     ]),
 
-                Fieldset::make(Str::formatTitle(__('integration_type.frequency')))
+                Fieldset::make(Str::formatTitle(__('integration_type.scheduling_settings')))
                     ->visible(fn () => Auth::user()->isSuperAdmin())
-                    ->relationship(
-                        IntegrationType::RELATION_FREQUENCY
-                    )
                     ->columns(5)
                     ->schema([
-                        // add fields to be saved in the 'settings' array in the database
-                        Select::make('settings.frequency')
+                        Select::make('scheduling_settings.frequency')
+                            ->label(Str::formatTitle(__('integration_type.scheduling_settings.frequency')))
                             ->options([
-                                'weekly' => 'Weekly',
                                 'daily' => 'Daily',
-                                // 'custom' => 'Custom',
+                                'hourly' => 'Hourly',
+                                'custom' => 'Custom',
                             ])
                             ->live(),
-                        CheckboxList::make('settings.day')
-                            ->hidden(fn (Get $get): bool => $get('settings.frequency') !== 'weekly')
-                            ->options([
-                                0 => 'Dom',
-                                1 => 'Seg',
-                                2 => 'Ter',
-                                3 => 'Qua',
-                                4 => 'Qui',
-                                5 => 'Sex',
-                                6 => 'Sab',
-                            ])
-                            ->columns(2),
-                        TimePicker::make('settings.at'),
+                        TextInput::make('scheduling_settings.expression')
+                            ->label(Str::formatTitle(__('integration_type.scheduling_settings.expression')))
+                            ->visible(fn (Get $get) => $get('scheduling_settings.frequency') === 'custom'),
+                        TimePicker::make('scheduling_settings.time')
+                            ->label(Str::formatTitle(__('integration_type.scheduling_settings.time')))
+                            ->visible(fn (Get $get) => $get('scheduling_settings.frequency') === 'daily'),
                     ])
             ]);
     }

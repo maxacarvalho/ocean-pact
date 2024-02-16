@@ -26,4 +26,11 @@ return [
     'fetch' => 'buscar',
     'path_parameters' => 'parâmetros da URL',
     'parameter' => 'parâmetro',
+    'scheduling_settings' => 'configurações de agendamento',
+    'scheduling_settings.frequency' => 'frequência',
+    'scheduling_settings.frequency.daily' => 'diariamente',
+    'scheduling_settings.frequency.hourly' => 'hora em hora',
+    'scheduling_settings.frequency.custom' => 'personalizado',
+    'scheduling_settings.expression' => 'expressão cron',
+    'scheduling_settings.time' => 'hora',
 ];
