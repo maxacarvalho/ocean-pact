@@ -48,8 +48,8 @@ class MoneyCast implements Cast, CastsAttributes
     {
         $currency = 'BRL';
 
-        if (is_string($context[QuoteItem::CURRENCY])) {
-            $currency = $context[QuoteItem::CURRENCY];
+        if (isset($properties[QuoteItem::CURRENCY]) && is_string($properties[QuoteItem::CURRENCY])) {
+            $currency = $properties[QuoteItem::CURRENCY];
         }
 
         return Money::ofMinor(
