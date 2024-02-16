@@ -25,21 +25,21 @@ use Illuminate\Support\Carbon;
  */
 class Product extends Model
 {
-    public const TABLE_NAME = 'products';
-    public const ID = 'id';
-    public const COMPANY_CODE = 'company_code';
-    public const COMPANY_CODE_BRANCH = 'company_code_branch';
-    public const CODE = 'code';
-    public const DESCRIPTION = 'description';
-    public const MEASUREMENT_UNIT = 'measurement_unit';
-    public const LAST_PRICE = 'last_price';
-    public const SMALLEST_PRICE = 'smallest_price';
-    public const SMALLEST_ETA = 'smallest_eta';
-    public const CREATED_AT = 'created_at';
-    public const UPDATED_AT = 'updated_at';
+    public const string TABLE_NAME = 'products';
+    public const string ID = 'id';
+    public const string COMPANY_CODE = 'company_code';
+    public const string COMPANY_CODE_BRANCH = 'company_code_branch';
+    public const string CODE = 'code';
+    public const string DESCRIPTION = 'description';
+    public const string MEASUREMENT_UNIT = 'measurement_unit';
+    public const string LAST_PRICE = 'last_price';
+    public const string SMALLEST_PRICE = 'smallest_price';
+    public const string SMALLEST_ETA = 'smallest_eta';
+    public const string CREATED_AT = 'created_at';
+    public const string UPDATED_AT = 'updated_at';
 
     // Relations
-    public const RELATION_COMPANY = 'company';
+    public const string RELATION_COMPANY = 'company';
 
     protected $table = self::TABLE_NAME;
 

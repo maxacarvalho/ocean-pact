@@ -53,12 +53,10 @@ class Quote extends Model
     public const string ID = 'id';
     public const string PROPOSAL_NUMBER = 'proposal_number';
     public const string COMPANY_ID = 'company_id';
-    public const string COMPANY_CODE = 'company_code';
-    public const string COMPANY_CODE_BRANCH = 'company_code_branch';
-    public const string BUDGET_ID = 'budget_id';
     public const string SUPPLIER_ID = 'supplier_id';
     public const string PAYMENT_CONDITION_ID = 'payment_condition_id';
     public const string BUYER_ID = 'buyer_id';
+    public const string BUDGET_ID = 'budget_id';
     public const string QUOTE_NUMBER = 'quote_number';
     public const string VALID_UNTIL = 'valid_until';
     public const string STATUS = 'status';

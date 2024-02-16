@@ -18,16 +18,16 @@ use Illuminate\Support\Carbon;
  */
 class Currency extends Model
 {
-    public const TABLE_NAME = 'currencies';
-    public const ID = 'id';
-    public const COMPANY_CODE = 'company_code';
-    public const PROTHEUS_CURRENCY_ID = 'protheus_currency_id';
-    public const DESCRIPTION = 'description';
-    public const PROTHEUS_CODE = 'protheus_code';
-    public const PROTHEUS_ACRONYM = 'protheus_acronym';
-    public const ISO_CODE = 'iso_code';
-    public const CREATED_AT = 'created_at';
-    public const UPDATED_AT = 'updated_at';
+    public const string TABLE_NAME = 'currencies';
+    public const string ID = 'id';
+    public const string COMPANY_CODE = 'company_code';
+    public const string PROTHEUS_CURRENCY_ID = 'protheus_currency_id';
+    public const string DESCRIPTION = 'description';
+    public const string PROTHEUS_CODE = 'protheus_code';
+    public const string PROTHEUS_ACRONYM = 'protheus_acronym';
+    public const string ISO_CODE = 'iso_code';
+    public const string CREATED_AT = 'created_at';
+    public const string UPDATED_AT = 'updated_at';
 
     protected $table = self::TABLE_NAME;
 

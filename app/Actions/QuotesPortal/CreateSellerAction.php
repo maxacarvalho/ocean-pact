@@ -2,7 +2,7 @@
 
 namespace App\Actions\QuotesPortal;
 
-use App\Data\QuotesPortal\SellerData;
+use App\Data\QuotesPortal\StoreQuotePayloadData\SellerData;
 use App\Models\Role;
 use App\Models\User;
 use App\Utils\Str;
