@@ -117,7 +117,7 @@ class IntegrationTypeResource extends Resource
                     ]),
 
                 Fieldset::make(Str::formatTitle(__('integration_type.scheduling_settings')))
-                    ->visible(fn () => Auth::user()->isSuperAdmin())
+                    ->visible(fn () => Auth::user()->isSuperAdmin() || Auth::user()->isAdmin())
                     ->columns(5)
                     ->schema([
                         Select::make('scheduling_settings.frequency')
@@ -126,11 +126,17 @@ class IntegrationTypeResource extends Resource
                             ->live(),
                         TextInput::make('scheduling_settings.expression')
                             ->label(Str::formatTitle(__('integration_type.scheduling_settings.expression')))
-                            ->visible(fn (Get $get) => $get('scheduling_settings.frequency') === IntegrationTypeSchedulingOptionsEnum::custom->value)
+                            ->visible(function (Get $get) {
+                                $frequency = IntegrationTypeSchedulingOptionsEnum::from($get('scheduling_settings.frequency'));
+                                return $frequency === IntegrationTypeSchedulingOptionsEnum::custom;
+                            })
                             ->rules([new CronExpressionRule()]),
                         TimePicker::make('scheduling_settings.time')
                             ->label(Str::formatTitle(__('integration_type.scheduling_settings.time')))
-                            ->visible(fn (Get $get) => $get('scheduling_settings.frequency') === IntegrationTypeSchedulingOptionsEnum::daily->value),
+                            ->visible(function (Get $get) {
+                                $frequency = IntegrationTypeSchedulingOptionsEnum::from($get('scheduling_settings.frequency'));
+                                return $frequency === IntegrationTypeSchedulingOptionsEnum::daily;
+                            })
                     ])
             ]);
     }
