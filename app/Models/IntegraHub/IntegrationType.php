@@ -26,10 +26,11 @@ use Illuminate\Support\Str;
  * @property bool                                    $allows_duplicates
  * @property array                                   $headers
  * @property array|null                              $path_parameters
+ * @property array|null                              $scheduling_settings
  * @property Carbon|null                             $created_at
  * @property Carbon|null                             $updated_at
  * Relations
- * @property-read Company|null                       $company
+ * @property-read  Company|null                      $company
  * @property-read  IntegrationTypeField[]|Collection $fields
  * @property-read  Payload[]|Collection              $payloads
  */
@@ -49,6 +50,7 @@ class IntegrationType extends Model
     public const ALLOWS_DUPLICATES = 'allows_duplicates';
     public const HEADERS = 'headers';
     public const PATH_PARAMETERS = 'path_parameters';
+    public const SCHEDULING_SETTINGS = 'scheduling_settings';
     public const CREATED_AT = 'created_at';
     public const UPDATED_AT = 'updated_at';
 
@@ -74,6 +76,7 @@ class IntegrationType extends Model
         self::ALLOWS_DUPLICATES => 'boolean',
         self::HEADERS => 'array',
         self::PATH_PARAMETERS => 'array',
+        self::SCHEDULING_SETTINGS => 'array',
     ];
 
     protected static function booted(): void

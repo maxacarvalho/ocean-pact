@@ -4,20 +4,24 @@ namespace App\Filament\Resources;
 
 use App\Enums\IntegraHub\IntegrationHandlingTypeEnum;
 use App\Enums\IntegraHub\IntegrationTypeEnum;
+use App\Enums\IntegraHub\IntegrationTypeSchedulingOptionsEnum;
 use App\Filament\Resources\IntegrationTypeResource\Pages\CreateIntegrationType;
 use App\Filament\Resources\IntegrationTypeResource\Pages\EditIntegrationType;
 use App\Filament\Resources\IntegrationTypeResource\Pages\ListIntegrationTypes;
 use App\Filament\Resources\IntegrationTypeResource\RelationManagers\FieldsRelationManager;
 use App\Models\IntegraHub\IntegrationType;
 use App\Models\QuotesPortal\Company;
+use App\Rules\CronExpressionRule;
 use App\Utils\Str;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\KeyValue;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\TimePicker;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
 use Filament\Resources\Resource;
 use Filament\Tables\Actions\DeleteBulkAction as TableDeleteBulkAction;
 use Filament\Tables\Actions\EditAction as TableEditAction;
@@ -111,6 +115,29 @@ class IntegrationTypeResource extends Resource
                             ->label(Str::formatTitle(__('integration_type.allows_duplicates')))
                             ->default(fn () => false),
                     ]),
+
+                Fieldset::make(Str::formatTitle(__('integration_type.scheduling_settings')))
+                    ->visible(fn () => Auth::user()->isSuperAdmin() || Auth::user()->isAdmin())
+                    ->columns(5)
+                    ->schema([
+                        Select::make('scheduling_settings.frequency')
+                            ->label(Str::formatTitle(__('integration_type.scheduling_settings.frequency')))
+                            ->options(IntegrationTypeSchedulingOptionsEnum::class)
+                            ->live(),
+                        TextInput::make('scheduling_settings.expression')
+                            ->label(Str::formatTitle(__('integration_type.scheduling_settings.expression')))
+                            ->visible(function (Get $get) {
+                                $frequency = IntegrationTypeSchedulingOptionsEnum::from($get('scheduling_settings.frequency'));
+                                return $frequency === IntegrationTypeSchedulingOptionsEnum::custom;
+                            })
+                            ->rules([new CronExpressionRule()]),
+                        TimePicker::make('scheduling_settings.time')
+                            ->label(Str::formatTitle(__('integration_type.scheduling_settings.time')))
+                            ->visible(function (Get $get) {
+                                $frequency = IntegrationTypeSchedulingOptionsEnum::from($get('scheduling_settings.frequency'));
+                                return $frequency === IntegrationTypeSchedulingOptionsEnum::daily;
+                            })
+                    ])
             ]);
     }
 
