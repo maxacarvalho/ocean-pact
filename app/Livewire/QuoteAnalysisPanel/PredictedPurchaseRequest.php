@@ -68,6 +68,7 @@ class PredictedPurchaseRequest extends Component implements HasActions, HasForms
         $this->predictedPurchaseRequestCount = $this->getTableQuery()->count();
 
         $this->form->fill();
+        $this->loadProducts();
     }
 
     public function render(): View|Application|Factory
@@ -136,7 +137,7 @@ class PredictedPurchaseRequest extends Component implements HasActions, HasForms
                 $this->getTableQuery()
             )
             ->columns([
-                TextColumn::make(PredictedPurchaseRequestModel::RELATION_SUPPLIER.'.'.Supplier::BUSINESS_NAME)
+                TextColumn::make(PredictedPurchaseRequestModel::RELATION_SUPPLIER.'.'.Supplier::NAME)
                     ->label(Str::title(__('predicted_purchase_request.supplier'))),
 
                 TextColumn::make(PredictedPurchaseRequestModel::RELATION_PRODUCT.'.'.Product::DESCRIPTION)
@@ -384,13 +385,18 @@ class PredictedPurchaseRequest extends Component implements HasActions, HasForms
             /** @var Product $product */
             $product = $quoteItems->first()->product;
 
-            /** @var QuoteItem $quoteItemWithTheLowestPrice */
-            $quoteItemWithTheLowestPrice = $quoteItems->reduce(function (?QuoteItem $carry, QuoteItem $quoteItem) {
+            /** @var QuoteItem $quoteItemFiltered */
+            $quoteItemFiltered = $quoteItems->reduce(function (?QuoteItem $carry, QuoteItem $quoteItem) use ($filtering) {
                 if ($carry === null) {
                     return $quoteItem;
                 }
 
-                if ($quoteItem->unit_price->getMinorAmount()->toInt() < $carry->unit_price->getMinorAmount()->toInt()) {
+                if ($filtering['lower_price'] && $quoteItem->unit_price->getMinorAmount()->toInt() < $carry->unit_price->getMinorAmount()->toInt()) {
+                    return $quoteItem;
+                }
+
+                if ($filtering['lower_eta'] && $quoteItem->delivery_in_days < $carry->delivery_in_days || 
+                    ($quoteItem->delivery_in_days == $carry->delivery_in_days && $quoteItem->unit_price->getMinorAmount()->toInt() < $carry->unit_price->getMinorAmount()->toInt())) {
                     return $quoteItem;
                 }
 
@@ -400,20 +406,20 @@ class PredictedPurchaseRequest extends Component implements HasActions, HasForms
             $data = PredictedPurchaseRequestData::from([
                 PredictedPurchaseRequestModel::COMPANY_ID => $this->companyId,
                 PredictedPurchaseRequestModel::QUOTE_NUMBER => $this->quoteNumber,
-                PredictedPurchaseRequestModel::BUYER_ID => $quoteItemWithTheLowestPrice->quote->buyer_id,
-                PredictedPurchaseRequestModel::QUOTE_ID => $quoteItemWithTheLowestPrice->quote_id,
-                PredictedPurchaseRequestModel::SUPPLIER_ID => $quoteItemWithTheLowestPrice->quote->supplier_id,
+                PredictedPurchaseRequestModel::BUYER_ID => $quoteItemFiltered->quote->buyer_id,
+                PredictedPurchaseRequestModel::QUOTE_ID => $quoteItemFiltered->quote_id,
+                PredictedPurchaseRequestModel::SUPPLIER_ID => $quoteItemFiltered->quote->supplier_id,
                 PredictedPurchaseRequestModel::PRODUCT_ID => $product->id,
                 PredictedPurchaseRequestModel::ITEM => $uniqueQuoteItem,
-                PredictedPurchaseRequestModel::QUOTE_ITEM_ID => $quoteItemWithTheLowestPrice->id,
-                PredictedPurchaseRequestModel::DELIVERY_DATE => $quoteItemWithTheLowestPrice->updated_at->addDays(
-                    $quoteItemWithTheLowestPrice->delivery_in_days
+                PredictedPurchaseRequestModel::QUOTE_ITEM_ID => $quoteItemFiltered->id,
+                PredictedPurchaseRequestModel::DELIVERY_DATE => $quoteItemFiltered->updated_at->addDays(
+                    $quoteItemFiltered->delivery_in_days
                 ),
                 PredictedPurchaseRequestModel::PRICE => [
-                    'currency' => $quoteItemWithTheLowestPrice->unit_price->getCurrency(),
-                    'amount' => $quoteItemWithTheLowestPrice->unit_price->getMinorAmount()->toInt(),
+                    'currency' => $quoteItemFiltered->unit_price->getCurrency(),
+                    'amount' => $quoteItemFiltered->unit_price->getMinorAmount()->toInt(),
                 ],
-                PredictedPurchaseRequestModel::LAST_PRICE => $quoteItemWithTheLowestPrice->product->last_price,
+                PredictedPurchaseRequestModel::LAST_PRICE => $quoteItemFiltered->product->last_price,
                 PredictedPurchaseRequestModel::NECESSITY_DATE => now(),
             ]);
 
