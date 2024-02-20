@@ -127,6 +127,9 @@ class IntegrationTypeResource extends Resource
                         TextInput::make('scheduling_settings.expression')
                             ->label(Str::formatTitle(__('integration_type.scheduling_settings.expression')))
                             ->visible(function (Get $get) {
+                                if (! $get('scheduling_settings.frequency')) {
+                                    return false;
+                                }
                                 $frequency = IntegrationTypeSchedulingOptionsEnum::from($get('scheduling_settings.frequency'));
                                 return $frequency === IntegrationTypeSchedulingOptionsEnum::custom;
                             })
@@ -134,6 +137,9 @@ class IntegrationTypeResource extends Resource
                         TimePicker::make('scheduling_settings.time')
                             ->label(Str::formatTitle(__('integration_type.scheduling_settings.time')))
                             ->visible(function (Get $get) {
+                                if (! $get('scheduling_settings.frequency')) {
+                                    return false;
+                                }
                                 $frequency = IntegrationTypeSchedulingOptionsEnum::from($get('scheduling_settings.frequency'));
                                 return $frequency === IntegrationTypeSchedulingOptionsEnum::daily;
                             })
