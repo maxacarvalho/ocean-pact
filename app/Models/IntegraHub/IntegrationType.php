@@ -4,7 +4,9 @@ namespace App\Models\IntegraHub;
 
 use App\Enums\IntegraHub\IntegrationHandlingTypeEnum;
 use App\Enums\IntegraHub\IntegrationTypeEnum;
+use App\Enums\IntegraHub\IntegrationTypeSchedulingOptionsEnum;
 use App\Models\QuotesPortal\Company;
+use Cron\CronExpression;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -126,5 +128,29 @@ class IntegrationType extends Model
                 fn (string $targetUrl, array $item) => Str::replace(":{$item['parameter']}", $inputPathParameters->get($item['parameter']), $targetUrl),
                 $targetUrl
             );
+    }
+
+    public function isDue(): bool
+    {
+        $schedulingSettings = $this->scheduling_settings;
+
+        if (!$schedulingSettings || ! isset($schedulingSettings['frequency'])) {
+            return false;
+        }
+
+        $now = Carbon::now();
+        $frequency = IntegrationTypeSchedulingOptionsEnum::from($schedulingSettings['frequency']);
+
+        switch ($frequency) {
+            case IntegrationTypeSchedulingOptionsEnum::daily:
+                return $now->format('H:i:s') === $schedulingSettings['time'];
+
+            case IntegrationTypeSchedulingOptionsEnum::hourly:
+                return $now->format('i') === '00';
+
+            default:
+                $cronExpression = new CronExpression($schedulingSettings['expression']);
+                return $cronExpression->isDue($now);
+        }
     }
 }
