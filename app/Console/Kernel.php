@@ -9,7 +9,7 @@ class Kernel extends ConsoleKernel
 {
     protected function schedule(Schedule $schedule): void
     {
-        //
+        $schedule->command('integration-type:check-schedule')->everyMinute();
     }
 
     protected function commands(): void
