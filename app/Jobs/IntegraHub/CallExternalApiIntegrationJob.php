@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Jobs;
+namespace App\Jobs\IntegraHub;
 
 use App\Models\IntegraHub\IntegrationType;
+use App\Services\PayloadService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -10,8 +11,9 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
-class CallExternalApiIntegration implements ShouldQueue
+class CallExternalApiIntegrationJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -19,7 +21,7 @@ class CallExternalApiIntegration implements ShouldQueue
      * Create a new job instance.
      */
     public function __construct(
-        public IntegrationType $integrationType,
+        private IntegrationType $integration
     ) {
         //
     }
@@ -27,21 +29,26 @@ class CallExternalApiIntegration implements ShouldQueue
     /**
      * Execute the job.
      */
-    public function handle(): void
+    public function handle(PayloadService $payloadService): void
     {
+        Log::info('Integration type ' . $this->integration->code . ' is due');
+
         $httpClient = Http::withOptions(['verify' => App::environment('production')])
-            ->withHeaders($this->integrationType->headers)
+            ->withHeaders($this->integration->headers)
             ->throw();
 
-        $url = $this->integrationType->target_url;
+        $url = $this->integration->target_url;
 
         $response = $httpClient->send(
-            method: $this->integrationType->type->value,
+            method: $this->integration->type->value,
             url: $url
         )->json();
 
-        // Create payload?
+        $payload = [
+            'payload' => $response,
+        ];
 
-        var_dump($response);
+        Log::info('Response from '. $this->integration->target_url . ': ' . json_encode($payload));
+        $payloadService->handlePayload($this->integration, $payload);
     }
 }
