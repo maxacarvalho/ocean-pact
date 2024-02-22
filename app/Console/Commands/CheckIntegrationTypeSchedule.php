@@ -2,9 +2,9 @@
 
 namespace App\Console\Commands;
 
+use App\Enums\IntegraHub\IntegrationHandlingTypeEnum;
 use App\Jobs\IntegraHub\CallExternalApiIntegrationJob;
 use App\Models\IntegraHub\IntegrationType;
-use App\Services\PayloadService;
 use Illuminate\Console\Command;
 
 class CheckIntegrationTypeSchedule extends Command
@@ -26,9 +26,12 @@ class CheckIntegrationTypeSchedule extends Command
     /**
      * Execute the console command.
      */
-    public function handle(PayloadService $payloadService)
+    public function handle()
     {
-        $integrations = IntegrationType::all();
+        /** @var Collection<IntegrationType> $integrations */
+        $integrations = IntegrationType::query()
+            ->where('handling_type', IntegrationHandlingTypeEnum::FETCH)
+            ->get();
 
         foreach ($integrations as $integration) {
             if ($integration->isDue()) {
