@@ -28,4 +28,9 @@ return [
     'parameter' => 'parameter',
     'interval' => 'scheduling interval (in minutes)',
     'interval_helper_text' => 'inform the interval in minutes. E.g. 15 for every 15 minutes, 7200 for every 5 days.',
+    'authorization' => 'authorization',
+    'authorization.type' => 'type',
+    'authorization.basic_auth' => 'basic auth',
+    'authorization.username' => 'username',
+    'authorization.password' => 'password',
 ];

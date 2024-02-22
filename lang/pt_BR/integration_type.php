@@ -28,4 +28,9 @@ return [
     'parameter' => 'parâmetro',
     'interval' => 'intervalo de agendamento (em minutos)',
     'interval_helper_text' => 'informe o intervalo de agendamento (em minutos). Exemplo: 15 para executar a cada 15 minutos, 7200 para cada 5 dias.',
+    'authorization' => 'autorização',
+    'authorization.type' => 'tipo',
+    'authorization.basic_auth' => 'autenticação basica',
+    'authorization.username' => 'nome de usuário',
+    'authorization.password' => 'senha',
 ];

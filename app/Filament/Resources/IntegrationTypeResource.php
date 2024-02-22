@@ -134,6 +134,25 @@ class IntegrationTypeResource extends Resource
                             ->label(Str::formatTitle(__('integration_type.allows_duplicates')))
                             ->default(fn () => false),
                     ]),
+
+                Fieldset::make(Str::formatTitle(__('integration_type.authorization')))
+                    ->visible(fn () => Auth::user()->isSuperAdmin() || Auth::user()->isAdmin())
+                    ->columns(5)
+                    ->schema([
+                        Select::make('authorization.type')
+                            ->label(Str::formatTitle(__('integration_type.authorization.type')))
+                            ->options([
+                                'basic' => Str::formatTitle(__('integration_type.authorization.basic_auth')),
+                            ])
+                            ->live(),
+                        TextInput::make('authorization.username')
+                            ->label(Str::formatTitle(__('integration_type.authorization.username')))
+                            ->visible(fn (Get $get) => $get('authorization.type') === 'basic'),
+                        TextInput::make('authorization.password')
+                            ->label(Str::formatTitle(__('integration_type.authorization.password')))
+                            ->visible(fn (Get $get) => $get('authorization.type') === 'basic')
+                            ->autocomplete(false),
+                    ])
             ]);
     }
 

@@ -29,6 +29,7 @@ use Illuminate\Support\Str;
  * @property int|null                                $interval
  * @property bool                                    $is_running
  * @property Carbon|null                             $last_run_at
+ * @property array|null                              $authorization
  * @property Carbon|null                             $created_at
  * @property Carbon|null                             $updated_at
  * Relations
@@ -55,6 +56,7 @@ class IntegrationType extends Model
     public const INTERVAL = 'interval';
     public const IS_RUNNING = 'is_running';
     public const LAST_RUN_AT = 'last_run_at';
+    public const AUTHORIZATION = 'authorization';
     public const CREATED_AT = 'created_at';
     public const UPDATED_AT = 'updated_at';
 
@@ -82,6 +84,7 @@ class IntegrationType extends Model
         self::PATH_PARAMETERS => 'array',
         self::IS_RUNNING => 'boolean',
         self::LAST_RUN_AT => 'datetime',
+        self::AUTHORIZATION => 'array',
     ];
 
     protected static function booted(): void
