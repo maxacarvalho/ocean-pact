@@ -9,6 +9,7 @@ use App\Data\IntegraHub\PayloadData;
 use App\Data\IntegraHub\PayloadErrorResponseData;
 use App\Data\IntegraHub\PayloadInputData;
 use App\Data\IntegraHub\PayloadSuccessResponseData;
+use App\Enums\IntegraHub\IntegrationHandlingTypeEnum;
 use App\Enums\IntegraHub\PayloadProcessingStatusEnum;
 use App\Exceptions\IntegraHub\DuplicatedPayloadException;
 use App\Http\Controllers\Controller;
@@ -34,6 +35,10 @@ class HandlesPayloadController extends Controller
         CreatePayloadAction $createPayloadAction,
         RecordFailedPayloadProcessingAttemptAction $recordFailedPayloadProcessingAttemptAction
     ): PayloadSuccessResponseData|JsonResponse {
+        if ($integrationType->handling_type === IntegrationHandlingTypeEnum::FETCH) {
+            return response()->json(['message' => Str::ucfirst(__('general.not_found'))], Response::HTTP_NOT_FOUND);
+        }
+
         $payloadInput = PayloadInputData::from($request->validated());
 
         $this->validatePathParameters($integrationType, $payloadInput->pathParameters);
