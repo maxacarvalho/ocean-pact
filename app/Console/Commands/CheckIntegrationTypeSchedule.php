@@ -2,8 +2,8 @@
 
 namespace App\Console\Commands;
 
-use App\Jobs\CallExternalApiIntegration;
 use App\Models\IntegraHub\IntegrationType;
+use App\Services\PayloadService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Http;
@@ -28,16 +28,13 @@ class CheckIntegrationTypeSchedule extends Command
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(PayloadService $payloadService)
     {
         $integrations = IntegrationType::all();
 
         foreach ($integrations as $integration) {
-            Log::info('Checking integration type '.$integration->code);
             if ($integration->isDue()) {
-                Log::info('Integration type '.$integration->code.' is due');
-                // Dispatch job to perform the call to the integration target URL
-                // dispatch(new CallExternalApiIntegration($integration));
+                Log::info('Integration type ' . $integration->code . ' is due');
 
                 $httpClient = Http::withOptions(['verify' => App::environment('production')])
                     ->withHeaders($integration->headers)
@@ -50,8 +47,13 @@ class CheckIntegrationTypeSchedule extends Command
                     url: $url
                 )->json();
 
+                $payload = [
+                    'payload' => $response,
+                ];
+
                 // Create payload?
-                Log::info('Response from '.$integration->target_url.': '.json_encode($response));
+                Log::info('Response from '. $integration->target_url . ': ' . json_encode($payload));
+                $payloadService->handlePayload($integration, $payload);
             }
         }
     }
