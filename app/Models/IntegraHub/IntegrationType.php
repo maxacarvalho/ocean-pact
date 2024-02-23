@@ -4,9 +4,7 @@ namespace App\Models\IntegraHub;
 
 use App\Enums\IntegraHub\IntegrationHandlingTypeEnum;
 use App\Enums\IntegraHub\IntegrationTypeEnum;
-use App\Enums\IntegraHub\IntegrationTypeSchedulingOptionsEnum;
 use App\Models\QuotesPortal\Company;
-use Cron\CronExpression;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -28,7 +26,9 @@ use Illuminate\Support\Str;
  * @property bool                                    $allows_duplicates
  * @property array                                   $headers
  * @property array|null                              $path_parameters
- * @property array|null                              $scheduling_settings
+ * @property int|null                                $interval
+ * @property bool                                    $is_running
+ * @property Carbon|null                             $last_run_at
  * @property Carbon|null                             $created_at
  * @property Carbon|null                             $updated_at
  * Relations
@@ -52,7 +52,9 @@ class IntegrationType extends Model
     public const ALLOWS_DUPLICATES = 'allows_duplicates';
     public const HEADERS = 'headers';
     public const PATH_PARAMETERS = 'path_parameters';
-    public const SCHEDULING_SETTINGS = 'scheduling_settings';
+    public const INTERVAL = 'interval';
+    public const IS_RUNNING = 'is_running';
+    public const LAST_RUN_AT = 'last_run_at';
     public const CREATED_AT = 'created_at';
     public const UPDATED_AT = 'updated_at';
 
@@ -78,7 +80,7 @@ class IntegrationType extends Model
         self::ALLOWS_DUPLICATES => 'boolean',
         self::HEADERS => 'array',
         self::PATH_PARAMETERS => 'array',
-        self::SCHEDULING_SETTINGS => 'array',
+        self::IS_RUNNING => 'boolean',
     ];
 
     protected static function booted(): void
@@ -132,25 +134,29 @@ class IntegrationType extends Model
 
     public function isDue(): bool
     {
-        $schedulingSettings = $this->scheduling_settings;
-
-        if (!$schedulingSettings || ! isset($schedulingSettings['frequency'])) {
+        if (is_null($this->interval) || $this->interval <= 0) {
             return false;
         }
 
-        $now = Carbon::now();
-        $frequency = IntegrationTypeSchedulingOptionsEnum::from($schedulingSettings['frequency']);
-
-        switch ($frequency) {
-            case IntegrationTypeSchedulingOptionsEnum::daily:
-                return $now->format('H:i:s') === $schedulingSettings['time'];
-
-            case IntegrationTypeSchedulingOptionsEnum::hourly:
-                return $now->format('i') === '00';
-
-            default:
-                $cronExpression = new CronExpression($schedulingSettings['expression']);
-                return $cronExpression->isDue($now);
+        if (is_null($this->last_run_at)) {
+            return true;
         }
+
+        return $this->last_run_at->diffInMinutes(Carbon::now()) >= $this->interval;
+    }
+
+    public function markAsRunning(): void
+    {
+        $this->update([
+            self::IS_RUNNING => true,
+            self::LAST_RUN_AT => Carbon::now(),
+        ]);
+    }
+
+    public function markAsStopped(): void
+    {
+        $this->update([
+            self::IS_RUNNING => false,
+        ]);
     }
 }
