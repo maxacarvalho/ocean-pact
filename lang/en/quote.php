@@ -59,6 +59,6 @@ return [
         'quote_number' => 'quote: :quote_number',
         'new_quote_ready_for_reply' => 'new quote ready for reply - :company',
         'new_quote_proposal_requested' => 'new proposal for quote :quote requested - :company',
-        'contact_request_subject' => 'quote :quote - contact request',
+        'contact_request_subject' => 'contact request for quote :quote - :company',
     ],
 ];
