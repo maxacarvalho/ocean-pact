@@ -57,6 +57,7 @@ return [
         'click_below_to_reply_the_quote' => 'click below to reply the quote',
         'reply_quote' => 'reply quote',
         'quote_number' => 'quote: :quote_number',
+        'proposal_number' => 'proposal number: :proposal_number',
         'new_quote_ready_for_reply' => 'new quote ready for reply - :company',
         'new_quote_proposal_requested' => 'new proposal for quote :quote requested - :company',
         'contact_request_subject' => 'quote :quote - contact request',
