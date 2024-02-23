@@ -26,11 +26,6 @@ return [
     'fetch' => 'fetch',
     'path_parameters' => 'URL parameters',
     'parameter' => 'parameter',
-    'scheduling_settings' => 'scheduling settings',
-    'scheduling_settings.frequency' => 'frequency',
-    'scheduling_settings.daily' => 'daily',
-    'scheduling_settings.hourly' => 'hourly',
-    'scheduling_settings.custom' => 'custom',
-    'scheduling_settings.expression' => 'cron expression',
-    'scheduling_settings.time' => 'time',
+    'interval' => 'scheduling interval (in minutes)',
+    'interval_helper_text' => 'inform the interval in minutes. E.g. 15 for every 15 minutes, 7200 for every 5 days.',
 ];
