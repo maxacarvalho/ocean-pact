@@ -68,7 +68,6 @@ class PredictedPurchaseRequest extends Component implements HasActions, HasForms
         $this->predictedPurchaseRequestCount = $this->getTableQuery()->count();
 
         $this->form->fill();
-        $this->loadProducts();
     }
 
     public function render(): View|Application|Factory
@@ -395,7 +394,7 @@ class PredictedPurchaseRequest extends Component implements HasActions, HasForms
                     return $quoteItem;
                 }
 
-                if ($filtering['lower_eta'] && $quoteItem->delivery_in_days < $carry->delivery_in_days || 
+                if ($filtering['lower_eta'] && $quoteItem->delivery_in_days < $carry->delivery_in_days ||
                     ($quoteItem->delivery_in_days == $carry->delivery_in_days && $quoteItem->unit_price->getMinorAmount()->toInt() < $carry->unit_price->getMinorAmount()->toInt())) {
                     return $quoteItem;
                 }

@@ -131,6 +131,7 @@ class IntegrationTypeResource extends Resource
                                     return false;
                                 }
                                 $frequency = IntegrationTypeSchedulingOptionsEnum::from($get('scheduling_settings.frequency'));
+
                                 return $frequency === IntegrationTypeSchedulingOptionsEnum::custom;
                             })
                             ->rules([new CronExpressionRule()]),
@@ -141,9 +142,10 @@ class IntegrationTypeResource extends Resource
                                     return false;
                                 }
                                 $frequency = IntegrationTypeSchedulingOptionsEnum::from($get('scheduling_settings.frequency'));
+
                                 return $frequency === IntegrationTypeSchedulingOptionsEnum::daily;
-                            })
-                    ])
+                            }),
+                    ]),
             ]);
     }
 

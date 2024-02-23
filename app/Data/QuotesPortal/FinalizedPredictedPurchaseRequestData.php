@@ -10,7 +10,8 @@ class FinalizedPredictedPurchaseRequestData extends Data
         public readonly string $quote_number,
         public readonly CompanyData $company,
         public readonly BuyerData $buyer,
-        public readonly array $suppliers
+        public readonly array $suppliers,
+        public readonly array $actions
     ) {
         //
     }
