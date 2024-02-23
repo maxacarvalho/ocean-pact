@@ -25,7 +25,7 @@ class QuoteContactRequestMail extends Mailable implements ShouldQueue
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: Str::ucfirst(__('quote.emails.contact_request_subject', ['quote' => $this->quote_number])),
+            subject: Str::ucfirst(__('quote.emails.contact_request_subject', ['quote' => $this->quote_number, 'company' => $this->company_business_name])),
         );
     }
 

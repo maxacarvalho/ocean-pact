@@ -61,7 +61,7 @@ return [
         'proposal_number' => 'número da proposta: :proposal_number',
         'new_quote_ready_for_reply' => 'nova cotação no portal do fornecedor - :company',
         'new_quote_proposal_requested' => 'nova proposta para cotação :quote - :company',
-        'contact_request_subject' => 'cotação :quote - solicitação de contato',
+        'contact_request_subject' => 'solicitação de contato para cotação :quote - :company',
         'contact_request_header' => 'cotação :quote',
     ],
 ];
