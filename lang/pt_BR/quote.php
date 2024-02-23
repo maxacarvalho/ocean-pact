@@ -58,6 +58,7 @@ return [
         'click_below_to_reply_the_quote' => 'clique abaixo para responder a cotação',
         'reply_quote' => 'responder cotação',
         'quote_number' => 'cotação: :quote_number',
+        'proposal_number' => 'número da proposta: :proposal_number',
         'new_quote_ready_for_reply' => 'nova cotação no portal do fornecedor - :company',
         'new_quote_proposal_requested' => 'nova proposta para cotação :quote - :company',
         'contact_request_subject' => 'cotação :quote - solicitação de contato',

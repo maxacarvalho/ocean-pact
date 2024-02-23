@@ -28,6 +28,7 @@ class SendQuoteProposalNotificationAction
                     supplier_name: $quote->supplier->name,
                     company_business_name: $quote->company->business_name,
                     quote_number: $quote->quote_number,
+                    proposal_number: $quote->proposal_number,
                     url: route('filament.admin.resources.quotes.edit', ['record' => $quote->id])
                 )
             );
