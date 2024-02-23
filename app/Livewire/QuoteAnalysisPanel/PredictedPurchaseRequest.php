@@ -117,8 +117,8 @@ class PredictedPurchaseRequest extends Component implements HasActions, HasForms
                             ->whereHas(Supplier::RELATION_QUOTES, function (Builder $query): void {
                                 $query->where(Quote::TABLE_NAME.'.'.Quote::QUOTE_NUMBER, $this->quoteNumber);
                             })
-                            ->orderBy(Supplier::BUSINESS_NAME)
-                            ->pluck(Supplier::TABLE_NAME.'.'.Supplier::BUSINESS_NAME, Supplier::TABLE_NAME.'.'.Supplier::ID)
+                            ->orderBy(Supplier::NAME)
+                            ->pluck(Supplier::TABLE_NAME.'.'.Supplier::NAME, Supplier::TABLE_NAME.'.'.Supplier::ID)
                             ->toArray()
                     )
                     ->searchable()
