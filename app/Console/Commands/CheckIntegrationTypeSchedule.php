@@ -30,7 +30,9 @@ class CheckIntegrationTypeSchedule extends Command
     {
         /** @var Collection<IntegrationType> $integrations */
         $integrations = IntegrationType::query()
-            ->where('handling_type', IntegrationHandlingTypeEnum::FETCH)
+            ->where(IntegrationType::HANDLING_TYPE, IntegrationHandlingTypeEnum::FETCH)
+            ->where(IntegrationType::INTERVAL, '>', 0)
+            ->where(IntegrationType::IS_RUNNING, false)
             ->get();
 
         foreach ($integrations as $integration) {

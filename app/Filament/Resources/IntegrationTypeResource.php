@@ -86,7 +86,6 @@ class IntegrationTypeResource extends Resource
                         ->numeric()
                         ->minValue(5)
                         ->maxValue(10080)
-                        ->step(5)
                         ->required(fn (Get $get) => $get(IntegrationType::HANDLING_TYPE) && IntegrationHandlingTypeEnum::from($get(IntegrationType::HANDLING_TYPE)) === IntegrationHandlingTypeEnum::FETCH)
                         ->visible(function (Get $get) {
                             if (! $get(IntegrationType::HANDLING_TYPE)) {

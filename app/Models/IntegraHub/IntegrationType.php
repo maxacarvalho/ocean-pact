@@ -81,6 +81,7 @@ class IntegrationType extends Model
         self::HEADERS => 'array',
         self::PATH_PARAMETERS => 'array',
         self::IS_RUNNING => 'boolean',
+        self::LAST_RUN_AT => 'datetime',
     ];
 
     protected static function booted(): void

@@ -21,7 +21,7 @@ class CallExternalApiIntegrationJob implements ShouldQueue
      * Create a new job instance.
      */
     public function __construct(
-        private IntegrationType $integration
+        private IntegrationType $integrationType
     ) {
         //
     }
@@ -31,16 +31,17 @@ class CallExternalApiIntegrationJob implements ShouldQueue
      */
     public function handle(PayloadService $payloadService): void
     {
-        Log::info('Integration type ' . $this->integration->code . ' is due');
+        Log::info('Integration type ' . $this->integrationType->code . ' is due');
+        $this->integrationType->markAsRunning();
 
         $httpClient = Http::withOptions(['verify' => App::environment('production')])
-            ->withHeaders($this->integration->headers)
+            ->withHeaders($this->integrationType->headers)
             ->throw();
 
-        $url = $this->integration->target_url;
+        $url = $this->integrationType->target_url;
 
         $response = $httpClient->send(
-            method: $this->integration->type->value,
+            method: $this->integrationType->type->value,
             url: $url
         )->json();
 
@@ -48,7 +49,9 @@ class CallExternalApiIntegrationJob implements ShouldQueue
             'payload' => $response,
         ];
 
-        Log::info('Response from '. $this->integration->target_url . ': ' . json_encode($payload));
-        $payloadService->handlePayload($this->integration, $payload);
+        Log::info('Response from '. $this->integrationType->target_url . ': ' . json_encode($payload));
+        $payloadService->handlePayload($this->integrationType, $payload);
+
+        $this->integrationType->markAsStopped();
     }
 }
