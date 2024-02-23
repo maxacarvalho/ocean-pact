@@ -13,7 +13,6 @@ use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;
-use Filament\Tables\Columns\CheckboxColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
@@ -101,8 +100,6 @@ class SupplierQuote extends Component implements HasForms, HasTable
                     ->formatStateUsing(function (int $state): string {
                         return Carbon::now()->addDays($state)->format('d/m/Y');
                     }),
-
-                CheckboxColumn::make('is_selected')->label(__('quote_analysis_panel.is_selected')),
             ]);
     }
 

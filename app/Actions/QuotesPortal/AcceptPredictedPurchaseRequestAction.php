@@ -9,6 +9,8 @@ use App\Exceptions\QuotesPortal\PredictedPurchaseRequestAlreadyAcceptedException
 use App\Models\QuotesPortal\Company;
 use App\Models\QuotesPortal\PredictedPurchaseRequest;
 use App\Models\QuotesPortal\Product;
+use App\Models\QuotesPortal\Quote;
+use App\Models\QuotesPortal\QuoteAnalysisAction;
 use App\Models\QuotesPortal\QuoteItem;
 use App\Models\QuotesPortal\Supplier;
 use App\Models\User;
@@ -107,6 +109,14 @@ class AcceptPredictedPurchaseRequestAction
                     ->first()?->buyer_company,
             ],
             'suppliers' => array_values($suppliers),
+            'actions' => QuoteAnalysisAction::query()
+                ->with([
+                    QuoteAnalysisAction::RELATION_QUOTE => [
+                        Quote::RELATION_SUPPLIER,
+                        Quote::RELATION_ITEMS,
+                    ],
+                ])
+                ->where(QuoteAnalysisAction::QUOTE_NUMBER, $quoteNumber)->get()->toArray(),
         ]);
 
         PredictedPurchaseRequest::query()

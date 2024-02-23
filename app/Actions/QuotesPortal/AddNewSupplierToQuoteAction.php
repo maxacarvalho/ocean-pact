@@ -56,6 +56,7 @@ class AddNewSupplierToQuoteAction
 
         QuoteAnalysisAction::query()->create([
             QuoteAnalysisAction::QUOTE_ID => $newQuote->id,
+            QuoteAnalysisAction::QUOTE_NUMBER => $quoteNumber,
             QuoteAnalysisAction::ACTION => QuoteAnalysisActionEnum::NEW_SUPPLIER,
         ]);
 

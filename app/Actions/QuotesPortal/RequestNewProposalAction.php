@@ -54,6 +54,7 @@ class RequestNewProposalAction
 
             QuoteAnalysisAction::query()->create([
                 QuoteAnalysisAction::QUOTE_ID => $newQuote->id,
+                QuoteAnalysisAction::QUOTE_NUMBER => $newQuote->quote_number,
                 QuoteAnalysisAction::ACTION => QuoteAnalysisActionEnum::NEW_PROPOSAL,
             ]);
 
