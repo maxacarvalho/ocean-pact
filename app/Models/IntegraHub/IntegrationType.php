@@ -26,10 +26,10 @@ use Illuminate\Support\Str;
  * @property bool                                    $allows_duplicates
  * @property array                                   $headers
  * @property array|null                              $path_parameters
+ * @property array|null                              $authorization
  * @property int|null                                $interval
  * @property bool                                    $is_running
  * @property Carbon|null                             $last_run_at
- * @property array|null                              $authorization
  * @property Carbon|null                             $created_at
  * @property Carbon|null                             $updated_at
  * Relations
@@ -53,10 +53,10 @@ class IntegrationType extends Model
     public const ALLOWS_DUPLICATES = 'allows_duplicates';
     public const HEADERS = 'headers';
     public const PATH_PARAMETERS = 'path_parameters';
+    public const AUTHORIZATION = 'authorization';
     public const INTERVAL = 'interval';
     public const IS_RUNNING = 'is_running';
     public const LAST_RUN_AT = 'last_run_at';
-    public const AUTHORIZATION = 'authorization';
     public const CREATED_AT = 'created_at';
     public const UPDATED_AT = 'updated_at';
 
@@ -82,9 +82,9 @@ class IntegrationType extends Model
         self::ALLOWS_DUPLICATES => 'boolean',
         self::HEADERS => 'array',
         self::PATH_PARAMETERS => 'array',
+        self::AUTHORIZATION => 'array',
         self::IS_RUNNING => 'boolean',
         self::LAST_RUN_AT => 'datetime',
-        self::AUTHORIZATION => 'array',
     ];
 
     protected static function booted(): void
@@ -162,5 +162,25 @@ class IntegrationType extends Model
         $this->update([
             self::IS_RUNNING => false,
         ]);
+    }
+
+    public function getAuthorizationHeader(): array
+    {
+        if (is_null($this->authorization) || !$this->authorization['type']) {
+            return [];
+        }
+
+        if ($this->authorization['type'] === 'basic') {
+            return [
+                'Authorization' => 'Basic ' . base64_encode($this->authorization['username'] . ':' . $this->authorization['password']),
+            ];
+        }
+
+        return [];
+    }
+
+    public function getHeaders(): array
+    {
+        return array_merge($this->headers ?? [], $this->getAuthorizationHeader());
     }
 }

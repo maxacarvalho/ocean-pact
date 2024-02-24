@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('integration_types', function (Blueprint $table) {
-            $table->json('authorization')->nullable()->after('scheduling_settings');
+            $table->json('authorization')->nullable()->after('path_parameters');
         });
     }
 

@@ -35,23 +35,33 @@ class CallExternalApiIntegrationJob implements ShouldQueue
         $this->integrationType->markAsRunning();
 
         $httpClient = Http::withOptions(['verify' => App::environment('production')])
-            ->withHeaders($this->integrationType->headers)
+            ->withHeaders($this->integrationType->getHeaders())
             ->throw();
 
         $url = $this->integrationType->target_url;
 
-        $response = $httpClient->send(
-            method: $this->integrationType->type->value,
-            url: $url
-        )->json();
+        $response = null;
+        try {
+            $response = $httpClient->send(
+                method: $this->integrationType->type->value,
+                url: $url
+            )->json();
+        } catch (\Exception $exception) {
+            Log::error($exception->getMessage());
+        } finally {
+            $this->integrationType->markAsStopped();
+        }
+
+        if (! $response) {
+            Log::info('No response from ' . $this->integrationType->target_url);
+            return;
+        }
 
         $payload = [
             'payload' => $response,
         ];
 
         $payloadService->handlePayload($this->integrationType, $payload);
-
-        $this->integrationType->markAsStopped();
     }
 
     /**

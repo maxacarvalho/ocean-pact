@@ -147,10 +147,12 @@ class IntegrationTypeResource extends Resource
                             ->live(),
                         TextInput::make('authorization.username')
                             ->label(Str::formatTitle(__('integration_type.authorization.username')))
-                            ->visible(fn (Get $get) => $get('authorization.type') === 'basic'),
+                            ->visible(fn (Get $get) => $get('authorization.type') === 'basic')
+                            ->required(fn (Get $get) => $get('authorization.type') === 'basic'),
                         TextInput::make('authorization.password')
                             ->label(Str::formatTitle(__('integration_type.authorization.password')))
                             ->visible(fn (Get $get) => $get('authorization.type') === 'basic')
+                            ->required(fn (Get $get) => $get('authorization.type') === 'basic')
                             ->autocomplete(false),
                     ])
             ]);
