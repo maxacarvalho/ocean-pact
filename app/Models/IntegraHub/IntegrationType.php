@@ -26,7 +26,9 @@ use Illuminate\Support\Str;
  * @property bool                                    $allows_duplicates
  * @property array                                   $headers
  * @property array|null                              $path_parameters
- * @property array|null                              $scheduling_settings
+ * @property int|null                                $interval
+ * @property bool                                    $is_running
+ * @property Carbon|null                             $last_run_at
  * @property Carbon|null                             $created_at
  * @property Carbon|null                             $updated_at
  * Relations
@@ -50,7 +52,9 @@ class IntegrationType extends Model
     public const ALLOWS_DUPLICATES = 'allows_duplicates';
     public const HEADERS = 'headers';
     public const PATH_PARAMETERS = 'path_parameters';
-    public const SCHEDULING_SETTINGS = 'scheduling_settings';
+    public const INTERVAL = 'interval';
+    public const IS_RUNNING = 'is_running';
+    public const LAST_RUN_AT = 'last_run_at';
     public const CREATED_AT = 'created_at';
     public const UPDATED_AT = 'updated_at';
 
@@ -76,7 +80,8 @@ class IntegrationType extends Model
         self::ALLOWS_DUPLICATES => 'boolean',
         self::HEADERS => 'array',
         self::PATH_PARAMETERS => 'array',
-        self::SCHEDULING_SETTINGS => 'array',
+        self::IS_RUNNING => 'boolean',
+        self::LAST_RUN_AT => 'datetime',
     ];
 
     protected static function booted(): void
@@ -126,5 +131,33 @@ class IntegrationType extends Model
                 fn (string $targetUrl, array $item) => Str::replace(":{$item['parameter']}", $inputPathParameters->get($item['parameter']), $targetUrl),
                 $targetUrl
             );
+    }
+
+    public function isDue(): bool
+    {
+        if (is_null($this->interval) || $this->interval <= 0) {
+            return false;
+        }
+
+        if (is_null($this->last_run_at)) {
+            return true;
+        }
+
+        return $this->last_run_at->diffInMinutes(Carbon::now()) >= $this->interval;
+    }
+
+    public function markAsRunning(): void
+    {
+        $this->update([
+            self::IS_RUNNING => true,
+            self::LAST_RUN_AT => Carbon::now(),
+        ]);
+    }
+
+    public function markAsStopped(): void
+    {
+        $this->update([
+            self::IS_RUNNING => false,
+        ]);
     }
 }

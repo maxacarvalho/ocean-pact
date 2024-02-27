@@ -26,11 +26,6 @@ return [
     'fetch' => 'buscar',
     'path_parameters' => 'parâmetros da URL',
     'parameter' => 'parâmetro',
-    'scheduling_settings' => 'configurações de agendamento',
-    'scheduling_settings.frequency' => 'frequência',
-    'scheduling_settings.daily' => 'diariamente',
-    'scheduling_settings.hourly' => 'hora em hora',
-    'scheduling_settings.custom' => 'personalizado',
-    'scheduling_settings.expression' => 'expressão cron',
-    'scheduling_settings.time' => 'hora',
+    'interval' => 'intervalo de agendamento (em minutos)',
+    'interval_helper_text' => 'informe o intervalo de agendamento (em minutos). Exemplo: 15 para executar a cada 15 minutos, 7200 para cada 5 dias.',
 ];

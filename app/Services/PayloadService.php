@@ -1,45 +1,33 @@
 <?php
 
-namespace App\Http\Controllers\IntegraHub\API\Payload;
+namespace App\Services;
 
 use App\Actions\IntegraHub\CreatePayloadAction;
 use App\Actions\IntegraHub\HandlePayloadAction;
 use App\Actions\IntegraHub\RecordFailedPayloadProcessingAttemptAction;
 use App\Data\IntegraHub\PayloadData;
-use App\Data\IntegraHub\PayloadErrorResponseData;
 use App\Data\IntegraHub\PayloadInputData;
-use App\Data\IntegraHub\PayloadSuccessResponseData;
-use App\Enums\IntegraHub\IntegrationHandlingTypeEnum;
 use App\Enums\IntegraHub\PayloadProcessingStatusEnum;
 use App\Exceptions\IntegraHub\DuplicatedPayloadException;
-use App\Http\Controllers\Controller;
-use App\Http\Requests\IntegraHub\StorePayloadRequest;
 use App\Models\IntegraHub\IntegrationType;
 use App\Models\IntegraHub\Payload;
-use App\Utils\Str;
 use App\Utils\ValidationRules;
-use Illuminate\Http\Client\RequestException;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
-use JsonException;
 use Throwable;
 
-class HandlesPayloadController extends Controller
+readonly class PayloadService
 {
-    public function __invoke(
-        IntegrationType $integrationType,
-        StorePayloadRequest $request,
-        HandlePayloadAction $handlePayloadAction,
-        CreatePayloadAction $createPayloadAction,
-        RecordFailedPayloadProcessingAttemptAction $recordFailedPayloadProcessingAttemptAction
-    ): PayloadSuccessResponseData|JsonResponse {
-        if ($integrationType->handling_type === IntegrationHandlingTypeEnum::FETCH) {
-            return response()->json(['message' => Str::ucfirst(__('general.not_found'))], Response::HTTP_NOT_FOUND);
-        }
+    public function __construct(
+        private HandlePayloadAction $handlePayloadAction,
+        private CreatePayloadAction $createPayloadAction,
+        private RecordFailedPayloadProcessingAttemptAction $recordFailedPayloadProcessingAttemptAction
+    ) {
+    }
 
-        $payloadInput = PayloadInputData::from($request->validated());
+    public function handlePayload(IntegrationType $integrationType, array $payloadInput): void
+    {
+        $payloadInput = PayloadInputData::from($payloadInput);
 
         $this->validatePathParameters($integrationType, $payloadInput->pathParameters);
 
@@ -52,46 +40,22 @@ class HandlesPayloadController extends Controller
                 $this->ensureItIsNotDuplicated($integrationType, $payloadInput->payload);
             }
 
-            $payload = $createPayloadAction->handle(
+            $payload = $this->createPayloadAction->handle(
                 PayloadData::fromPayloadHandlerController($integrationType, $payloadInput)
             );
 
             $payload->markAsProcessing();
 
-            return $handlePayloadAction->handle($integrationType, $payload, $payloadInput);
+            $this->handlePayloadAction->handle($integrationType, $payload, $payloadInput);
         } catch (DuplicatedPayloadException $e) {
-            $responseError = PayloadErrorResponseData::from([
-                'title' => $e->getMessage(),
-            ]);
-
-            return response()->json($responseError->toArray(), Response::HTTP_CONFLICT);
-        } catch (RequestException $e) {
-            Log::error('HandlesPayloadController: Unable to store payloadInput', [
+            Log::error('PayloadService: Duplicate payload detected', [
                 'exception_message' => $e->getMessage(),
                 'context' => [
                     'payload_input' => $payloadInput,
-                    'http_code' => $e->getCode(),
-                    'http_response' => $e->response->json(),
-                ],
+                ]
             ]);
-
-            if ($payload instanceof Payload) {
-                $payload->markAsFailed($e->getMessage(), $e->response->json());
-                $recordFailedPayloadProcessingAttemptAction->handle(
-                    payloadId: $payload->id,
-                    response: $e->response->json()
-                );
-            }
-
-            $responseError = PayloadErrorResponseData::from([
-                'title' => Str::ucfirst(__('general.http_response_error')),
-                'details' => $e->getMessage(),
-                'errors' => $e->response->json(),
-            ]);
-
-            return response()->json($responseError->toArray(), $e->getCode());
         } catch (Throwable $e) {
-            Log::error('HandlesPayloadController: Unable to store payloadInput', [
+            Log::error('PayloadService: Unable to store payloadInput', [
                 'exception_message' => $e->getMessage(),
                 'context' => [
                     'payload_input' => $payloadInput,
@@ -100,18 +64,11 @@ class HandlesPayloadController extends Controller
 
             if ($payload instanceof Payload) {
                 $payload->markAsFailed($e->getMessage(), null);
-                $recordFailedPayloadProcessingAttemptAction->handle(
+                $this->recordFailedPayloadProcessingAttemptAction->handle(
                     payloadId: $payload->id,
                     response: [$e->getMessage()]
                 );
             }
-
-            $responseError = PayloadErrorResponseData::from([
-                'title' => Str::ucfirst(__('general.unexpected_error')),
-                'details' => $e->getMessage(),
-            ]);
-
-            return response()->json($responseError->toArray(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
