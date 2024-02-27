@@ -86,17 +86,8 @@ class IntegrationTypeResource extends Resource
                         ->numeric()
                         ->minValue(5)
                         ->maxValue(10080)
-                        ->required(fn (Get $get) => $get(IntegrationType::HANDLING_TYPE) && IntegrationHandlingTypeEnum::from($get(IntegrationType::HANDLING_TYPE)) === IntegrationHandlingTypeEnum::FETCH)
-                        ->visible(function (Get $get) {
-                            if (! $get(IntegrationType::HANDLING_TYPE)) {
-                                return false;
-                            }
-                            $type = IntegrationHandlingTypeEnum::from($get(IntegrationType::HANDLING_TYPE));
-                            if ($type !== IntegrationHandlingTypeEnum::FETCH) {
-                                return false;
-                            }
-                            return Auth::user()->isSuperAdmin() || Auth::user()->isAdmin();
-                        }),
+                        ->required(fn (Get $get) => self::isHandlingTypeFetch($get))
+                        ->visible(fn (Get $get) => self::isAdminAndHandlingTypeIsFetch($get))
                 ]),
 
                 TextInput::make(IntegrationType::TARGET_URL)
@@ -134,6 +125,29 @@ class IntegrationTypeResource extends Resource
                             ->label(Str::formatTitle(__('integration_type.allows_duplicates')))
                             ->default(fn () => false),
                     ]),
+
+                Fieldset::make(Str::formatTitle(__('integration_type.authorization')))
+                    ->visible(fn (Get $get) => self::isAdminAndHandlingTypeIsFetch($get))
+                    ->columns(5)
+                    ->schema([
+                        Select::make('authorization.type')
+                            ->label(Str::formatTitle(__('integration_type.authorization.type')))
+                            ->options([
+                                'basic' => Str::formatTitle(__('integration_type.authorization.basic_auth')),
+                            ])
+                            ->live(),
+
+                        TextInput::make('authorization.username')
+                            ->label(Str::formatTitle(__('integration_type.authorization.username')))
+                            ->visible(fn (Get $get) => $get('authorization.type') === 'basic')
+                            ->required(fn (Get $get) => $get('authorization.type') === 'basic'),
+
+                        TextInput::make('authorization.password')
+                            ->label(Str::formatTitle(__('integration_type.authorization.password')))
+                            ->visible(fn (Get $get) => $get('authorization.type') === 'basic')
+                            ->required(fn (Get $get) => $get('authorization.type') === 'basic')
+                            ->autocomplete(false),
+                    ])
             ]);
     }
 
@@ -203,5 +217,24 @@ class IntegrationTypeResource extends Resource
     {
         return Collection::make([0 => Str::formatTitle(__('company.all'))])
             ->merge(Company::query()->pluck(Company::BRANCH, Company::ID));
+    }
+
+    private static function isAdminAndHandlingTypeIsFetch(Get $get): bool
+    {
+        if (! self::isHandlingTypeFetch($get)) {
+            return false;
+        }
+
+        return Auth::user()->isSuperAdmin() || Auth::user()->isAdmin();
+    }
+
+    private static function isHandlingTypeFetch(Get $get): bool
+    {
+        if (! $get(IntegrationType::HANDLING_TYPE)) {
+            return false;
+        }
+
+        $type = IntegrationHandlingTypeEnum::from($get(IntegrationType::HANDLING_TYPE));
+        return $type === IntegrationHandlingTypeEnum::FETCH;
     }
 }

@@ -35,7 +35,7 @@ class CallExternalApiIntegrationJob implements ShouldQueue
         $this->integrationType->markAsRunning();
 
         $httpClient = Http::withOptions(['verify' => App::environment('production')])
-            ->withHeaders($this->integrationType->headers)
+            ->withHeaders($this->integrationType->getHeaders())
             ->throw();
 
         $url = $this->integrationType->target_url;

@@ -38,3 +38,59 @@ describe('Scheduling interval is due method', function () {
         expect($integrationType->isDue())->toBeTrue();
     });
 });
+
+describe('getAuthorizationHeader method', function () {
+    test('should return empty when authorization is not set', function () {
+        $integrationType = new IntegrationType();
+        expect($integrationType->getAuthorizationHeader())->toBeEmpty();
+    });
+
+    test('should return basic auth header when authorization is set to basic', function () {
+        $integrationType = new IntegrationType();
+        $integrationType->authorization = [
+            'type' => 'basic',
+            'username' => 'test',
+            'password' => 'test',
+        ];
+        $basicAuth = 'Basic ' . base64_encode('test:test');
+        expect($integrationType->getAuthorizationHeader())->toBeArray();
+        expect($integrationType->getAuthorizationHeader()['Authorization'])->toBe($basicAuth);
+    });
+});
+
+describe('getHeaders method', function () {
+    test('should return empty header is not set', function () {
+        $integrationType = new IntegrationType();
+        expect($integrationType->getHeaders())->toBeEmpty();
+    });
+
+    test('should return array of headers when they are set', function () {
+        $integrationType = new IntegrationType();
+        $integrationType->headers = [
+            'Accept' => 'application/json',
+            'Content-Type' => 'application/json',
+        ];
+        $headers = $integrationType->getHeaders();
+        expect($headers)->toBeArray();
+        expect($headers['Accept'])->toBe('application/json');
+        expect($headers['Content-Type'])->toBe('application/json');
+    });
+
+    test('should include authorization headers', function () {
+        $integrationType = new IntegrationType();
+        $integrationType->headers = [
+            'Accept' => 'application/json',
+            'Content-Type' => 'application/json',
+        ];
+        $integrationType->authorization = [
+            'type' => 'basic',
+            'username' => 'test',
+            'password' => 'test',
+        ];
+        $headers = $integrationType->getHeaders();
+        expect($headers)->toBeArray();
+        expect($headers['Accept'])->toBe('application/json');
+        expect($headers['Content-Type'])->toBe('application/json');
+        expect($headers['Authorization'])->toBe('Basic ' . base64_encode('test:test'));
+    });
+});
