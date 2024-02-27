@@ -12,6 +12,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Throwable;
 
 class CallExternalApiIntegrationJob implements ShouldQueue
 {
@@ -31,7 +32,6 @@ class CallExternalApiIntegrationJob implements ShouldQueue
      */
     public function handle(PayloadService $payloadService): void
     {
-        Log::info('Integration type ' . $this->integrationType->code . ' is due');
         $this->integrationType->markAsRunning();
 
         $httpClient = Http::withOptions(['verify' => App::environment('production')])
@@ -49,9 +49,23 @@ class CallExternalApiIntegrationJob implements ShouldQueue
             'payload' => $response,
         ];
 
-        Log::info('Response from '. $this->integrationType->target_url . ': ' . json_encode($payload));
         $payloadService->handlePayload($this->integrationType, $payload);
 
         $this->integrationType->markAsStopped();
+    }
+
+    /**
+     * Handle a job failure.
+     */
+    public function failed(Throwable $exception): void
+    {
+        $this->integrationType->markAsStopped();
+
+        Log::error('CallExternalApiIntegrationJob exception', [
+            'exception_message' => $exception->getMessage(),
+            'integration_type' => $this->integrationType->code,
+        ]);
+
+        report($exception);
     }
 }
