@@ -24,6 +24,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\HtmlString;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Unique;
 use Throwable;
 
 class FieldsRelationManager extends RelationManager
@@ -47,10 +48,9 @@ class FieldsRelationManager extends RelationManager
                             ->label(Str::title(__('integration_type_field.field_name')))
                             ->rules([
                                 'required',
-                                Rule::unique(IntegrationTypeField::TABLE_NAME, IntegrationTypeField::FIELD_NAME)
-                                    ->ignore($form->getRecord()?->id)
-                                    ->where(IntegrationTypeField::INTEGRATION_TYPE_ID, $this->getOwnerRecord()->id),
+                                $this->getUniqueRule($form, IntegrationTypeField::FIELD_NAME),
                             ]),
+
                         Select::make(IntegrationTypeField::FIELD_TYPE)
                             ->label(Str::title(__('integration_type_field.field_type')))
                             ->required()
@@ -62,6 +62,16 @@ class FieldsRelationManager extends RelationManager
                                     state: $this->isFieldType($state, IntegrationTypeFieldTypeEnum::array)
                                 );
                             }),
+
+                        TextInput::make(IntegrationTypeField::ALTERNATE_NAME)
+                            ->label(Str::title(__('integration_type_field.alternate_name')))
+                            ->hintIcon(
+                                'heroicon-m-question-mark-circle',
+                                tooltip: Str::formatTitle(__('integration_type_field.alternate_name_tooltip'))
+                            )
+                            ->rules([
+                                $this->getUniqueRule($form, IntegrationTypeField::ALTERNATE_NAME),
+                            ]),
                     ]),
 
                 Fieldset::make(Str::title(__('integration_type_field.common_rules')))
@@ -183,6 +193,8 @@ class FieldsRelationManager extends RelationManager
                     ->label(Str::title(__('integration_type_field.field_name'))),
                 TextColumn::make(IntegrationTypeField::FIELD_TYPE)
                     ->label(Str::title(__('integration_type_field.field_type'))),
+                TextColumn::make(IntegrationTypeField::ALTERNATE_NAME)
+                    ->label(Str::title(__('integration_type_field.alternate_name'))),
             ])
             ->filters([
                 //
@@ -241,5 +253,12 @@ class FieldsRelationManager extends RelationManager
         } catch (Throwable) {
             return false;
         }
+    }
+
+    private function getUniqueRule(Form $form, string $field): Unique
+    {
+        return Rule::unique(IntegrationTypeField::TABLE_NAME, $field)
+            ->ignore($form->getRecord()?->id)
+            ->where(IntegrationTypeField::INTEGRATION_TYPE_ID, $this->getOwnerRecord()->id);
     }
 }
