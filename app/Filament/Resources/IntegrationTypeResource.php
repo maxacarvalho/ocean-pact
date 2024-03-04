@@ -149,7 +149,7 @@ class IntegrationTypeResource extends Resource
                             ->required(fn (Get $get) => $get('authorization.type') === 'basic')
                             ->autocomplete(false)
                             ->password(),
-                    ])
+                    ]),
             ]);
     }
 
