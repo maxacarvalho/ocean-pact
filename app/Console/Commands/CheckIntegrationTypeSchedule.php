@@ -34,6 +34,7 @@ class CheckIntegrationTypeSchedule extends Command
             ->where(IntegrationType::INTERVAL, '>', 0)
             ->whereNotNull(IntegrationType::TARGET_URL)
             ->where(IntegrationType::IS_RUNNING, false)
+            ->where(IntegrationType::IS_ENABLED, true)
             ->get();
 
         foreach ($integrations as $integration) {
