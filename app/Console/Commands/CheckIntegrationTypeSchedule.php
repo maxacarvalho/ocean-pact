@@ -32,6 +32,7 @@ class CheckIntegrationTypeSchedule extends Command
         $integrations = IntegrationType::query()
             ->where(IntegrationType::HANDLING_TYPE, IntegrationHandlingTypeEnum::FETCH)
             ->where(IntegrationType::INTERVAL, '>', 0)
+            ->whereNotNull(IntegrationType::TARGET_URL)
             ->where(IntegrationType::IS_RUNNING, false)
             ->get();
 

@@ -92,6 +92,7 @@ class IntegrationTypeResource extends Resource
 
                 TextInput::make(IntegrationType::TARGET_URL)
                     ->label(Str::formatTitle(__('integration_type.target_url')))
+                    ->required(fn (Get $get) => self::isHandlingTypeFetch($get))
                     ->url(),
 
                 KeyValue::make(IntegrationType::HEADERS)
