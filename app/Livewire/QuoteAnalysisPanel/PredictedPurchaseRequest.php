@@ -5,6 +5,7 @@ namespace App\Livewire\QuoteAnalysisPanel;
 use App\Actions\QuotesPortal\AcceptPredictedPurchaseRequestAction;
 use App\Actions\QuotesPortal\AddNewSupplierToQuoteAction;
 use App\Data\QuotesPortal\PredictedPurchaseRequestData;
+use App\Enums\QuotesPortal\QuoteStatusEnum;
 use App\Exceptions\QuotesPortal\MissingPredictedPurchaseRequestItemsException;
 use App\Exceptions\QuotesPortal\PredictedPurchaseRequestAlreadyAcceptedException;
 use App\Models\QuotesPortal\PredictedPurchaseRequest as PredictedPurchaseRequestModel;
@@ -345,7 +346,8 @@ class PredictedPurchaseRequest extends Component implements HasActions, HasForms
             ->with([QuoteItem::RELATION_QUOTE, QuoteItem::RELATION_PRODUCT])
             ->whereHas(QuoteItem::RELATION_QUOTE, function (Builder $query): void {
                 $query->where(Quote::COMPANY_ID, $this->companyId)
-                    ->where(Quote::QUOTE_NUMBER, $this->quoteNumber);
+                    ->where(Quote::QUOTE_NUMBER, $this->quoteNumber)
+                    ->where(Quote::STATUS, '=', QuoteStatusEnum::RESPONDED);
             })
             ->where(QuoteItem::UNIT_PRICE, '>', 0)
             ->when($filtering['lower_price'], function (Builder $query): void {

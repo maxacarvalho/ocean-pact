@@ -52,7 +52,7 @@ describe('getAuthorizationHeader method', function () {
             'username' => 'test',
             'password' => 'test',
         ];
-        $basicAuth = 'Basic ' . base64_encode('test:test');
+        $basicAuth = 'Basic '.base64_encode('test:test');
         expect($integrationType->getAuthorizationHeader())->toBeArray();
         expect($integrationType->getAuthorizationHeader()['Authorization'])->toBe($basicAuth);
     });
@@ -91,6 +91,6 @@ describe('getHeaders method', function () {
         expect($headers)->toBeArray();
         expect($headers['Accept'])->toBe('application/json');
         expect($headers['Content-Type'])->toBe('application/json');
-        expect($headers['Authorization'])->toBe('Basic ' . base64_encode('test:test'));
+        expect($headers['Authorization'])->toBe('Basic '.base64_encode('test:test'));
     });
 });
