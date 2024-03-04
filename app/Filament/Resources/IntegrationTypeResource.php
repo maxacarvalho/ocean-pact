@@ -87,7 +87,7 @@ class IntegrationTypeResource extends Resource
                         ->minValue(5)
                         ->maxValue(10080)
                         ->required(fn (Get $get) => self::isHandlingTypeFetch($get))
-                        ->visible(fn (Get $get) => self::isAdminAndHandlingTypeIsFetch($get))
+                        ->visible(fn (Get $get) => self::isAdminAndHandlingTypeIsFetch($get)),
                 ]),
 
                 TextInput::make(IntegrationType::TARGET_URL)
@@ -148,7 +148,7 @@ class IntegrationTypeResource extends Resource
                             ->visible(fn (Get $get) => $get('authorization.type') === 'basic')
                             ->required(fn (Get $get) => $get('authorization.type') === 'basic')
                             ->autocomplete(false),
-                    ])
+                    ]),
             ]);
     }
 
@@ -236,6 +236,7 @@ class IntegrationTypeResource extends Resource
         }
 
         $type = IntegrationHandlingTypeEnum::from($get(IntegrationType::HANDLING_TYPE));
+
         return $type === IntegrationHandlingTypeEnum::FETCH;
     }
 }

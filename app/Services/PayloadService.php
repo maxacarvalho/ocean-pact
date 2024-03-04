@@ -52,7 +52,7 @@ readonly class PayloadService
                 'exception_message' => $e->getMessage(),
                 'context' => [
                     'payload_input' => $payloadInput,
-                ]
+                ],
             ]);
         } catch (Throwable $e) {
             Log::error('PayloadService: Unable to store payloadInput', [

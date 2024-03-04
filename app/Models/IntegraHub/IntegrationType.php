@@ -172,7 +172,7 @@ class IntegrationType extends Model
 
         if ($this->authorization['type'] === 'basic') {
             return [
-                'Authorization' => 'Basic ' . base64_encode($this->authorization['username'] . ':' . $this->authorization['password']),
+                'Authorization' => 'Basic '.base64_encode($this->authorization['username'].':'.$this->authorization['password']),
             ];
         }
 
