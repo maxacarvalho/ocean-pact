@@ -1,8 +1,8 @@
 <?php
 
 return [
-    'buyer_invitations' => 'buyer invitations',
-    'buyer_invitation' => 'buyer invitation',
+    'user_invitations' => 'buyer invitations',
+    'user_invitation' => 'buyer invitation',
     'supplier_invitations' => 'supplier invitations',
     'supplier_invitation' => 'supplier invitation',
     'pending' => 'pending',
