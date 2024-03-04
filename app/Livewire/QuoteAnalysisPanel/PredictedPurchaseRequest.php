@@ -38,6 +38,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Locked;
+use Livewire\Attributes\On;
 use Livewire\Component;
 use stdClass;
 use Throwable;
@@ -69,11 +70,65 @@ class PredictedPurchaseRequest extends Component implements HasActions, HasForms
         $this->predictedPurchaseRequestCount = $this->getTableQuery()->count();
 
         $this->form->fill();
+
+        $selectedQuoteItems = $this->getTableQuery()
+            ->get()
+            ->pluck('quote_item_id');
+
+        $this->dispatch('predictedPurchaseRequestLoaded', selectedQuoteItems: $selectedQuoteItems);
     }
 
     public function render(): View|Application|Factory
     {
         return view('livewire.quote-analysis-panel.predicted-purchase-request');
+    }
+
+    #[On('predictedPurchaseRequestItemToggled')]
+    public function onPredictedPurchaseRequestItemToggled(int $quoteItemId, string $item, int $productId, $state): void
+    {
+        if (false === $state) {
+            $this->getTableQuery()->where(PredictedPurchaseRequestModel::QUOTE_ITEM_ID, '=', $quoteItemId)->delete();
+        }
+
+        if (true === $state) {
+            $this->getTableQuery()
+                ->where(PredictedPurchaseRequestModel::ITEM, '=', $item)
+                ->where(PredictedPurchaseRequestModel::PRODUCT_ID, '=', $productId)
+                ->delete();
+
+            /** @var QuoteItem $quoteItem */
+            $quoteItem = QuoteItem::query()
+                ->with([QuoteItem::RELATION_QUOTE, QuoteItem::RELATION_PRODUCT])
+                ->findOrFail($quoteItemId);
+
+            $data = PredictedPurchaseRequestData::from([
+                PredictedPurchaseRequestModel::COMPANY_ID => $this->companyId,
+                PredictedPurchaseRequestModel::QUOTE_NUMBER => $this->quoteNumber,
+                PredictedPurchaseRequestModel::BUYER_ID => $quoteItem->quote->buyer_id,
+                PredictedPurchaseRequestModel::QUOTE_ID => $quoteItem->quote_id,
+                PredictedPurchaseRequestModel::SUPPLIER_ID => $quoteItem->quote->supplier_id,
+                PredictedPurchaseRequestModel::PRODUCT_ID => $quoteItem->product->id,
+                PredictedPurchaseRequestModel::ITEM => $quoteItem->item,
+                PredictedPurchaseRequestModel::QUOTE_ITEM_ID => $quoteItem->id,
+                PredictedPurchaseRequestModel::DELIVERY_DATE => $quoteItem->updated_at->addDays(
+                    $quoteItem->delivery_in_days
+                ),
+                PredictedPurchaseRequestModel::PRICE => [
+                    'currency' => $quoteItem->unit_price->getCurrency(),
+                    'amount' => $quoteItem->unit_price->getMinorAmount()->toInt(),
+                ],
+                PredictedPurchaseRequestModel::LAST_PRICE => $quoteItem->product->last_price,
+                PredictedPurchaseRequestModel::NECESSITY_DATE => now(),
+            ]);
+
+            PredictedPurchaseRequestModel::query()->create($data->toArray());
+        }
+
+        $selectedQuoteItems = $this->getTableQuery()
+            ->get()
+            ->pluck('quote_item_id');
+
+        $this->dispatch('predictedPurchaseRequestLoaded', selectedQuoteItems: $selectedQuoteItems);
     }
 
     public function acceptPredictedPurchaseRequestAction(): Action
@@ -428,6 +483,14 @@ class PredictedPurchaseRequest extends Component implements HasActions, HasForms
         }
 
         $this->predictedPurchaseRequestCount = $this->getTableQuery()->count();
+
+        $selectedQuoteItems = PredictedPurchaseRequestModel::query()
+            ->where(PredictedPurchaseRequestModel::QUOTE_NUMBER, $this->quoteNumber)
+            ->where(PredictedPurchaseRequestModel::COMPANY_ID, $this->companyId)
+            ->pluck('quote_item_id')
+            ->toArray();
+
+        $this->dispatch('predictedPurchaseRequestLoaded', selectedQuoteItems: $selectedQuoteItems);
     }
 
     public function finishQuote()
