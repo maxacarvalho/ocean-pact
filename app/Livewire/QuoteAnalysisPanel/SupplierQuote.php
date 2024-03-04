@@ -5,6 +5,7 @@ namespace App\Livewire\QuoteAnalysisPanel;
 use App\Actions\QuotesPortal\CreateQuoteContactRequestAction;
 use App\Actions\QuotesPortal\RequestNewProposalAction;
 use App\Enums\QuotesPortal\QuoteStatusEnum;
+use App\Models\QuotesPortal\PredictedPurchaseRequest as PredictedPurchaseRequestModel;
 use App\Models\QuotesPortal\Quote;
 use App\Models\QuotesPortal\QuoteItem;
 use App\Utils\Str;
@@ -13,6 +14,7 @@ use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;
+use Filament\Tables\Columns\CheckboxColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
@@ -23,6 +25,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Carbon;
 use Livewire\Attributes\Locked;
+use Livewire\Attributes\On;
 use Livewire\Component;
 
 /**
@@ -40,6 +43,7 @@ class SupplierQuote extends Component implements HasForms, HasTable
     public bool $isQuoteBuyerOwner;
     public string $supplierName;
     public ?array $contactRequestFormData = [];
+    public ?array $predictedPurchaseRequestSelectedQuoteItems = [];
 
     public function mount(int $quoteId, bool $isQuoteBuyerOwner): void
     {
@@ -50,11 +54,23 @@ class SupplierQuote extends Component implements HasForms, HasTable
 
         $this->quoteStatus = $this->quote->status;
         $this->supplierName = $this->quote->supplier->name;
+
+        $this->predictedPurchaseRequestSelectedQuoteItems = PredictedPurchaseRequestModel::query()
+            ->where(PredictedPurchaseRequestModel::COMPANY_ID, $this->quote->company_id)
+            ->where(PredictedPurchaseRequestModel::QUOTE_NUMBER, $this->quote->quote_number)
+            ->pluck('quote_item_id')
+            ->toArray();
     }
 
     public function render(): View|Application|Factory
     {
         return view('livewire.quote-analysis-panel.supplier-quote');
+    }
+
+    #[On('predictedPurchaseRequestLoaded')]
+    public function onPredictedPurchaseRequestLoaded($selectedQuoteItems): void
+    {
+        $this->predictedPurchaseRequestSelectedQuoteItems = $selectedQuoteItems;
     }
 
     public function table(Table $table): Table
@@ -99,6 +115,28 @@ class SupplierQuote extends Component implements HasForms, HasTable
                     ->label(__('quote_analysis_panel.eta'))
                     ->formatStateUsing(function (int $state): string {
                         return Carbon::now()->addDays($state)->format('d/m/Y');
+                    }),
+
+                CheckboxColumn::make('is_selected')
+                    ->label(Str::ucfirst(__('quote_analysis_panel.is_selected')))
+                    ->state(function (QuoteItem $quoteItem) {
+                        return in_array($quoteItem->id, $this->predictedPurchaseRequestSelectedQuoteItems, true);
+                    })
+                    ->updateStateUsing(function ($state, QuoteItem $quoteItem) {
+                        if (false === $state) {
+                            $this->predictedPurchaseRequestSelectedQuoteItems = array_diff($this->predictedPurchaseRequestSelectedQuoteItems, [$quoteItem->id]);
+                        } else {
+                            $this->predictedPurchaseRequestSelectedQuoteItems[] = $quoteItem->id;
+                        }
+
+                        $this->dispatch('predictedPurchaseRequestItemToggled',
+                            quoteItemId: $quoteItem->id,
+                            item: $quoteItem->item,
+                            productId: $quoteItem->product_id,
+                            state: $state
+                        );
+
+                        return $state;
                     }),
             ]);
     }
