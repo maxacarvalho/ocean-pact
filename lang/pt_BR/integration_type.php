@@ -33,4 +33,5 @@ return [
     'authorization.basic_auth' => 'autenticação basica',
     'authorization.username' => 'nome de usuário',
     'authorization.password' => 'senha',
+    'execute' => 'executar',
 ];
