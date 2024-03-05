@@ -147,7 +147,8 @@ class IntegrationTypeResource extends Resource
                             ->label(Str::formatTitle(__('integration_type.authorization.password')))
                             ->visible(fn (Get $get) => $get('authorization.type') === 'basic')
                             ->required(fn (Get $get) => $get('authorization.type') === 'basic')
-                            ->autocomplete(false),
+                            ->autocomplete(false)
+                            ->password(),
                     ]),
             ]);
     }

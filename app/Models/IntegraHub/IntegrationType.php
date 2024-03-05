@@ -119,6 +119,13 @@ class IntegrationType extends Model
         return $this->handling_type->equals(IntegrationHandlingTypeEnum::STORE_AND_SEND);
     }
 
+    public function isCallable(): bool
+    {
+        return $this->is_enabled
+            && ! $this->is_running
+            && $this->handling_type->equals(IntegrationHandlingTypeEnum::FETCH);
+    }
+
     public function resolveTargetUrl(Payload $payload): string
     {
         if (! is_array($this->path_parameters) || empty($this->path_parameters)) {
