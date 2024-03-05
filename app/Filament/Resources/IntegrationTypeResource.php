@@ -150,8 +150,7 @@ class IntegrationTypeResource extends Resource
                             ->autocomplete(false)
                             ->password(),
                     ]),
-            ])
-            ->reactive();
+            ]);
     }
 
     public static function table(Table $table): Table
