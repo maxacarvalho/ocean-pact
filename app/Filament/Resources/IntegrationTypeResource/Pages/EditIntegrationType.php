@@ -15,11 +15,14 @@ class EditIntegrationType extends EditRecord
 
     protected function getHeaderActions(): array
     {
+        $savedData = $this->data;
+
         return [
             Action::make('execute')
                 ->label(Str::formatTitle(__('integration_type.execute')))
                 ->icon('heroicon-o-play')
-                ->visible($this->record->isCallable())
+                ->disabled(fn () => !$this->record->isCallable() || $savedData !== $this->data)
+                ->visible(fn () => $this->record->isCallable())
                 ->action('executeIntegrationType'),
             PageDeleteAction::make(),
         ];
@@ -28,10 +31,5 @@ class EditIntegrationType extends EditRecord
     public function executeIntegrationType(): void
     {
         dispatch(new CallExternalApiIntegrationJob($this->record));
-    }
-
-    protected function getRedirectUrl(): string
-    {
-        return $this->getResource()::getUrl('edit', ['record' => $this->record]);
     }
 }
