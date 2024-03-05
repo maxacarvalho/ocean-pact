@@ -122,6 +122,7 @@ class SupplierQuote extends Component implements HasForms, HasTable
                     ->state(function (QuoteItem $quoteItem) {
                         return in_array($quoteItem->id, $this->predictedPurchaseRequestSelectedQuoteItems, true);
                     })
+                    ->disabled(fn (QuoteItem $quoteItem): bool => $this->quoteStatus->equals(QuoteStatusEnum::RESPONDED) === false)
                     ->updateStateUsing(function ($state, QuoteItem $quoteItem) {
                         if (false === $state) {
                             $this->predictedPurchaseRequestSelectedQuoteItems = array_diff($this->predictedPurchaseRequestSelectedQuoteItems, [$quoteItem->id]);
