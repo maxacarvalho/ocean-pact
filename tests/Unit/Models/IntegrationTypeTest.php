@@ -42,19 +42,19 @@ describe('Scheduling interval is due method', function () {
 describe('getAuthorizationHeader method', function () {
     test('should return empty when authorization is not set', function () {
         $integrationType = new IntegrationType();
-        expect($integrationType->getAuthorizationHeader())->toBeEmpty();
+        expect($integrationType->getAuthorizationHeader([]))->toBeEmpty();
     });
 
     test('should return basic auth header when authorization is set to basic', function () {
         $integrationType = new IntegrationType();
-        $integrationType->authorization = [
+        $authorization = [
             'type' => 'basic',
             'username' => 'test',
             'password' => 'test',
         ];
         $basicAuth = 'Basic '.base64_encode('test:test');
-        expect($integrationType->getAuthorizationHeader())->toBeArray();
-        expect($integrationType->getAuthorizationHeader()['Authorization'])->toBe($basicAuth);
+        expect($integrationType->getAuthorizationHeader($authorization))->toBeArray();
+        expect($integrationType->getAuthorizationHeader($authorization)['Authorization'])->toBe($basicAuth);
     });
 });
 
@@ -88,6 +88,43 @@ describe('getHeaders method', function () {
             'password' => 'test',
         ];
         $headers = $integrationType->getHeaders();
+        expect($headers)->toBeArray();
+        expect($headers['Accept'])->toBe('application/json');
+        expect($headers['Content-Type'])->toBe('application/json');
+        expect($headers['Authorization'])->toBe('Basic '.base64_encode('test:test'));
+    });
+});
+
+describe('getForwardHeaders method', function () {
+    test('should return empty when forward_headers is not set', function () {
+        $integrationType = new IntegrationType();
+        expect($integrationType->getHeaders())->toBeEmpty();
+    });
+
+    test('should return array of headers when they are set', function () {
+        $integrationType = new IntegrationType();
+        $integrationType->forward_headers = [
+            'Accept' => 'application/json',
+            'Content-Type' => 'application/json',
+        ];
+        $headers = $integrationType->getForwardHeaders();
+        expect($headers)->toBeArray();
+        expect($headers['Accept'])->toBe('application/json');
+        expect($headers['Content-Type'])->toBe('application/json');
+    });
+
+    test('should include forward_authorization headers', function () {
+        $integrationType = new IntegrationType();
+        $integrationType->forward_headers = [
+            'Accept' => 'application/json',
+            'Content-Type' => 'application/json',
+        ];
+        $integrationType->forward_authorization = [
+            'type' => 'basic',
+            'username' => 'test',
+            'password' => 'test',
+        ];
+        $headers = $integrationType->getForwardHeaders();
         expect($headers)->toBeArray();
         expect($headers['Accept'])->toBe('application/json');
         expect($headers['Content-Type'])->toBe('application/json');

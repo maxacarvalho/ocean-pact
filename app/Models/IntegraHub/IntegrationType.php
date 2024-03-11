@@ -130,14 +130,15 @@ class IntegrationType extends Model
 
     public function isForwardable(): bool
     {
-        return $this->handling_type->equals(IntegrationHandlingTypeEnum::STORE_AND_SEND);
+        return $this->handling_type->equals(IntegrationHandlingTypeEnum::STORE_AND_SEND)
+            || $this->handling_type->equals(IntegrationHandlingTypeEnum::FETCH_AND_SEND);
     }
 
     public function isCallable(): bool
     {
         return $this->is_enabled
             && ! $this->is_running
-            && $this->handling_type->equals(IntegrationHandlingTypeEnum::FETCH);
+            && $this->handling_type->equals(IntegrationHandlingTypeEnum::FETCH) || $this->handling_type->equals(IntegrationHandlingTypeEnum::FETCH_AND_SEND);
     }
 
     public function resolveTargetUrl(Payload $payload): string
@@ -185,15 +186,15 @@ class IntegrationType extends Model
         ]);
     }
 
-    public function getAuthorizationHeader(): array
+    public function getAuthorizationHeader(array|null $authorization): array
     {
-        if (is_null($this->authorization) || !isset($this->authorization['type'])) {
+        if (is_null($authorization) || !isset($authorization['type'])) {
             return [];
         }
 
-        if ($this->authorization['type'] === 'basic') {
+        if ($authorization['type'] === 'basic') {
             return [
-                'Authorization' => 'Basic '.base64_encode($this->authorization['username'].':'.$this->authorization['password']),
+                'Authorization' => 'Basic '.base64_encode($authorization['username'].':'.$authorization['password']),
             ];
         }
 
@@ -202,6 +203,15 @@ class IntegrationType extends Model
 
     public function getHeaders(): array
     {
-        return array_merge($this->headers ?? [], $this->getAuthorizationHeader());
+        $authorizationHeader = $this->getAuthorizationHeader($this->authorization);
+
+        return array_merge($this->headers ?? [], $authorizationHeader);
+    }
+
+    public function getForwardHeaders(): array
+    {
+        $authorizationHeader = $this->getAuthorizationHeader($this->forward_authorization);
+
+        return array_merge($this->forward_headers ?? [], $authorizationHeader);
     }
 }
