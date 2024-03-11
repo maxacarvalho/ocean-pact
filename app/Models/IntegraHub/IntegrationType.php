@@ -28,6 +28,9 @@ use Illuminate\Support\Str;
  * @property array                                   $headers
  * @property array|null                              $path_parameters
  * @property array|null                              $authorization
+ * @property string|null                             $forward_url
+ * @property array|null                              $forward_headers
+ * @property array|null                              $forward_authorization
  * @property int|null                                $interval
  * @property bool                                    $is_running
  * @property Carbon|null                             $last_run_at
@@ -57,6 +60,9 @@ class IntegrationType extends Model
     public const HEADERS = 'headers';
     public const PATH_PARAMETERS = 'path_parameters';
     public const AUTHORIZATION = 'authorization';
+    public const FORWARD_URL = 'forward_url';
+    public const FORWARD_HEADERS = 'forward_headers';
+    public const FORWARD_AUTHORIZATION = 'forward_authorization';
     public const INTERVAL = 'interval';
     public const IS_RUNNING = 'is_running';
     public const LAST_RUN_AT = 'last_run_at';
@@ -90,6 +96,8 @@ class IntegrationType extends Model
             self::AUTHORIZATION => 'array',
             self::IS_RUNNING => 'boolean',
             self::LAST_RUN_AT => 'datetime',
+            self::FORWARD_HEADERS => 'array',
+            self::FORWARD_AUTHORIZATION => 'array',
         ];
     }
 
