@@ -176,7 +176,7 @@ class IntegrationType extends Model
 
     public function getAuthorizationHeader(): array
     {
-        if (is_null($this->authorization) || !$this->authorization['type']) {
+        if (is_null($this->authorization) || !isset($this->authorization['type'])) {
             return [];
         }
 
