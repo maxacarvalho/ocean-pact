@@ -1,6 +1,5 @@
 <?php
 
-use App\Data\IntegraHub\PayloadData;
 use App\Models\IntegraHub\Payload;
 use App\Models\QuotesPortal\Quote;
 use Illuminate\Database\Eloquent\Builder;
@@ -10,18 +9,16 @@ return new class extends Migration
 {
     public function up(): void
     {
-        $items = PayloadData::collection(
-            Payload::query()
-                ->select('payloads.*')
-                ->join('integration_types', 'integration_types.id', '=', 'payloads.integration_type_id')
-                ->where('integration_types.code', '=', 'cotacoes-respondidas')
-                ->where(function (Builder $query): void {
-                    $query
-                        ->where('payloads.processing_status', '!=', 'COLLECTED')
-                        ->orWhereNull('payloads.processing_status');
-                })
-                ->get()
-        );
+        $items = Payload::query()
+            ->select('payloads.*')
+            ->join('integration_types', 'integration_types.id', '=', 'payloads.integration_type_id')
+            ->where('integration_types.code', '=', 'cotacoes-respondidas')
+            ->where(function (Builder $query): void {
+                $query
+                    ->where('payloads.processing_status', '!=', 'COLLECTED')
+                    ->orWhereNull('payloads.processing_status');
+            })
+            ->get();
 
         foreach ($items as $item) {
             if (! $item->payload['DATA_LIMITE_RESPOSTA']) {
