@@ -6,6 +6,7 @@ use App\Enums\IntegraHub\IntegrationHandlingTypeEnum;
 use App\Enums\IntegraHub\IntegrationTypeEnum;
 use App\Models\QuotesPortal\Company;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -39,6 +40,8 @@ use Illuminate\Support\Str;
  */
 class IntegrationType extends Model
 {
+    use HasFactory;
+
     public const TABLE_NAME = 'integration_types';
     public const ID = 'id';
     public const COMPANY_ID = 'company_id';
