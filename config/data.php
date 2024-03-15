@@ -82,7 +82,7 @@ return [
         'enabled' => true,
         'directories' => [app_path('Data')],
         'cache' => [
-            'store' => env('CACHE_DRIVER', 'file'),
+            'store' => env('CACHE_STORE', 'file'),
             'prefix' => 'laravel-data',
         ],
         'reflection_discovery' => [
