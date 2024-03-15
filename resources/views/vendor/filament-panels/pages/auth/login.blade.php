@@ -20,7 +20,7 @@
         <div class="text-center">
             <a
                 class="text-primary-600 hover:text-primary-700"
-                href="{{ route('filament.admin.supplier-registration', ['token' => $this->token]) }}"
+                href="{{ route('filament.admin.user-activation', ['token' => $this->token]) }}"
             >{{ \App\Utils\Str::ucfirst(__('invitation.register_here')) }}</a>
         </div>
     @endif
