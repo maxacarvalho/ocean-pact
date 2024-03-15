@@ -69,13 +69,16 @@ class QuoteItem extends Model
         self::UPDATED_AT,
     ];
 
-    protected $casts = [
-        self::UNIT_PRICE => MoneyCast::class,
-        self::IPI => 'float',
-        self::ICMS => 'float',
-        self::SHOULD_BE_QUOTED => 'boolean',
-        self::STATUS => QuoteItemStatusEnum::class,
-    ];
+    protected function casts(): array
+    {
+        return [
+            self::UNIT_PRICE => MoneyCast::class,
+            self::IPI => 'float',
+            self::ICMS => 'float',
+            self::SHOULD_BE_QUOTED => 'boolean',
+            self::STATUS => QuoteItemStatusEnum::class,
+        ];
+    }
 
     public function quote(): BelongsTo
     {

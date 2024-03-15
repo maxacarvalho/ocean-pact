@@ -40,9 +40,12 @@ class QuoteContactRequest extends Model
         self::UPDATED_AT,
     ];
 
-    protected $casts = [
-        self::RECIPIENTS => 'array',
-    ];
+    protected function casts(): array
+    {
+        return [
+            self::RECIPIENTS => 'array',
+        ];
+    }
 
     public function quote(): BelongsTo
     {

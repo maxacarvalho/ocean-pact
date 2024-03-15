@@ -56,15 +56,18 @@ class Payload extends Model
         self::UPDATED_AT,
     ];
 
-    protected $casts = [
-        self::PAYLOAD => 'array',
-        self::PATH_PARAMETERS => 'array',
-        self::STORED_AT => 'datetime',
-        self::STORING_STATUS => PayloadStoringStatusEnum::class,
-        self::PROCESSED_AT => 'datetime',
-        self::PROCESSING_STATUS => PayloadProcessingStatusEnum::class,
-        self::RESPONSE => 'array',
-    ];
+    protected function casts(): array
+    {
+        return [
+            self::PAYLOAD => 'array',
+            self::PATH_PARAMETERS => 'array',
+            self::STORED_AT => 'datetime',
+            self::STORING_STATUS => PayloadStoringStatusEnum::class,
+            self::PROCESSED_AT => 'datetime',
+            self::PROCESSING_STATUS => PayloadProcessingStatusEnum::class,
+            self::RESPONSE => 'array',
+        ];
+    }
 
     public function integrationType(): BelongsTo
     {

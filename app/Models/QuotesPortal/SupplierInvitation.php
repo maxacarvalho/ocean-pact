@@ -44,10 +44,13 @@ class SupplierInvitation extends Model
         self::UPDATED_AT,
     ];
 
-    protected $casts = [
-        self::SENT_AT => 'datetime',
-        self::STATUS => InvitationStatusEnum::class,
-    ];
+    protected function casts(): array
+    {
+        return [
+            self::SENT_AT => 'datetime',
+            self::STATUS => InvitationStatusEnum::class,
+        ];
+    }
 
     public function supplier(): BelongsTo
     {

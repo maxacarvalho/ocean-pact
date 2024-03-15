@@ -40,10 +40,13 @@ class PayloadProcessingAttempt extends Model
         self::UPDATED_AT,
     ];
 
-    protected $casts = [
-        self::STATUS => PayloadProcessingAttemptsStatusEnum::class,
-        self::RESPONSE => 'array',
-    ];
+    protected function casts(): array
+    {
+        return [
+            self::STATUS => PayloadProcessingAttemptsStatusEnum::class,
+            self::RESPONSE => 'array',
+        ];
+    }
 
     public function payload(): BelongsTo
     {

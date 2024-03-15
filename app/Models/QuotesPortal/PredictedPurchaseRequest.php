@@ -72,13 +72,16 @@ class PredictedPurchaseRequest extends Model
         self::UPDATED_AT,
     ];
 
-    protected $casts = [
-        self::DELIVERY_DATE => 'date',
-        self::NECESSITY_DATE => 'date',
-        self::PRICE => MoneyFromJsonCast::class,
-        self::LAST_PRICE => MoneyFromJsonCast::class,
-        self::STATUS => PredictedPurchaseRequestStatusEnum::class,
-    ];
+    protected function casts(): array
+    {
+        return [
+            self::DELIVERY_DATE => 'date',
+            self::NECESSITY_DATE => 'date',
+            self::PRICE => MoneyFromJsonCast::class,
+            self::LAST_PRICE => MoneyFromJsonCast::class,
+            self::STATUS => PredictedPurchaseRequestStatusEnum::class,
+        ];
+    }
 
     public function company(): BelongsTo
     {

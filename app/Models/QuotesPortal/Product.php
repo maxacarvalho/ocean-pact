@@ -49,10 +49,13 @@ class Product extends Model
         self::UPDATED_AT,
     ];
 
-    protected $casts = [
-        self::LAST_PRICE => MoneyFromJsonCast::class,
-        self::SMALLEST_PRICE => MoneyFromJsonCast::class,
-    ];
+    protected function casts(): array
+    {
+        return [
+            self::LAST_PRICE => MoneyFromJsonCast::class,
+            self::SMALLEST_PRICE => MoneyFromJsonCast::class,
+        ];
+    }
 
     public function company(): BelongsTo
     {
