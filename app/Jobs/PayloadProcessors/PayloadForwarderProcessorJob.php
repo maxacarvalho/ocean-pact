@@ -34,20 +34,9 @@ class PayloadForwarderProcessorJob implements ShouldQueue
             ->with(Payload::RELATION_INTEGRATION_TYPE)
             ->findOrFail($this->payloadId);
 
-        $fields = $payload->integrationType->fields;
-        $payloadData = $payload->payload;
-        foreach ($fields as $field) {
-            if (array_key_exists($field->field_name, $payloadData)) {
-                $key = $field->alternate_name ?? $field->field_name;
-                $value = $payloadData[$field->field_name];
-                unset($payloadData[$field->field_name]);
-                $payloadData[$key] = $value;
-            }
-        }
-
         $httpClient = Http::withOptions(['verify' => App::environment('production')])
             ->withHeaders($this->getHeaders($payload))
-            ->withBody(json_encode($payloadData, JSON_THROW_ON_ERROR))
+            ->withBody(json_encode($payload->payload, JSON_THROW_ON_ERROR))
             ->throw();
 
         if ($payload->integrationType->handling_type->equals(IntegrationHandlingTypeEnum::STORE_AND_SEND)) {

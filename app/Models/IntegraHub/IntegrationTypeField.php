@@ -4,6 +4,7 @@ namespace App\Models\IntegraHub;
 
 use App\Enums\IntegraHub\IntegrationTypeFieldTypeEnum;
 use Illuminate\Contracts\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
@@ -23,7 +24,7 @@ use Spatie\EloquentSortable\SortableTrait;
  */
 class IntegrationTypeField extends Model implements Sortable
 {
-    use SortableTrait;
+    use SortableTrait, HasFactory;
 
     public const TABLE_NAME = 'integration_type_fields';
     public const ID = 'id';

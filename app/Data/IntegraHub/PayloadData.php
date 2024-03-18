@@ -16,6 +16,7 @@ final class PayloadData extends Data
     public function __construct(
         public readonly int|Optional $id,
         public readonly int $integration_type_id,
+        public readonly array $original_payload,
         public readonly array $payload,
         public readonly array|null $path_parameters,
         public readonly string|null $payload_hash,
@@ -37,11 +38,14 @@ final class PayloadData extends Data
         IntegrationType $integrationType,
         PayloadInputData $payloadInput
     ): PayloadData {
+        $transformedPayload = self::transformPayload($integrationType, $payloadInput->payload);
+
         return PayloadData::from([
             'integration_type_id' => $integrationType->id,
-            'payload' => $payloadInput->payload,
+            'original_payload' => $payloadInput->payload,
+            'payload' => $transformedPayload,
             'path_parameters' => $payloadInput->pathParameters,
-            'payload_hash' => md5(json_encode($payloadInput, JSON_THROW_ON_ERROR)),
+            'payload_hash' => md5(json_encode($transformedPayload, JSON_THROW_ON_ERROR)),
             'stored_at' => now(),
             'storing_status' => PayloadStoringStatusEnum::STORED,
             'processing_status' => PayloadProcessingStatusEnum::READY,
@@ -50,13 +54,32 @@ final class PayloadData extends Data
 
     public static function fromWebhookPayloadProcessor(IntegrationType $integrationType, array $payload): self
     {
+        $transformedPayload = self::transformPayload($integrationType, $payload);
+
         return self::from([
             'integration_type_id' => $integrationType->id,
-            'payload' => $payload,
-            'payload_hash' => md5(json_encode($payload)),
+            'original_payload' => $payload,
+            'payload' => $transformedPayload,
+            'payload_hash' => md5(json_encode($transformedPayload)),
             'stored_at' => now(),
             'storing_status' => PayloadStoringStatusEnum::STORED,
             'processing_status' => PayloadProcessingStatusEnum::READY,
         ]);
+    }
+
+    private static function transformPayload(IntegrationType $integrationType, array $payload): array
+    {
+        $fields = $integrationType->fields;
+
+        foreach ($fields as $field) {
+            if (array_key_exists($field->field_name, $payload)) {
+                $key = $field->alternate_name ?? $field->field_name;
+                $value = $payload[$field->field_name];
+                unset($payload[$field->field_name]);
+                $payload[$key] = $value;
+            }
+        }
+
+        return $payload;
     }
 }
