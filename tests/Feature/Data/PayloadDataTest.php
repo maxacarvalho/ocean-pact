@@ -9,7 +9,7 @@ describe('PayloadData', function () {
     test('should create PayloadData instance', function () {
         $integrationType = IntegrationType::factory()->create();
 
-        $payload = [ 'message' => 'hello' ];
+        $payload = ['message' => 'hello'];
         $payloadInputData = PayloadInputData::from([
             'payload' => $payload,
         ]);
@@ -29,7 +29,7 @@ describe('PayloadData', function () {
             IntegrationTypeField::ALTERNATE_NAME => 'transformed',
         ]);
 
-        $payload = [ 'message' => 'hello' ];
+        $payload = ['message' => 'hello'];
         $payloadInputData = PayloadInputData::from([
             'payload' => $payload,
         ]);

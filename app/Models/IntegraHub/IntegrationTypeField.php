@@ -24,7 +24,7 @@ use Spatie\EloquentSortable\SortableTrait;
  */
 class IntegrationTypeField extends Model implements Sortable
 {
-    use SortableTrait, HasFactory;
+    use HasFactory, SortableTrait;
 
     public const TABLE_NAME = 'integration_type_fields';
     public const ID = 'id';
