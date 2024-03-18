@@ -67,6 +67,19 @@ services:
             - MYSQL_USER=${DB_USERNAME:-oceanpact}
             - MYSQL_PASSWORD=${DB_PASSWORD:-secret}
 
+    mysql_testing:
+        image: mysql:8
+        ports:
+            - "3307:3306"
+        networks:
+            - oceanpact-net
+        environment:
+            - MYSQL_DATABASE=${DB_DATABASE}
+            - MYSQL_USER=${DB_USERNAME}
+            - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
+            - MYSQL_PASSWORD=${DB_PASSWORD}
+        tmpfs: /var/lib/mysql
+
     node:
         image: node:18-alpine
         volumes:
@@ -84,4 +97,6 @@ volumes:
     oceanpact-data-redis:
         driver: local
     oceanpact-data-mysql:
+        driver: local
+    oceanpact-data-mysql-testing:
         driver: local
