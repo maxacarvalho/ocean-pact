@@ -44,9 +44,12 @@ class Budget extends Model
         self::UPDATED_AT,
     ];
 
-    protected $casts = [
-        self::STATUS => BudgetStatusEnum::class,
-    ];
+    protected function casts(): array
+    {
+        return [
+            self::STATUS => BudgetStatusEnum::class,
+        ];
+    }
 
     public function company(): BelongsTo
     {

@@ -44,10 +44,13 @@ class IntegrationTypeField extends Model implements Sortable
         self::UPDATED_AT,
     ];
 
-    protected $casts = [
-        self::FIELD_TYPE => IntegrationTypeFieldTypeEnum::class,
-        self::FIELD_RULES => 'array',
-    ];
+    protected function casts(): array
+    {
+        return [
+            self::FIELD_TYPE => IntegrationTypeFieldTypeEnum::class,
+            self::FIELD_RULES => 'array',
+        ];
+    }
 
     public function integrationType(): BelongsTo
     {

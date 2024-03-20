@@ -26,7 +26,7 @@ class CheckIntegrationTypeSchedule extends Command
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(): void
     {
         /** @var Collection<IntegrationType> $integrations */
         $integrations = IntegrationType::query()

@@ -76,19 +76,22 @@ class IntegrationType extends Model
         self::UPDATED_AT,
     ];
 
-    protected $casts = [
-        self::TYPE => IntegrationTypeEnum::class,
-        self::HANDLING_TYPE => IntegrationHandlingTypeEnum::class,
-        self::IS_VISIBLE => 'boolean',
-        self::IS_ENABLED => 'boolean',
-        self::IS_SYNCHRONOUS => 'boolean',
-        self::ALLOWS_DUPLICATES => 'boolean',
-        self::HEADERS => 'array',
-        self::PATH_PARAMETERS => 'array',
-        self::AUTHORIZATION => 'array',
-        self::IS_RUNNING => 'boolean',
-        self::LAST_RUN_AT => 'datetime',
-    ];
+    protected function casts(): array
+    {
+        return [
+            self::TYPE => IntegrationTypeEnum::class,
+            self::HANDLING_TYPE => IntegrationHandlingTypeEnum::class,
+            self::IS_VISIBLE => 'boolean',
+            self::IS_ENABLED => 'boolean',
+            self::IS_SYNCHRONOUS => 'boolean',
+            self::ALLOWS_DUPLICATES => 'boolean',
+            self::HEADERS => 'array',
+            self::PATH_PARAMETERS => 'array',
+            self::AUTHORIZATION => 'array',
+            self::IS_RUNNING => 'boolean',
+            self::LAST_RUN_AT => 'datetime',
+        ];
+    }
 
     protected static function booted(): void
     {

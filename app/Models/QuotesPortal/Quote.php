@@ -87,11 +87,14 @@ class Quote extends Model
         self::UPDATED_AT,
     ];
 
-    protected $casts = [
-        self::STATUS => QuoteStatusEnum::class,
-        self::VALID_UNTIL => 'date',
-        self::FREIGHT_TYPE => FreightTypeEnum::class,
-    ];
+    protected function casts(): array
+    {
+        return [
+            self::STATUS => QuoteStatusEnum::class,
+            self::VALID_UNTIL => 'date',
+            self::FREIGHT_TYPE => FreightTypeEnum::class,
+        ];
+    }
 
     public function budget(): BelongsTo
     {

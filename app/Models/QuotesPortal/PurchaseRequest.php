@@ -39,10 +39,13 @@ class PurchaseRequest extends Model
         self::UPDATED_AT,
     ];
 
-    protected $casts = [
-        self::SENT_AT => 'datetime',
-        self::VIEWED_AT => 'datetime',
-    ];
+    protected function casts(): array
+    {
+        return [
+            self::SENT_AT => 'datetime',
+            self::VIEWED_AT => 'datetime',
+        ];
+    }
 
     public function quote(): BelongsTo
     {

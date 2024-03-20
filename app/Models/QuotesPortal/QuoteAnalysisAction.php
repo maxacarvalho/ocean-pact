@@ -37,9 +37,12 @@ class QuoteAnalysisAction extends Model
         self::UPDATED_AT,
     ];
 
-    protected $casts = [
-        self::ACTION => QuoteAnalysisActionEnum::class,
-    ];
+    protected function casts(): array
+    {
+        return [
+            self::ACTION => QuoteAnalysisActionEnum::class,
+        ];
+    }
 
     public function quote(): BelongsTo
     {
