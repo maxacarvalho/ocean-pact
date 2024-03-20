@@ -1,9 +1,12 @@
 <?php
 
 use App\Providers\AppServiceProvider;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 use Sentry\Laravel\Integration;
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -29,5 +32,21 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withExceptions(function (Exceptions $exceptions) {
         $exceptions->reportable(function (Throwable $e) {
             Integration::captureUnhandledException($e);
+        });
+
+        $exceptions->render(function (AuthenticationException $exception, Request $request) {
+            if ($request->expectsJson()) {
+                return response()->json(['message' => $exception->getMessage()], 401);
+            }
+
+            if ($exception->redirectTo($request)) {
+                return redirect()->guest($exception->redirectTo($request));
+            }
+
+            if (Route::has('login')) {
+                return redirect()->guest(route('login'));
+            }
+
+            return redirect()->to('/');
         });
     })->create();
