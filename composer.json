@@ -18,7 +18,6 @@
         "brick/money": "^0.8.0",
         "cerbero/json-parser": "^1.1",
         "cerbero/lazy-json": "^2.0",
-        "doctrine/dbal": "^3.6",
         "dragonmantank/cron-expression": "^3.3",
         "filament/filament": "^3.2",
         "guzzlehttp/guzzle": "^7.2",

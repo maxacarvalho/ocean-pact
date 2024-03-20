@@ -23,7 +23,7 @@ class AppServiceProvider extends ServiceProvider
      *
      * @var string
      */
-    public const HOME = '/home';
+    public const string HOME = '/';
 
     public function register(): void
     {
@@ -61,8 +61,6 @@ class AppServiceProvider extends ServiceProvider
 
     public function bootAuth(): void
     {
-        $this->registerPolicies();
-
         Gate::define('viewPulse', function (User $user) {
             return $user->isSuperAdmin();
         });
