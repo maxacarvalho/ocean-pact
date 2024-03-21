@@ -1,10 +1,14 @@
 <?php
 
+use App\Http\Middleware\TrustProxies;
+use App\Http\Middleware\VerifyCsrfToken;
 use App\Providers\AppServiceProvider;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken as LaravelValidateCsrfToken;
+use Illuminate\Http\Middleware\TrustProxies as LaravelTrustProxies;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Sentry\Laravel\Integration;
@@ -25,9 +29,9 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->statefulApi();
         $middleware->api('throttle:api');
 
-        $middleware->replace(\Illuminate\Http\Middleware\TrustProxies::class, \App\Http\Middleware\TrustProxies::class);
+        $middleware->replace(LaravelTrustProxies::class, TrustProxies::class);
 
-        $middleware->replaceInGroup('web', \Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class, \App\Http\Middleware\VerifyCsrfToken::class);
+        $middleware->replaceInGroup('web', LaravelValidateCsrfToken::class, VerifyCsrfToken::class);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         $exceptions->reportable(function (Throwable $e) {
