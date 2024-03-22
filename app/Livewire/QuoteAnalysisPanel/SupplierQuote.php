@@ -4,6 +4,7 @@ namespace App\Livewire\QuoteAnalysisPanel;
 
 use App\Actions\QuotesPortal\CreateQuoteContactRequestAction;
 use App\Actions\QuotesPortal\RequestNewProposalAction;
+use App\Enums\QuotesPortal\QuoteItemStatusEnum;
 use App\Enums\QuotesPortal\QuoteStatusEnum;
 use App\Models\QuotesPortal\PredictedPurchaseRequest as PredictedPurchaseRequestModel;
 use App\Models\QuotesPortal\Quote;
@@ -88,6 +89,10 @@ class SupplierQuote extends Component implements HasForms, HasTable
                     'statusLabel' => $this->quoteStatus->getLabel(),
                 ])
             )
+            ->recordClasses(fn (QuoteItem $record) => match ($record->status) {
+                QuoteItemStatusEnum::REJECTED => 'opacity-30',
+                default => null,
+            })
             ->query(fn (): Builder => QuoteItem::query()->where(QuoteItem::QUOTE_ID, $this->quoteId))
             ->queryStringIdentifier("supplier-quote-{$this->quoteId}")
             ->defaultSort(QuoteItem::ITEM)
@@ -117,12 +122,15 @@ class SupplierQuote extends Component implements HasForms, HasTable
                         return Carbon::now()->addDays($state)->format('d/m/Y');
                     }),
 
+                TextColumn::make(QuoteItem::STATUS)
+                    ->label(Str::formatTitle(__('quote_item.status'))),
+
                 CheckboxColumn::make('is_selected')
                     ->label(Str::ucfirst(__('quote_analysis_panel.is_selected')))
                     ->state(function (QuoteItem $quoteItem) {
                         return in_array($quoteItem->id, $this->predictedPurchaseRequestSelectedQuoteItems, true);
                     })
-                    ->disabled(fn (QuoteItem $quoteItem): bool => $this->quoteStatus->equals(QuoteStatusEnum::RESPONDED) === false)
+                    ->disabled(fn (QuoteItem $quoteItem): bool => $this->canBeSelected($quoteItem) === false)
                     ->updateStateUsing(function ($state, QuoteItem $quoteItem) {
                         if (false === $state) {
                             $this->predictedPurchaseRequestSelectedQuoteItems = array_diff($this->predictedPurchaseRequestSelectedQuoteItems, [$quoteItem->id]);
@@ -130,7 +138,8 @@ class SupplierQuote extends Component implements HasForms, HasTable
                             $this->predictedPurchaseRequestSelectedQuoteItems[] = $quoteItem->id;
                         }
 
-                        $this->dispatch('predictedPurchaseRequestItemToggled',
+                        $this->dispatch(
+                            'predictedPurchaseRequestItemToggled',
                             quoteItemId: $quoteItem->id,
                             item: $quoteItem->item,
                             productId: $quoteItem->product_id,
@@ -213,5 +222,14 @@ class SupplierQuote extends Component implements HasForms, HasTable
             ->findOrFail($quoteId);
 
         return $quote;
+    }
+
+    private function canBeSelected(QuoteItem $quoteItem): bool
+    {
+        if ($this->quoteStatus->equals(QuoteStatusEnum::RESPONDED) === false) {
+            return false;
+        }
+
+        return $quoteItem->should_be_quoted === true && $quoteItem->status->equals(QuoteItemStatusEnum::REJECTED) === false;
     }
 }

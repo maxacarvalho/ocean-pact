@@ -87,8 +87,8 @@
         "post-create-project-cmd": [
             "@php artisan key:generate --ansi"
         ],
-        "format": "vendor/bin/pint",
-        "format-test": "vendor/bin/pint --test"
+        "format-style": "vendor/bin/pint",
+        "check-style": "vendor/bin/pint --test -v"
     },
     "extra": {
         "laravel": {
