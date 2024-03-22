@@ -2,8 +2,10 @@
 
 namespace App\Filament\Resources\QuoteResource\Pages;
 
+use App\Enums\QuotesPortal\PredictedPurchaseRequestStatusEnum;
 use App\Enums\QuotesPortal\QuoteStatusEnum;
 use App\Filament\Resources\QuoteResource;
+use App\Models\QuotesPortal\PredictedPurchaseRequest;
 use App\Models\QuotesPortal\Quote;
 use App\Models\QuotesPortal\QuoteItem;
 use App\Utils\Str;
@@ -21,6 +23,8 @@ class QuoteAnalysisPanel extends Page
     #[Locked]
     public array $quoteIds = [];
     public Collection|array $quoteItems = [];
+    public Collection|array $predictedPurchaseRequestItems = [];
+    public bool $isReadOnly = false;
 
     protected static string $resource = QuoteResource::class;
     protected static string $view = 'filament.resources.quote-resource.pages.quote-analysis-panel';
@@ -31,6 +35,14 @@ class QuoteAnalysisPanel extends Page
         $this->quoteNumber = $quoteNumber;
         $this->quoteIds = $this->getQuoteIds();
         $this->quoteItems = $this->getQuoteItems();
+
+        $this->predictedPurchaseRequestItems = PredictedPurchaseRequest::query()
+            ->where(PredictedPurchaseRequest::COMPANY_ID, '=', $this->companyId)
+            ->where(PredictedPurchaseRequest::QUOTE_NUMBER, '=', $this->quoteNumber)
+            ->get();
+
+        $this->isReadOnly = $this->predictedPurchaseRequestItems
+            ->contains(fn (PredictedPurchaseRequest $item): bool => $item->status->equals(PredictedPurchaseRequestStatusEnum::ACCEPTED));
     }
 
     #[On('newSupplierAddedToQuote')]

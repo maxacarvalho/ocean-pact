@@ -11,6 +11,7 @@
         :company-id="$this->companyId"
         :quote-number="$this->quoteNumber"
         :is-quote-buyer-owner="$this->isQuoteBuyerOwner()"
+        :is-read-only="$this->isReadOnly"
     />
 
     <div class="overflow-x-auto flex space-x-4 p-1">
@@ -19,6 +20,7 @@
                 :wire:key="$quoteId"
                 :quote-id="$quoteId"
                 :is-quote-buyer-owner="$this->isQuoteBuyerOwner()"
+                :is-read-only="$this->isReadOnly"
             />
         @endforeach
     </div>
