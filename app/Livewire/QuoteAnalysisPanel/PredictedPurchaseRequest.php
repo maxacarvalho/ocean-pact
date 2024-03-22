@@ -62,13 +62,15 @@ class PredictedPurchaseRequest extends Component implements HasActions, HasForms
     public bool $isQuoteBuyerOwner;
     public int $predictedPurchaseRequestCount = 0;
     public ?string $cannotAcceptPredictedPurchaseRequestModalContent = null;
+    public bool $isReadOnly = false;
 
-    public function mount(int $companyId, string $quoteNumber, bool $isQuoteBuyerOwner): void
+    public function mount(int $companyId, string $quoteNumber, bool $isQuoteBuyerOwner, bool $isReadOnly): void
     {
         $this->companyId = $companyId;
         $this->quoteNumber = $quoteNumber;
         $this->isQuoteBuyerOwner = $isQuoteBuyerOwner;
         $this->predictedPurchaseRequestCount = $this->getTableQuery()->count();
+        $this->isReadOnly = $isReadOnly;
 
         $this->form->fill();
 

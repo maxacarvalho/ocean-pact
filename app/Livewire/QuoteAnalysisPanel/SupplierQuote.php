@@ -45,11 +45,13 @@ class SupplierQuote extends Component implements HasForms, HasTable
     public string $supplierName;
     public ?array $contactRequestFormData = [];
     public ?array $predictedPurchaseRequestSelectedQuoteItems = [];
+    public bool $isReadOnly = false;
 
-    public function mount(int $quoteId, bool $isQuoteBuyerOwner): void
+    public function mount(int $quoteId, bool $isQuoteBuyerOwner, bool $isReadOnly): void
     {
         $this->quoteId = $quoteId;
         $this->isQuoteBuyerOwner = $isQuoteBuyerOwner;
+        $this->isReadOnly = $isReadOnly;
 
         $this->quote = $this->getQuote($quoteId);
 
@@ -226,6 +228,10 @@ class SupplierQuote extends Component implements HasForms, HasTable
 
     private function canBeSelected(QuoteItem $quoteItem): bool
     {
+        if ($this->isReadOnly) {
+            return false;
+        }
+
         if ($this->quoteStatus->equals(QuoteStatusEnum::RESPONDED) === false) {
             return false;
         }
