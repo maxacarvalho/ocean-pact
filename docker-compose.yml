@@ -15,7 +15,7 @@ services:
         networks:
             oceanpact-net:
                 aliases:
-                    - oceanpact.test
+                    - oceanpact.dev
 
     app:
         image: oceanpact/app

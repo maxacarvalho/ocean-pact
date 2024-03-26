@@ -70,6 +70,12 @@ class SupplierQuote extends Component implements HasForms, HasTable
         return view('livewire.quote-analysis-panel.supplier-quote');
     }
 
+    #[On('predictedPurchaseRequestAccepted')]
+    public function predictedPurchaseRequestAccepted(): void
+    {
+        $this->isReadOnly = true;
+    }
+
     #[On('predictedPurchaseRequestLoaded')]
     public function onPredictedPurchaseRequestLoaded($selectedQuoteItems): void
     {
