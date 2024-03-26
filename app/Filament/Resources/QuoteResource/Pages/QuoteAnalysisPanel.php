@@ -45,6 +45,12 @@ class QuoteAnalysisPanel extends Page
             ->contains(fn (PredictedPurchaseRequest $item): bool => $item->status->equals(PredictedPurchaseRequestStatusEnum::ACCEPTED));
     }
 
+    #[On('predictedPurchaseRequestAccepted')]
+    public function predictedPurchaseRequestAccepted(): void
+    {
+        $this->isReadOnly = true;
+    }
+
     #[On('newSupplierAddedToQuote')]
     public function newSupplierAddedToQuote(): void
     {

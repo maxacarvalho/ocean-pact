@@ -146,6 +146,9 @@ class PredictedPurchaseRequest extends Component implements HasActions, HasForms
                         $this->companyId,
                         $this->quoteNumber
                     );
+
+                    $this->isReadOnly = true;
+                    $this->dispatch('predictedPurchaseRequestAccepted');
                 } catch (MissingPredictedPurchaseRequestItemsException|PredictedPurchaseRequestAlreadyAcceptedException $exception) {
                     $this->cannotAcceptPredictedPurchaseRequestModalContent = $exception->getMessage();
                     $this->dispatch('open-modal', id: 'cannot-accept-predicted-purchase-request-modal');
