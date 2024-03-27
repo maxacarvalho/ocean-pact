@@ -408,10 +408,10 @@ class PredictedPurchaseRequest extends Component implements HasActions, HasForms
             ->whereHas(QuoteItem::RELATION_QUOTE, function (Builder $query): void {
                 $query->where(Quote::COMPANY_ID, $this->companyId)
                     ->where(Quote::QUOTE_NUMBER, $this->quoteNumber)
-                    ->where(Quote::STATUS, '=', QuoteStatusEnum::RESPONDED);
+                    ->where(Quote::TABLE_NAME.'.'.Quote::STATUS, '=', QuoteStatusEnum::RESPONDED);
             })
             ->where(QuoteItem::SHOULD_BE_QUOTED, '=', true)
-            ->whereNot(QuoteItem::STATUS, '=', QuoteItemStatusEnum::REJECTED)
+            ->whereNot(QuoteItem::TABLE_NAME.'.'.QuoteItem::STATUS, '=', QuoteItemStatusEnum::REJECTED)
             ->where(QuoteItem::UNIT_PRICE, '>', 0)
             ->when($filtering['lower_price'], function (Builder $query): void {
                 $query->orderBy(QuoteItem::UNIT_PRICE);
