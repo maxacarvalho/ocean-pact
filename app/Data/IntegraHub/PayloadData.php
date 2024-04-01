@@ -67,19 +67,40 @@ final class PayloadData extends Data
         ]);
     }
 
-    private static function transformPayload(IntegrationType $integrationType, array $payload): array
+    public static function transformPayload(IntegrationType $integrationType, array $payload): array
     {
-        $fields = $integrationType->fields;
+        $mappingConfig = $integrationType->fields->pluck('alternate_name', 'field_name');
 
-        foreach ($fields as $field) {
-            if (array_key_exists($field->field_name, $payload)) {
-                $key = $field->alternate_name ?? $field->field_name;
-                $value = $payload[$field->field_name];
-                unset($payload[$field->field_name]);
-                $payload[$key] = $value;
+        $data = [];
+        foreach ($mappingConfig as $key => $value) {
+            $data[$value] = data_get($payload, $key);
+        }
+
+        $dottedData = self::getDottedArray($data);
+        $transformed = [];
+        foreach ($dottedData as $key => $value) {
+            data_fill($transformed, $key, $value);
+        }
+
+        return $transformed;
+    }
+
+    private static function getDottedArray(array $data, string $dottedKey = ''): array
+    {
+        $dotted = [];
+        foreach ($data as $key => $value) {
+            $newKey = $key;
+            if (is_numeric($key)) {
+                $lastStarPosition = strrpos($dottedKey, '*');
+                $newKey = substr_replace($dottedKey, $key, $lastStarPosition, 1);
+                $dotted[$newKey] = $value;
+            }
+
+            if (is_array($value)) {
+                $dotted = array_merge($dotted, self::getDottedArray($value, $newKey));
             }
         }
 
-        return $payload;
+        return $dotted;
     }
 }
