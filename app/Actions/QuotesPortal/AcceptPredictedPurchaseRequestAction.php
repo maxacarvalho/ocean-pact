@@ -17,6 +17,7 @@ use App\Models\QuotesPortal\QuoteItem;
 use App\Models\QuotesPortal\Supplier;
 use App\Models\User;
 use App\Utils\Str;
+use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Spatie\WebhookServer\WebhookCall;
 
@@ -143,8 +144,10 @@ class AcceptPredictedPurchaseRequestAction
                 QuoteItem::STATUS => QuoteItemStatusEnum::ACCEPTED,
             ]);
         QuoteItem::query()
-            ->whereNotIn(QuoteItem::ID, $quoteItemsIds)
-            ->where(QuoteItem::QUOTE_ID, $first->quote_id)
+            ->where(function (Builder $query) use ($quoteIds, $quoteItemsIds) {
+                $query->whereIn(QuoteItem::QUOTE_ID, $quoteIds)
+                    ->whereNotIn(QuoteItem::ID, $quoteItemsIds);
+            })
             ->update([
                 QuoteItem::STATUS => QuoteItemStatusEnum::REJECTED,
             ]);
