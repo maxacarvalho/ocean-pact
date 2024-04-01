@@ -4,6 +4,8 @@ namespace App\Actions\QuotesPortal;
 
 use App\Data\QuotesPortal\FinalizedPredictedPurchaseRequestData;
 use App\Enums\QuotesPortal\PredictedPurchaseRequestStatusEnum;
+use App\Enums\QuotesPortal\QuoteItemStatusEnum;
+use App\Enums\QuotesPortal\QuoteStatusEnum;
 use App\Exceptions\QuotesPortal\MissingPredictedPurchaseRequestItemsException;
 use App\Exceptions\QuotesPortal\PredictedPurchaseRequestAlreadyAcceptedException;
 use App\Models\QuotesPortal\Company;
@@ -124,6 +126,20 @@ class AcceptPredictedPurchaseRequestAction
             ->where(PredictedPurchaseRequest::QUOTE_NUMBER, $quoteNumber)
             ->update([
                 PredictedPurchaseRequest::STATUS => PredictedPurchaseRequestStatusEnum::ACCEPTED,
+            ]);
+
+        $quoteIds = $purchaseRequestItems->pluck(PredictedPurchaseRequest::QUOTE_ID)->toArray();
+        $quoteItemsIds = $purchaseRequestItems->pluck(PredictedPurchaseRequest::QUOTE_ITEM_ID)->toArray();
+
+        Quote::query()
+            ->whereIn(Quote::ID, $quoteIds)
+            ->update([
+                Quote::STATUS => QuoteStatusEnum::ANALYZED,
+            ]);
+        QuoteItem::query()
+            ->whereIn(QuoteItem::ID, $quoteItemsIds)
+            ->update([
+                QuoteItem::STATUS => QuoteItemStatusEnum::ACCEPTED,
             ]);
 
         WebhookCall::create()
