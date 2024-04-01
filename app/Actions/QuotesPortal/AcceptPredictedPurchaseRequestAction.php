@@ -136,10 +136,17 @@ class AcceptPredictedPurchaseRequestAction
             ->update([
                 Quote::STATUS => QuoteStatusEnum::ANALYZED,
             ]);
+
         QuoteItem::query()
             ->whereIn(QuoteItem::ID, $quoteItemsIds)
             ->update([
                 QuoteItem::STATUS => QuoteItemStatusEnum::ACCEPTED,
+            ]);
+        QuoteItem::query()
+            ->whereNotIn(QuoteItem::ID, $quoteItemsIds)
+            ->where(QuoteItem::QUOTE_ID, $first->quote_id)
+            ->update([
+                QuoteItem::STATUS => QuoteItemStatusEnum::REJECTED,
             ]);
 
         WebhookCall::create()
