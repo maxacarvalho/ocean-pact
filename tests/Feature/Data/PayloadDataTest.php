@@ -4,7 +4,6 @@ use App\Data\IntegraHub\PayloadData;
 use App\Data\IntegraHub\PayloadInputData;
 use App\Models\IntegraHub\IntegrationType;
 use App\Models\IntegraHub\IntegrationTypeField;
-use Illuminate\Support\Arr;
 
 describe('PayloadData', function () {
     test('should create PayloadData instance', function () {
@@ -106,5 +105,62 @@ describe('PayloadData', function () {
 
         $transformedPayload = PayloadData::transformPayload($integrationType, $payload);
         $this->assertEquals($expectedResult, $transformedPayload);
-    })->only();
+    });
+
+    test('should transform payload data with nested arrays inside nested arrays', function () {
+        $integrationType = IntegrationType::factory()->create();
+        IntegrationTypeField::factory()->createMany([
+            ['integration_type_id' => $integrationType->id, 'field_name' => 'empresas.*.nome', 'alternate_name' => 'companies.*.name'],
+            ['integration_type_id' => $integrationType->id, 'field_name' => 'empresas.*.produtos.*.id', 'alternate_name' => 'companies.*.products.*.id'],
+            ['integration_type_id' => $integrationType->id, 'field_name' => 'empresas.*.produtos.*.nome', 'alternate_name' => 'companies.*.products.*.name'],
+        ]);
+
+        $payload = [
+            'empresas' => [
+                [
+                    'nome' => 'ABC Company',
+                    'produtos' => [
+                        ['id' => 1, 'nome' => 'Shoes'],
+                        ['id' => 2, 'nome' => 'Shirt'],
+                    ],
+                ],
+                [
+                    'nome' => 'XYZ Company',
+                    'produtos' => [
+                        ['id' => 3, 'nome' => 'Pants'],
+                        ['id' => 4, 'nome' => 'Socks'],
+                    ],
+                ],
+            ],
+        ];
+
+        $expectedResult = [
+            'companies' => [
+                [
+                    'name' => 'ABC Company',
+                    'products' => [
+                        ['id' => 1, 'name' => 'Shoes'],
+                        ['id' => 2, 'name' => 'Shirt'],
+                    ],
+                ],
+                [
+                    'name' => 'XYZ Company',
+                    'products' => [
+                        ['id' => 3, 'name' => 'Pants'],
+                        ['id' => 4, 'name' => 'Socks'],
+                    ],
+                ],
+            ],
+        ];
+
+        $transformedPayload = PayloadData::transformPayload($integrationType, $payload);
+        $this->assertEquals($expectedResult, $transformedPayload);
+    });
+
+    test('should not transform payload data when integration_type fields alternate_name is not set', function () {
+        $integrationType = IntegrationType::factory()->create();
+        $payload = ['message' => 'hello'];
+        $transformedPayload = PayloadData::transformPayload($integrationType, $payload);
+        $this->assertEquals($payload, $transformedPayload);
+    });
 });

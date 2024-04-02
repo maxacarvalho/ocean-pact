@@ -5,6 +5,7 @@ namespace App\Data\IntegraHub;
 use App\Enums\IntegraHub\PayloadProcessingStatusEnum;
 use App\Enums\IntegraHub\PayloadStoringStatusEnum;
 use App\Models\IntegraHub\IntegrationType;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
 use Spatie\LaravelData\Attributes\WithCast;
 use Spatie\LaravelData\Casts\EnumCast;
@@ -69,38 +70,60 @@ final class PayloadData extends Data
 
     public static function transformPayload(IntegrationType $integrationType, array $payload): array
     {
-        $mappingConfig = $integrationType->fields->pluck('alternate_name', 'field_name');
+        $mappingConfig = $integrationType->fields->pluck('alternate_name', 'field_name')->toArray();
+        $regexMapping = self::createRegexMapping($mappingConfig);
 
-        $data = [];
-        foreach ($mappingConfig as $key => $value) {
-            $data[$value] = data_get($payload, $key);
+        $dottedPayload = Arr::dot($payload);
+        $transformedPayload = [];
+
+        foreach ($dottedPayload as $key => $value) {
+            $replacements = 0;
+            foreach ($regexMapping as $pattern => $replacement) {
+                $newKey = preg_replace('/'.$pattern.'/', $replacement, $key, -1, $replacements);
+                if ($replacements) {
+                    $transformedPayload[$newKey] = $value;
+                    break;
+                }
+            }
+
+            if ($replacements == 0) {
+                $transformedPayload[$key] = $value;
+            }
         }
 
-        $dottedData = self::getDottedArray($data);
-        $transformed = [];
-        foreach ($dottedData as $key => $value) {
-            data_fill($transformed, $key, $value);
-        }
-
-        return $transformed;
+        return Arr::undot($transformedPayload);
     }
 
-    private static function getDottedArray(array $data, string $dottedKey = ''): array
+    /**
+     * Creates a regex mapping based on the mapping config by replacing
+     * the wildcards with groups in the keys of the mapping and replacing
+     * the wildcards in the values with references to the groups. E.g.:
+     *
+     * $mappingConfig = [
+     *     'empresas.*.produtos.*.id' => 'companies.*.products.*.id'
+     * ]
+     *
+     * returns [
+     *     'empresas.(\d+).produtos.(\d+).id' => 'companies.$1.products.$2.id',
+     * ]
+     *
+     * @param  array<string, string>  $mappingConfig
+     * @return array<string, string>
+     */
+    private static function createRegexMapping(array $mappingConfig): array
     {
-        $dotted = [];
-        foreach ($data as $key => $value) {
-            $newKey = $key;
-            if (is_numeric($key)) {
-                $lastStarPosition = strrpos($dottedKey, '*');
-                $newKey = substr_replace($dottedKey, $key, $lastStarPosition, 1);
-                $dotted[$newKey] = $value;
-            }
+        $regexMapping = [];
 
-            if (is_array($value)) {
-                $dotted = array_merge($dotted, self::getDottedArray($value, $newKey));
-            }
+        foreach ($mappingConfig as $key => $value) {
+            $countMatches = 0;
+            $newValue = preg_replace_callback('/\*/', function () use (&$countMatches) {
+                return '$'.++$countMatches;
+            }, $value);
+
+            $newKey = str_replace('*', '(\d+)', $key);
+            $regexMapping[$newKey] = $newValue;
         }
 
-        return $dotted;
+        return $regexMapping;
     }
 }
