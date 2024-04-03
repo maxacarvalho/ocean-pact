@@ -48,4 +48,6 @@ return [
     'numerics' => 'numéricas',
     'optional' => 'opcional',
     'in' => 'opções',
+    'target_integration' => 'integração de destino',
+    'target_integration_type_field' => 'campo de destino',
 ];

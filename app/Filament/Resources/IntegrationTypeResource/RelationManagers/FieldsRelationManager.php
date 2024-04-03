@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\IntegrationTypeResource\RelationManagers;
 
 use App\Enums\IntegraHub\IntegrationTypeFieldTypeEnum;
+use App\Models\IntegraHub\IntegrationType;
 use App\Models\IntegraHub\IntegrationTypeField;
 use App\Utils\Str;
 use Filament\Forms\Components\Fieldset;
@@ -22,6 +23,7 @@ use Filament\Tables\Actions\EditAction as TableEditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 use Illuminate\Support\HtmlString;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Unique;
@@ -62,6 +64,18 @@ class FieldsRelationManager extends RelationManager
                                     state: $this->isFieldType($state, IntegrationTypeFieldTypeEnum::array)
                                 );
                             }),
+
+                        Select::make('target_integration')
+                            ->label(Str::title(__('integration_type_field.target_integration')))
+                            ->options(fn () => $this->getTargetIntegration())
+                            ->default($this->record?->targetIntegrationTypeField?->integration_type_id ?? 0)
+                            ->live(),
+
+                        Select::make(IntegrationTypeField::TARGET_INTEGRATION_TYPE_FIELD_ID)
+                            ->label(Str::title(__('integration_type_field.target_integration_type_field')))
+                            ->options(fn (Get $get) => $get('target_integration') ? $this->getTargetFields($get('target_integration')) : [])
+                            ->default($this->record?->target_integration_type_field_id ?? 0)
+                            ->preload(),
 
                         TextInput::make(IntegrationTypeField::ALTERNATE_NAME)
                             ->label(Str::title(__('integration_type_field.alternate_name')))
@@ -195,6 +209,13 @@ class FieldsRelationManager extends RelationManager
                     ->label(Str::title(__('integration_type_field.field_type'))),
                 TextColumn::make(IntegrationTypeField::ALTERNATE_NAME)
                     ->label(Str::title(__('integration_type_field.alternate_name'))),
+                TextColumn::make(IntegrationTypeField::TARGET_INTEGRATION_TYPE_FIELD_ID)
+                    ->label(Str::title(__('integration_type_field.target_integration_type_field')))
+                    ->formatStateUsing(function (IntegrationTypeField $record) {
+                        $record->load('targetIntegrationTypeField');
+
+                        return $record->targetIntegrationTypeField?->field_name ?? '';
+                    }),
             ])
             ->filters([
                 //
@@ -237,6 +258,8 @@ class FieldsRelationManager extends RelationManager
             $data[IntegrationTypeField::FIELD_RULES] = ['string' => true] + $data[IntegrationTypeField::FIELD_RULES];
         }
 
+        unset($data['target_integration']);
+
         return $data;
     }
 
@@ -260,5 +283,19 @@ class FieldsRelationManager extends RelationManager
         return Rule::unique(IntegrationTypeField::TABLE_NAME, $field)
             ->ignore($form->getRecord()?->id)
             ->where(IntegrationTypeField::INTEGRATION_TYPE_ID, $this->getOwnerRecord()->id);
+    }
+
+    private function getTargetIntegration(): Collection
+    {
+        return Collection::make(IntegrationType::query()->pluck(IntegrationType::CODE, IntegrationType::ID));
+    }
+
+    private function getTargetFields(int $integrationTypeId): Collection
+    {
+        return Collection::make(
+            IntegrationTypeField::query()
+                ->where(IntegrationTypeField::INTEGRATION_TYPE_ID, $integrationTypeId)
+                ->pluck(IntegrationTypeField::FIELD_NAME, IntegrationTypeField::ID)
+        );
     }
 }
