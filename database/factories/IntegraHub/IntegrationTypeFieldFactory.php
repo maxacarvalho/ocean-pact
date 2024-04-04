@@ -26,7 +26,7 @@ class IntegrationTypeFieldFactory extends Factory
             IntegrationTypeField::FIELD_NAME => fake()->word(),
             IntegrationTypeField::FIELD_TYPE => fake()->randomElement(IntegrationTypeFieldTypeEnum::values()),
             IntegrationTypeField::FIELD_RULES => null,
-            IntegrationTypeField::ALTERNATE_NAME => fake()->word(),
+            IntegrationTypeField::TARGET_INTEGRATION_TYPE_FIELD_ID => null,
             IntegrationTypeField::CREATED_AT => fake()->dateTime(),
             IntegrationTypeField::UPDATED_AT => fake()->dateTime(),
         ];

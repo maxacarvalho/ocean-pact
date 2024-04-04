@@ -76,16 +76,6 @@ class FieldsRelationManager extends RelationManager
                             ->options(fn (Get $get) => $get('target_integration') ? $this->getTargetFields($get('target_integration')) : [])
                             ->default($this->record?->target_integration_type_field_id ?? 0)
                             ->preload(),
-
-                        TextInput::make(IntegrationTypeField::ALTERNATE_NAME)
-                            ->label(Str::title(__('integration_type_field.alternate_name')))
-                            ->hintIcon(
-                                'heroicon-m-question-mark-circle',
-                                tooltip: Str::formatTitle(__('integration_type_field.alternate_name_tooltip'))
-                            )
-                            ->rules([
-                                $this->getUniqueRule($form, IntegrationTypeField::ALTERNATE_NAME),
-                            ]),
                     ]),
 
                 Fieldset::make(Str::title(__('integration_type_field.common_rules')))
@@ -207,8 +197,6 @@ class FieldsRelationManager extends RelationManager
                     ->label(Str::title(__('integration_type_field.field_name'))),
                 TextColumn::make(IntegrationTypeField::FIELD_TYPE)
                     ->label(Str::title(__('integration_type_field.field_type'))),
-                TextColumn::make(IntegrationTypeField::ALTERNATE_NAME)
-                    ->label(Str::title(__('integration_type_field.alternate_name'))),
                 TextColumn::make(IntegrationTypeField::TARGET_INTEGRATION_TYPE_FIELD_ID)
                     ->label(Str::title(__('integration_type_field.target_integration_type_field')))
                     ->formatStateUsing(function (IntegrationTypeField $record) {

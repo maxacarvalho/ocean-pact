@@ -70,12 +70,17 @@ final class PayloadData extends Data
 
     public static function transformPayload(IntegrationType $integrationType, array $payload): array
     {
-        $mappingConfig = $integrationType->fields->pluck('alternate_name', 'field_name')->toArray();
+        $mappingConfig = $integrationType->fields
+            ->load('targetIntegrationTypeField')
+            ->pluck('targetIntegrationTypeField.field_name', 'field_name')
+            ->toArray();
+
         array_walk($mappingConfig, function (&$value, $key) {
             if (is_null($value)) {
                 $value = $key;
             }
         });
+
         $regexMapping = self::createRegexMapping($mappingConfig);
 
         $dottedPayload = Arr::dot($payload);

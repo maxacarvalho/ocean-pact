@@ -4,8 +4,6 @@ return [
     'integration_type_field' => 'campo do tipo de integração',
     'integration_type_fields' => 'campos do tipo de integração',
     'field_name' => 'nome do campo',
-    'alternate_name' => 'nome alternativo',
-    'alternate_name_tooltip' => 'nome que será usado como nome do campo quando um payload salvo for enviado.',
     'field_type' => 'tipo do campo',
     'field_rules' => 'regras do campo',
     'date' => 'data',

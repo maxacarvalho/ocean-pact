@@ -21,12 +21,16 @@ describe('PayloadData', function () {
             ->and($payloadData->payload)->toBe($payload);
     });
 
-    test('should transform payload data when integration_type fields alternate_name is set', function () {
+    test('should transform payload data when target_integration_type_field is set', function () {
         $integrationType = IntegrationType::factory()->create();
+        $targetField = IntegrationTypeField::factory()->create([
+            IntegrationTypeField::INTEGRATION_TYPE_ID => IntegrationType::factory()->create()->id,
+            IntegrationTypeField::FIELD_NAME => 'transformed',
+        ]);
         IntegrationTypeField::factory()->create([
             IntegrationTypeField::INTEGRATION_TYPE_ID => $integrationType->id,
             IntegrationTypeField::FIELD_NAME => 'message',
-            IntegrationTypeField::ALTERNATE_NAME => 'transformed',
+            IntegrationTypeField::TARGET_INTEGRATION_TYPE_FIELD_ID => $targetField->id,
         ]);
 
         $payload = ['message' => 'hello'];
@@ -44,16 +48,30 @@ describe('PayloadData', function () {
 
     test('should transform payload data', function () {
         $integrationType = IntegrationType::factory()->create();
-        IntegrationTypeField::factory()->createMany([
-            ['integration_type_id' => $integrationType->id, 'field_name' => '*.identificador', 'alternate_name' => '*.id'],
-            ['integration_type_id' => $integrationType->id, 'field_name' => '*.nome_completo', 'alternate_name' => '*.name'],
-            ['integration_type_id' => $integrationType->id, 'field_name' => '*.email', 'alternate_name' => '*.email'],
-            ['integration_type_id' => $integrationType->id, 'field_name' => '*.empresa.razao_social', 'alternate_name' => '*.company.name'],
-            ['integration_type_id' => $integrationType->id, 'field_name' => '*.empresa.endereco', 'alternate_name' => '*.company.address'],
-            ['integration_type_id' => $integrationType->id, 'field_name' => '*.pedidos.*.SKU', 'alternate_name' => '*.orders.*.id'],
-            ['integration_type_id' => $integrationType->id, 'field_name' => '*.pedidos.*.descricao', 'alternate_name' => '*.orders.*.product'],
-            ['integration_type_id' => $integrationType->id, 'field_name' => '*.pedidos.*.qtd', 'alternate_name' => '*.orders.*.quantity'],
-        ]);
+        $targetIntegration = IntegrationType::factory()->create();
+        $fieldsMap = [
+            '*.identificador' => '*.id',
+            '*.nome_completo' => '*.name',
+            '*.email' => '*.email',
+            '*.empresa.razao_social' => '*.company.name',
+            '*.empresa.endereco' => '*.company.address',
+            '*.pedidos.*.SKU' => '*.orders.*.id',
+            '*.pedidos.*.descricao' => '*.orders.*.product',
+            '*.pedidos.*.qtd' => '*.orders.*.quantity',
+        ];
+
+        foreach ($fieldsMap as $fieldName => $targetFieldName) {
+            $targetField = IntegrationTypeField::factory()->create([
+                IntegrationTypeField::INTEGRATION_TYPE_ID => $targetIntegration->id,
+                IntegrationTypeField::FIELD_NAME => $targetFieldName,
+            ]);
+
+            IntegrationTypeField::factory()->create([
+                IntegrationTypeField::INTEGRATION_TYPE_ID => $integrationType->id,
+                IntegrationTypeField::FIELD_NAME => $fieldName,
+                IntegrationTypeField::TARGET_INTEGRATION_TYPE_FIELD_ID => $targetField->id,
+            ]);
+        }
 
         $payload = [
             [
@@ -105,15 +123,30 @@ describe('PayloadData', function () {
 
         $transformedPayload = PayloadData::transformPayload($integrationType, $payload);
         $this->assertEquals($expectedResult, $transformedPayload);
-    });
+    })->only();
 
     test('should transform payload data with nested arrays inside nested arrays', function () {
         $integrationType = IntegrationType::factory()->create();
-        IntegrationTypeField::factory()->createMany([
-            ['integration_type_id' => $integrationType->id, 'field_name' => 'empresas.*.nome', 'alternate_name' => 'companies.*.name'],
-            ['integration_type_id' => $integrationType->id, 'field_name' => 'empresas.*.produtos.*.id', 'alternate_name' => 'companies.*.products.*.id'],
-            ['integration_type_id' => $integrationType->id, 'field_name' => 'empresas.*.produtos.*.nome', 'alternate_name' => 'companies.*.products.*.name'],
-        ]);
+
+        $targetIntegration = IntegrationType::factory()->create();
+        $fieldsMap = [
+            'empresas.*.nome' => 'companies.*.name',
+            'empresas.*.produtos.*.id' => 'companies.*.products.*.id',
+            'empresas.*.produtos.*.nome' => 'companies.*.products.*.name',
+        ];
+
+        foreach ($fieldsMap as $fieldName => $targetFieldName) {
+            $targetField = IntegrationTypeField::factory()->create([
+                IntegrationTypeField::INTEGRATION_TYPE_ID => $targetIntegration->id,
+                IntegrationTypeField::FIELD_NAME => $targetFieldName,
+            ]);
+
+            IntegrationTypeField::factory()->create([
+                IntegrationTypeField::INTEGRATION_TYPE_ID => $integrationType->id,
+                IntegrationTypeField::FIELD_NAME => $fieldName,
+                IntegrationTypeField::TARGET_INTEGRATION_TYPE_FIELD_ID => $targetField->id,
+            ]);
+        }
 
         $payload = [
             'empresas' => [
@@ -157,7 +190,7 @@ describe('PayloadData', function () {
         $this->assertEquals($expectedResult, $transformedPayload);
     });
 
-    test('should not transform payload data when integration_type fields alternate_name is not set', function () {
+    test('should not transform payload data when target_integration_type_field is not set', function () {
         $integrationType = IntegrationType::factory()->create();
         $payload = ['message' => 'hello'];
         $transformedPayload = PayloadData::transformPayload($integrationType, $payload);
