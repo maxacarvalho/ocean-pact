@@ -5,6 +5,7 @@ namespace App\Data\IntegraHub;
 use App\Enums\IntegraHub\PayloadProcessingStatusEnum;
 use App\Enums\IntegraHub\PayloadStoringStatusEnum;
 use App\Models\IntegraHub\IntegrationType;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
 use Spatie\LaravelData\Attributes\WithCast;
 use Spatie\LaravelData\Casts\EnumCast;
@@ -16,6 +17,7 @@ final class PayloadData extends Data
     public function __construct(
         public readonly int|Optional $id,
         public readonly int $integration_type_id,
+        public readonly array $original_payload,
         public readonly array $payload,
         public readonly array|null $path_parameters,
         public readonly string|null $payload_hash,
@@ -37,11 +39,14 @@ final class PayloadData extends Data
         IntegrationType $integrationType,
         PayloadInputData $payloadInput
     ): PayloadData {
+        $transformedPayload = self::transformPayload($integrationType, $payloadInput->payload);
+
         return PayloadData::from([
             'integration_type_id' => $integrationType->id,
-            'payload' => $payloadInput->payload,
+            'original_payload' => $payloadInput->payload,
+            'payload' => $transformedPayload,
             'path_parameters' => $payloadInput->pathParameters,
-            'payload_hash' => md5(json_encode($payloadInput, JSON_THROW_ON_ERROR)),
+            'payload_hash' => md5(json_encode($transformedPayload, JSON_THROW_ON_ERROR)),
             'stored_at' => now(),
             'storing_status' => PayloadStoringStatusEnum::STORED,
             'processing_status' => PayloadProcessingStatusEnum::READY,
@@ -50,13 +55,75 @@ final class PayloadData extends Data
 
     public static function fromWebhookPayloadProcessor(IntegrationType $integrationType, array $payload): self
     {
+        $transformedPayload = self::transformPayload($integrationType, $payload);
+
         return self::from([
             'integration_type_id' => $integrationType->id,
-            'payload' => $payload,
-            'payload_hash' => md5(json_encode($payload)),
+            'original_payload' => $payload,
+            'payload' => $transformedPayload,
+            'payload_hash' => md5(json_encode($transformedPayload)),
             'stored_at' => now(),
             'storing_status' => PayloadStoringStatusEnum::STORED,
             'processing_status' => PayloadProcessingStatusEnum::READY,
         ]);
+    }
+
+    public static function transformPayload(IntegrationType $integrationType, array $payload): array
+    {
+        $mappingConfig = $integrationType->fields->pluck('alternate_name', 'field_name')->toArray();
+        $regexMapping = self::createRegexMapping($mappingConfig);
+
+        $dottedPayload = Arr::dot($payload);
+        $transformedPayload = [];
+
+        foreach ($dottedPayload as $key => $value) {
+            $replacements = 0;
+            foreach ($regexMapping as $pattern => $replacement) {
+                $newKey = preg_replace('/'.$pattern.'/', $replacement, $key, -1, $replacements);
+                if ($replacements) {
+                    $transformedPayload[$newKey] = $value;
+                    break;
+                }
+            }
+
+            if ($replacements == 0) {
+                $transformedPayload[$key] = $value;
+            }
+        }
+
+        return Arr::undot($transformedPayload);
+    }
+
+    /**
+     * Creates a regex mapping based on the mapping config by replacing
+     * the wildcards with groups in the keys of the mapping and replacing
+     * the wildcards in the values with references to the groups. E.g.:
+     *
+     * $mappingConfig = [
+     *     'empresas.*.produtos.*.id' => 'companies.*.products.*.id'
+     * ]
+     *
+     * returns [
+     *     'empresas.(\d+).produtos.(\d+).id' => 'companies.$1.products.$2.id',
+     * ]
+     *
+     * @param  array<string, string>  $mappingConfig
+     * @return array<string, string>
+     */
+    private static function createRegexMapping(array $mappingConfig): array
+    {
+        $regexMapping = [];
+
+        foreach ($mappingConfig as $key => $value) {
+            $countMatches = 0;
+            $newValue = preg_replace_callback('/\*/', function () use (&$countMatches) {
+                return '$'.++$countMatches;
+            }, $value);
+
+            $newKey = str_replace('*', '(\d+)', $key);
+            $regexMapping[$newKey] = $newValue;
+        }
+
+        return $regexMapping;
     }
 }

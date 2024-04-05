@@ -34,4 +34,8 @@ return [
     'authorization.username' => 'username',
     'authorization.password' => 'password',
     'execute' => 'execute',
+    'fetch_and_send' => 'fetch and send',
+    'forward_url' => 'forward url',
+    'forward_headers' => 'forward headers',
+    'forward_authorization' => 'forward authorization',
 ];

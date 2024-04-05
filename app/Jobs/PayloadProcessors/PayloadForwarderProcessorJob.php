@@ -4,6 +4,8 @@ namespace App\Jobs\PayloadProcessors;
 
 use App\Actions\IntegraHub\RecordFailedPayloadProcessingAttemptAction;
 use App\Actions\IntegraHub\RecordSuccessfulPayloadProcessingAttemptAction;
+use App\Enums\IntegraHub\IntegrationHandlingTypeEnum;
+use App\Enums\IntegraHub\IntegrationTypeEnum;
 use App\Models\IntegraHub\Payload;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -33,16 +35,17 @@ class PayloadForwarderProcessorJob implements ShouldQueue
             ->findOrFail($this->payloadId);
 
         $httpClient = Http::withOptions(['verify' => App::environment('production')])
-            ->withToken(config('ocean-pact.temp_access_token'))
-            ->withHeaders($payload->integrationType->headers)
+            ->withHeaders($this->getHeaders($payload))
             ->withBody(json_encode($payload->payload, JSON_THROW_ON_ERROR))
             ->throw();
 
-        $url = $payload->integrationType->resolveTargetUrl($payload);
+        if ($payload->integrationType->handling_type->equals(IntegrationHandlingTypeEnum::STORE_AND_SEND)) {
+            $httpClient->withToken(config('ocean-pact.temp_access_token'));
+        }
 
         $response = $httpClient->send(
-            method: $payload->integrationType->type->value,
-            url: $url
+            method: $this->getMethod($payload),
+            url: $this->getTargetUrl($payload),
         )->json();
 
         $payload->markAsDone($response);
@@ -84,5 +87,32 @@ class PayloadForwarderProcessorJob implements ShouldQueue
         $action = app(RecordFailedPayloadProcessingAttemptAction::class);
 
         return $action;
+    }
+
+    private function getTargetUrl(Payload $payload): string
+    {
+        if ($payload->integrationType->handling_type->equals(IntegrationHandlingTypeEnum::FETCH_AND_SEND)) {
+            return $payload->integrationType->forward_url;
+        }
+
+        return $payload->integrationType->resolveTargetUrl($payload);
+    }
+
+    private function getHeaders(Payload $payload): array
+    {
+        if ($payload->integrationType->handling_type->equals(IntegrationHandlingTypeEnum::FETCH_AND_SEND)) {
+            return $payload->integrationType->getForwardHeaders();
+        }
+
+        return $payload->integrationType->getHeaders();
+    }
+
+    private function getMethod(Payload $payload): string
+    {
+        if ($payload->integrationType->handling_type->equals(IntegrationHandlingTypeEnum::FETCH_AND_SEND)) {
+            return IntegrationTypeEnum::POST->value;
+        }
+
+        return $payload->integrationType->type->value;
     }
 }

@@ -86,13 +86,13 @@ class IntegrationTypeResource extends Resource
                         ->numeric()
                         ->minValue(5)
                         ->maxValue(10080)
-                        ->required(fn (Get $get) => self::isHandlingTypeFetch($get))
+                        ->required(fn (Get $get) => self::selectedHandlingTypeMatches($get, [IntegrationHandlingTypeEnum::FETCH, IntegrationHandlingTypeEnum::FETCH_AND_SEND]))
                         ->visible(fn (Get $get) => self::isAdminAndHandlingTypeIsFetch($get)),
                 ]),
 
                 TextInput::make(IntegrationType::TARGET_URL)
                     ->label(Str::formatTitle(__('integration_type.target_url')))
-                    ->required(fn (Get $get) => self::isHandlingTypeFetch($get))
+                    ->required(fn (Get $get) => self::selectedHandlingTypeMatches($get, [IntegrationHandlingTypeEnum::FETCH, IntegrationHandlingTypeEnum::FETCH_AND_SEND]))
                     ->url(),
 
                 KeyValue::make(IntegrationType::HEADERS)
@@ -104,6 +104,61 @@ class IntegrationTypeResource extends Resource
                         TextInput::make('parameter')
                             ->label(Str::formatTitle(__('integration_type.parameter')))
                             ->required(),
+                    ])
+                    ->visible(fn (Get $get) => ! self::selectedHandlingTypeMatches($get, [IntegrationHandlingTypeEnum::FETCH, IntegrationHandlingTypeEnum::FETCH_AND_SEND])),
+
+                Fieldset::make(Str::formatTitle(__('integration_type.authorization')))
+                    ->visible(fn (Get $get) => self::isAdminAndHandlingTypeIsFetch($get))
+                    ->columns(5)
+                    ->schema([
+                        Select::make('authorization.type')
+                            ->label(Str::formatTitle(__('integration_type.authorization.type')))
+                            ->options(fn () => self::getAuthorizationOptions())
+                            ->live(),
+
+                        TextInput::make('authorization.username')
+                            ->label(Str::formatTitle(__('integration_type.authorization.username')))
+                            ->visible(fn (Get $get) => $get('authorization.type') === 'basic')
+                            ->required(fn (Get $get) => $get('authorization.type') === 'basic'),
+
+                        TextInput::make('authorization.password')
+                            ->label(Str::formatTitle(__('integration_type.authorization.password')))
+                            ->visible(fn (Get $get) => $get('authorization.type') === 'basic')
+                            ->required(fn (Get $get) => $get('authorization.type') === 'basic')
+                            ->autocomplete(false)
+                            ->password(),
+                    ]),
+
+                TextInput::make(IntegrationType::FORWARD_URL)
+                    ->label(Str::formatTitle(__('integration_type.forward_url')))
+                    ->required(fn (Get $get) => self::selectedHandlingTypeMatches($get, IntegrationHandlingTypeEnum::FETCH_AND_SEND))
+                    ->visible(fn (Get $get) => self::selectedHandlingTypeMatches($get, IntegrationHandlingTypeEnum::FETCH_AND_SEND))
+                    ->url(),
+
+                KeyValue::make(IntegrationType::FORWARD_HEADERS)
+                    ->label(Str::formatTitle(__('integration_type.forward_headers')))
+                    ->visible(fn (Get $get) => self::selectedHandlingTypeMatches($get, IntegrationHandlingTypeEnum::FETCH_AND_SEND)),
+
+                Fieldset::make(Str::formatTitle(__('integration_type.forward_authorization')))
+                    ->visible(fn (Get $get) => self::selectedHandlingTypeMatches($get, IntegrationHandlingTypeEnum::FETCH_AND_SEND))
+                    ->columns(5)
+                    ->schema([
+                        Select::make('forward_authorization.type')
+                            ->label(Str::formatTitle(__('integration_type.authorization.type')))
+                            ->options(fn () => self::getAuthorizationOptions())
+                            ->live(),
+
+                        TextInput::make('forward_authorization.username')
+                            ->label(Str::formatTitle(__('integration_type.authorization.username')))
+                            ->visible(fn (Get $get) => $get('forward_authorization.type') === 'basic')
+                            ->required(fn (Get $get) => $get('forward_authorization.type') === 'basic'),
+
+                        TextInput::make('forward_authorization.password')
+                            ->label(Str::formatTitle(__('integration_type.authorization.password')))
+                            ->visible(fn (Get $get) => $get('forward_authorization.type') === 'basic')
+                            ->required(fn (Get $get) => $get('forward_authorization.type') === 'basic')
+                            ->autocomplete(false)
+                            ->password(),
                     ]),
 
                 Fieldset::make(Str::formatTitle(__('integration_type.system_settings')))
@@ -125,30 +180,6 @@ class IntegrationTypeResource extends Resource
                         Toggle::make(IntegrationType::ALLOWS_DUPLICATES)
                             ->label(Str::formatTitle(__('integration_type.allows_duplicates')))
                             ->default(fn () => false),
-                    ]),
-
-                Fieldset::make(Str::formatTitle(__('integration_type.authorization')))
-                    ->visible(fn (Get $get) => self::isAdminAndHandlingTypeIsFetch($get))
-                    ->columns(5)
-                    ->schema([
-                        Select::make('authorization.type')
-                            ->label(Str::formatTitle(__('integration_type.authorization.type')))
-                            ->options([
-                                'basic' => Str::formatTitle(__('integration_type.authorization.basic_auth')),
-                            ])
-                            ->live(),
-
-                        TextInput::make('authorization.username')
-                            ->label(Str::formatTitle(__('integration_type.authorization.username')))
-                            ->visible(fn (Get $get) => $get('authorization.type') === 'basic')
-                            ->required(fn (Get $get) => $get('authorization.type') === 'basic'),
-
-                        TextInput::make('authorization.password')
-                            ->label(Str::formatTitle(__('integration_type.authorization.password')))
-                            ->visible(fn (Get $get) => $get('authorization.type') === 'basic')
-                            ->required(fn (Get $get) => $get('authorization.type') === 'basic')
-                            ->autocomplete(false)
-                            ->password(),
                     ]),
             ]);
     }
@@ -223,14 +254,14 @@ class IntegrationTypeResource extends Resource
 
     private static function isAdminAndHandlingTypeIsFetch(Get $get): bool
     {
-        if (! self::isHandlingTypeFetch($get)) {
+        if (! self::selectedHandlingTypeMatches($get, [IntegrationHandlingTypeEnum::FETCH, IntegrationHandlingTypeEnum::FETCH_AND_SEND])) {
             return false;
         }
 
         return Auth::user()->isSuperAdmin() || Auth::user()->isAdmin();
     }
 
-    private static function isHandlingTypeFetch(Get $get): bool
+    private static function selectedHandlingTypeMatches(Get $get, IntegrationHandlingTypeEnum|array $handlingType): bool
     {
         if (! $get(IntegrationType::HANDLING_TYPE)) {
             return false;
@@ -238,6 +269,17 @@ class IntegrationTypeResource extends Resource
 
         $type = IntegrationHandlingTypeEnum::from($get(IntegrationType::HANDLING_TYPE));
 
-        return $type === IntegrationHandlingTypeEnum::FETCH;
+        if ($handlingType instanceof IntegrationHandlingTypeEnum) {
+            return $type->equals($handlingType);
+        }
+
+        return in_array($type, $handlingType);
+    }
+
+    private static function getAuthorizationOptions(): array
+    {
+        return [
+            'basic' => Str::formatTitle(__('integration_type.authorization.basic_auth')),
+        ];
     }
 }
