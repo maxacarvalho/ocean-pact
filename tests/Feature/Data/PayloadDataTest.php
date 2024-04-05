@@ -16,9 +16,9 @@ describe('PayloadData', function () {
 
         $payloadData = PayloadData::fromPayloadHandlerController($integrationType, $payloadInputData);
 
-        expect($payloadData)->toBeInstanceOf(PayloadData::class);
-        expect($payloadData->integration_type_id)->toBe($integrationType->id);
-        expect($payloadData->payload)->toBe($payload);
+        expect($payloadData)->toBeInstanceOf(PayloadData::class)
+            ->and($payloadData->integration_type_id)->toBe($integrationType->id)
+            ->and($payloadData->payload)->toBe($payload);
     });
 
     test('should transform payload data when integration_type fields alternate_name is set', function () {
@@ -36,10 +36,10 @@ describe('PayloadData', function () {
 
         $payloadData = PayloadData::fromPayloadHandlerController($integrationType, $payloadInputData);
 
-        expect($payloadData->original_payload)->toBe($payload);
-        expect($payloadData->payload)->toBe([
-            'transformed' => 'hello',
-        ]);
+        expect($payloadData->original_payload)->toBe($payload)
+            ->and($payloadData->payload)->toBe([
+                'transformed' => 'hello',
+            ]);
     });
 
     test('should transform payload data', function () {

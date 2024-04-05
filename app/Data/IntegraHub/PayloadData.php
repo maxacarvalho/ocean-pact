@@ -71,6 +71,11 @@ final class PayloadData extends Data
     public static function transformPayload(IntegrationType $integrationType, array $payload): array
     {
         $mappingConfig = $integrationType->fields->pluck('alternate_name', 'field_name')->toArray();
+        array_walk($mappingConfig, function (&$value, $key) {
+            if (is_null($value)) {
+                $value = $key;
+            }
+        });
         $regexMapping = self::createRegexMapping($mappingConfig);
 
         $dottedPayload = Arr::dot($payload);
@@ -107,7 +112,7 @@ final class PayloadData extends Data
      *     'empresas.(\d+).produtos.(\d+).id' => 'companies.$1.products.$2.id',
      * ]
      *
-     * @param  array<string, string>  $mappingConfig
+     * @param array<string, string> $mappingConfig
      * @return array<string, string>
      */
     private static function createRegexMapping(array $mappingConfig): array
