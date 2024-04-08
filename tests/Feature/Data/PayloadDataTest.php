@@ -5,6 +5,27 @@ use App\Data\IntegraHub\PayloadInputData;
 use App\Models\IntegraHub\IntegrationType;
 use App\Models\IntegraHub\IntegrationTypeField;
 
+function setupIntegrationTypeWithFields(array $fieldsMap): IntegrationType
+{
+    $integrationType = IntegrationType::factory()->create();
+    $targetIntegration = IntegrationType::factory()->create();
+
+    foreach ($fieldsMap as $fieldName => $targetFieldName) {
+        $targetField = IntegrationTypeField::factory()->create([
+            IntegrationTypeField::INTEGRATION_TYPE_ID => $targetIntegration->id,
+            IntegrationTypeField::FIELD_NAME => $targetFieldName,
+        ]);
+
+        IntegrationTypeField::factory()->create([
+            IntegrationTypeField::INTEGRATION_TYPE_ID => $integrationType->id,
+            IntegrationTypeField::FIELD_NAME => $fieldName,
+            IntegrationTypeField::TARGET_INTEGRATION_TYPE_FIELD_ID => $targetField->id,
+        ]);
+    }
+
+    return $integrationType;
+}
+
 describe('PayloadData', function () {
     test('should create PayloadData instance', function () {
         $integrationType = IntegrationType::factory()->create();
@@ -47,8 +68,6 @@ describe('PayloadData', function () {
     });
 
     test('should transform payload data', function () {
-        $integrationType = IntegrationType::factory()->create();
-        $targetIntegration = IntegrationType::factory()->create();
         $fieldsMap = [
             '*.identificador' => '*.id',
             '*.nome_completo' => '*.name',
@@ -60,18 +79,7 @@ describe('PayloadData', function () {
             '*.pedidos.*.qtd' => '*.orders.*.quantity',
         ];
 
-        foreach ($fieldsMap as $fieldName => $targetFieldName) {
-            $targetField = IntegrationTypeField::factory()->create([
-                IntegrationTypeField::INTEGRATION_TYPE_ID => $targetIntegration->id,
-                IntegrationTypeField::FIELD_NAME => $targetFieldName,
-            ]);
-
-            IntegrationTypeField::factory()->create([
-                IntegrationTypeField::INTEGRATION_TYPE_ID => $integrationType->id,
-                IntegrationTypeField::FIELD_NAME => $fieldName,
-                IntegrationTypeField::TARGET_INTEGRATION_TYPE_FIELD_ID => $targetField->id,
-            ]);
-        }
+        $integrationType = setupIntegrationTypeWithFields($fieldsMap);
 
         $payload = [
             [
@@ -123,30 +131,16 @@ describe('PayloadData', function () {
 
         $transformedPayload = PayloadData::transformPayload($integrationType, $payload);
         $this->assertEquals($expectedResult, $transformedPayload);
-    })->only();
+    });
 
     test('should transform payload data with nested arrays inside nested arrays', function () {
-        $integrationType = IntegrationType::factory()->create();
-
-        $targetIntegration = IntegrationType::factory()->create();
         $fieldsMap = [
             'empresas.*.nome' => 'companies.*.name',
             'empresas.*.produtos.*.id' => 'companies.*.products.*.id',
             'empresas.*.produtos.*.nome' => 'companies.*.products.*.name',
         ];
 
-        foreach ($fieldsMap as $fieldName => $targetFieldName) {
-            $targetField = IntegrationTypeField::factory()->create([
-                IntegrationTypeField::INTEGRATION_TYPE_ID => $targetIntegration->id,
-                IntegrationTypeField::FIELD_NAME => $targetFieldName,
-            ]);
-
-            IntegrationTypeField::factory()->create([
-                IntegrationTypeField::INTEGRATION_TYPE_ID => $integrationType->id,
-                IntegrationTypeField::FIELD_NAME => $fieldName,
-                IntegrationTypeField::TARGET_INTEGRATION_TYPE_FIELD_ID => $targetField->id,
-            ]);
-        }
+        $integrationType = setupIntegrationTypeWithFields($fieldsMap);
 
         $payload = [
             'empresas' => [
@@ -192,7 +186,7 @@ describe('PayloadData', function () {
 
     test('should not transform payload data when target_integration_type_field is not set', function () {
         $integrationType = IntegrationType::factory()->create();
-        $payload = ['message' => 'hello'];
+        $payload = json_decode(file_get_contents(__DIR__.'/fixtures/payload.json'), true);
         $transformedPayload = PayloadData::transformPayload($integrationType, $payload);
         $this->assertEquals($payload, $transformedPayload);
     });

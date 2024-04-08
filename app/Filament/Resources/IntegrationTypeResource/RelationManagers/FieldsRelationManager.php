@@ -68,13 +68,11 @@ class FieldsRelationManager extends RelationManager
                         Select::make('target_integration')
                             ->label(Str::title(__('integration_type_field.target_integration')))
                             ->options(fn () => $this->getTargetIntegration())
-                            ->default($this->record?->targetIntegrationTypeField?->integration_type_id ?? 0)
                             ->live(),
 
                         Select::make(IntegrationTypeField::TARGET_INTEGRATION_TYPE_FIELD_ID)
                             ->label(Str::title(__('integration_type_field.target_integration_type_field')))
                             ->options(fn (Get $get) => $get('target_integration') ? $this->getTargetFields($get('target_integration')) : [])
-                            ->default($this->record?->target_integration_type_field_id ?? 0)
                             ->preload(),
                     ]),
 

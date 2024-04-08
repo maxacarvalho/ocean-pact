@@ -75,6 +75,10 @@ final class PayloadData extends Data
             ->pluck('targetIntegrationTypeField.field_name', 'field_name')
             ->toArray();
 
+        if (empty($mappingConfig)) {
+            return $payload;
+        }
+
         array_walk($mappingConfig, function (&$value, $key) {
             if (is_null($value)) {
                 $value = $key;
