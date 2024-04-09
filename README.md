@@ -13,15 +13,20 @@
 1. Clone o repositório
 2. Copie o arquivo `.env.example` para `.env`
 3. Crie um arquivo chamado `.npmrc` na raiz do projeto com o conteúdo abaixo
-4. Gere o certificado para HTTPS com o comando `mkcert -key-file docker/web/tls/key.pem -cert-file docker/web/tls/cert.pem oceanpact.test`
+4. Gere o certificado para HTTPS com o comando `mkcert -key-file docker/web/tls/key.pem -cert-file docker/web/tls/cert.pem oceanpact.dev`
 5. Execute o comando `docker-compose up -d`
 6. Instale as dependências do composer com o comando `docker-compose exec app composer install`
 7. Instale as dependências do npm com o comando `docker-compose exec node npm install`
 8. Compile os arquivo do front-end com o comando `docker-compose exec node npm run build`
 9. Rode as migrations com o comando `docker-compose exec app php artisan migrate`
 10. Crie um usuário para acesso `docker-compose exec app php artisan make:filament-user`
-11. Adicione o domínio `oceanpact.test` no arquivo `/etc/hosts` apontando para o IP `127.0.0.1`
-12. Acesse o sistema em `https://oceanpact.test`
+11. Gere a APP_KEY com o comando `docker-compose exec app php artisan key:generate`
+12. Adicione o domínio `oceanpact.dev` no arquivo `/etc/hosts`
+    ```
+    127.0.0.1        oceanpact.dev
+    ::1              oceanpact.dev
+    ```
+13. Acesse o sistema em `https://oceanpact.dev`
 
 #### Arquivo .npmrc
 ```

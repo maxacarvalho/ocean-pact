@@ -80,11 +80,14 @@ class User extends Authenticatable implements FilamentUser
         self::TWO_FACTOR_SECRET,
     ];
 
-    protected $casts = [
-        self::EMAIL_VERIFIED_AT => 'datetime',
-        self::IS_DRAFT => 'boolean',
-        self::ACTIVE => 'boolean',
-    ];
+    protected function casts(): array
+    {
+        return [
+            self::EMAIL_VERIFIED_AT => 'datetime',
+            self::IS_DRAFT => 'boolean',
+            self::ACTIVE => 'boolean',
+        ];
+    }
 
     public function companies(): BelongsToMany
     {
@@ -133,7 +136,7 @@ class User extends Authenticatable implements FilamentUser
 
     public function isNotSuperAdmin(): bool
     {
-        return ! $this->isSuperAdmin();
+        return !$this->isSuperAdmin();
     }
 
     public function isAdmin(): bool

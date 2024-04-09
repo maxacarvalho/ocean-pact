@@ -2,31 +2,42 @@
 
 namespace App\Actions\QuotesPortal;
 
-use App\Data\QuotesPortal\QuoteData;
-use App\Data\QuotesPortal\QuoteItemData;
-use App\Models\QuotesPortal\Company;
+use App\Data\QuotesPortal\StoreQuotePayloadData;
 use App\Models\QuotesPortal\Product;
 
 class FindOrCreateProductsAction
 {
-    public function handle(QuoteData $data, Company $company): array
+    /** @return array<string, int> */
+    public function handle(StoreQuotePayloadData $data): array
     {
-        $products = [];
+        $mappingCodesToProductsIds = [];
 
-        /** @var QuoteItemData $item */
         foreach ($data->items as $item) {
-            /** @var Product $newProduct */
-            $newProduct = Product::query()->firstOrCreate([
-                Product::COMPANY_CODE => $company->code,
-                Product::COMPANY_CODE_BRANCH => $company->code_branch,
-                Product::CODE => $item->product->code,
-                Product::DESCRIPTION => $item->product->description,
-                Product::MEASUREMENT_UNIT => $item->product->measurement_unit,
-            ]);
+            /** @var Product $product */
+            $product = Product::query()->firstOrCreate(
+                [
+                    Product::COMPANY_CODE => $data->companyCode,
+                    Product::COMPANY_CODE_BRANCH => $data->companyCodeBranch,
+                    Product::CODE => $item->product->code,
+                ],
+                [
+                    Product::DESCRIPTION => $item->product->description,
+                    Product::MEASUREMENT_UNIT => $item->product->measurementUnit,
+                    Product::SMALLEST_PRICE => [
+                        'currency' => $item->product->smallestPrice->currency,
+                        'amount' => $item->product->smallestPrice->getMinorAmount(),
+                    ],
+                    Product::LAST_PRICE => [
+                        'currency' => $item->product->lastPrice->currency,
+                        'amount' => $item->product->lastPrice->getMinorAmount(),
+                    ],
+                    Product::SMALLEST_ETA => $item->product->smallestEta,
+                ]
+            );
 
-            $products[$item->product->code] = $newProduct->id;
+            $mappingCodesToProductsIds[$product->code] = $product->id;
         }
 
-        return $products;
+        return $mappingCodesToProductsIds;
     }
 }

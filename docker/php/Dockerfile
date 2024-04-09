@@ -1,15 +1,15 @@
 FROM node:20-alpine AS node
-FROM alpine:3.18
+FROM alpine:3.19
 
 # Arguments
 ARG USER_NAME="php"
 ARG USER_UID="1000"
 ARG GROUP_NAME="php"
 ARG GROUP_GID="1000"
-ARG PHP_EXTENSIONS="php82 php82-bcmath php82-ctype php82-curl php82-dom php82-fileinfo php82-fpm php82-ftp php82-gd \
-    php82-iconv php82-intl php82-mbstring php82-mysqli php82-mysqlnd php82-opcache php82-openssl php82-pcntl php82-pdo \
-    php82-pdo_mysql php82-pecl-redis php82-pecl-xdebug php82-phar php82-posix php82-simplexml php82-sockets \
-    php82-sodium php82-tokenizer php82-xml php82-xmlreader php82-xmlwriter php82-xsl php82-zip"
+ARG PHP_EXTENSIONS="php83 php83-bcmath php83-ctype php83-curl php83-dom php83-fileinfo php83-fpm php83-ftp php83-gd \
+    php83-iconv php83-intl php83-mbstring php83-mysqli php83-mysqlnd php83-opcache php83-openssl php83-pcntl php83-pdo \
+    php83-pdo_mysql php83-pecl-redis php83-pecl-xdebug php83-phar php83-posix php83-simplexml php83-sockets \
+    php83-sodium php83-tokenizer php83-xml php83-xmlreader php83-xmlwriter php83-xsl php83-zip"
 ENV COMPOSER_MEMORY_LIMIT="3G"
 
 # Environment variables
@@ -28,22 +28,22 @@ RUN addgroup -g $GROUP_GID -S $GROUP_NAME && \
 RUN set -ex \
     apk update -qq && \
     apk add tzdata ca-certificates argon2-dev libsodium-dev openssl-dev curl git patch openssh $PHP_EXTENSIONS && \
-    ln -snf /usr/bin/php82 /usr/bin/php && \
+    ln -snf /usr/bin/php83 /usr/bin/php && \
     curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer \
     rm -rf /var/lib/{apt,dpkg,cache,log}/ /tmp/* /var/tmp/*
 
 # Forward logs and configure permissions
 RUN set -ex && \
-     ln -sf /dev/stderr /var/log/php82/error.log && \
-     chown -R $USER_UID:$GROUP_GID /etc/php82/ && \
-     chown -R $USER_UID:$GROUP_GID /var/log/php82/ && \
+     ln -sf /dev/stderr /var/log/php83/error.log && \
+     chown -R $USER_UID:$GROUP_GID /etc/php83/ && \
+     chown -R $USER_UID:$GROUP_GID /var/log/php83/ && \
      mkdir -p /var/lib/php/session/ && \
      chown -R $USER_UID:$GROUP_GID /var/lib/php/session && \
      chmod 770 /var/lib/php/session/
 
-COPY ./conf/php.ini /etc/php82/php.ini
-COPY ./conf/php-fpm.d/www.conf /etc/php82/php-fpm.d/www.conf
-COPY ./conf/conf.d/50_xdebug.ini /etc/php82/conf.d/50_xdebug.ini
+COPY ./conf/php.ini /etc/php83/php.ini
+COPY ./conf/php-fpm.d/www.conf /etc/php83/php-fpm.d/www.conf
+COPY ./conf/conf.d/50_xdebug.ini /etc/php83/conf.d/50_xdebug.ini
 
  # Create app directory and set permissions
 RUN set -ex && \
@@ -63,4 +63,4 @@ WORKDIR /app
 USER $USER_NAME
 
 EXPOSE 9000
-CMD ["php-fpm82", "-F"]
+CMD ["php-fpm83", "-F"]

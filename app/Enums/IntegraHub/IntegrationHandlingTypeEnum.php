@@ -14,6 +14,7 @@ enum IntegrationHandlingTypeEnum: string implements HasLabel
     case STORE_AND_SEND = 'STORE_AND_SEND';
     case STORE_AND_PROCESS = 'STORE_AND_PROCESS';
     case FETCH = 'FETCH';
+    case FETCH_AND_SEND = 'FETCH_AND_SEND';
 
     public function getLabel(): string
     {
@@ -22,6 +23,7 @@ enum IntegrationHandlingTypeEnum: string implements HasLabel
             'STORE_AND_SEND' => Str::formatTitle(__('integration_type.store_and_send')),
             'STORE_AND_PROCESS' => Str::formatTitle(__('integration_type.store_and_process')),
             'FETCH' => Str::formatTitle(__('integration_type.fetch')),
+            'FETCH_AND_SEND' => Str::formatTitle(__('integration_type.fetch_and_send')),
         };
     }
 }

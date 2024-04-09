@@ -42,17 +42,12 @@ class QuoteItemsRelationManager extends RelationManager
 
     protected static ?string $recordTitleAttribute = QuoteItem::ITEM;
 
+    public static function getTitle(Model $ownerRecord, string $pageClass): string
+    {
+        return Str::title(__('quote_item.quote_items'));
+    }
+
     public static function getNavigationLabel(): string
-    {
-        return Str::formatTitle(__('quote_item.quote_items'));
-    }
-
-    public static function getModelLabel(): ?string
-    {
-        return Str::formatTitle(__('quote_item.quote_item'));
-    }
-
-    public static function getPluralModelLabel(): string
     {
         return Str::formatTitle(__('quote_item.quote_items'));
     }

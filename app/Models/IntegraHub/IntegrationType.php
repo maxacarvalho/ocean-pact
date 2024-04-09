@@ -6,6 +6,7 @@ use App\Enums\IntegraHub\IntegrationHandlingTypeEnum;
 use App\Enums\IntegraHub\IntegrationTypeEnum;
 use App\Models\QuotesPortal\Company;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -26,15 +27,24 @@ use Illuminate\Support\Str;
  * @property bool                                    $allows_duplicates
  * @property array                                   $headers
  * @property array|null                              $path_parameters
+ * @property array|null                              $authorization
+ * @property string|null                             $forward_url
+ * @property array|null                              $forward_headers
+ * @property array|null                              $forward_authorization
+ * @property int|null                                $interval
+ * @property bool                                    $is_running
+ * @property Carbon|null                             $last_run_at
  * @property Carbon|null                             $created_at
  * @property Carbon|null                             $updated_at
  * Relations
- * @property-read Company|null                       $company
+ * @property-read  Company|null                      $company
  * @property-read  IntegrationTypeField[]|Collection $fields
  * @property-read  Payload[]|Collection              $payloads
  */
 class IntegrationType extends Model
 {
+    use HasFactory;
+
     public const TABLE_NAME = 'integration_types';
     public const ID = 'id';
     public const COMPANY_ID = 'company_id';
@@ -49,6 +59,13 @@ class IntegrationType extends Model
     public const ALLOWS_DUPLICATES = 'allows_duplicates';
     public const HEADERS = 'headers';
     public const PATH_PARAMETERS = 'path_parameters';
+    public const AUTHORIZATION = 'authorization';
+    public const FORWARD_URL = 'forward_url';
+    public const FORWARD_HEADERS = 'forward_headers';
+    public const FORWARD_AUTHORIZATION = 'forward_authorization';
+    public const INTERVAL = 'interval';
+    public const IS_RUNNING = 'is_running';
+    public const LAST_RUN_AT = 'last_run_at';
     public const CREATED_AT = 'created_at';
     public const UPDATED_AT = 'updated_at';
 
@@ -65,16 +82,24 @@ class IntegrationType extends Model
         self::UPDATED_AT,
     ];
 
-    protected $casts = [
-        self::TYPE => IntegrationTypeEnum::class,
-        self::HANDLING_TYPE => IntegrationHandlingTypeEnum::class,
-        self::IS_VISIBLE => 'boolean',
-        self::IS_ENABLED => 'boolean',
-        self::IS_SYNCHRONOUS => 'boolean',
-        self::ALLOWS_DUPLICATES => 'boolean',
-        self::HEADERS => 'array',
-        self::PATH_PARAMETERS => 'array',
-    ];
+    protected function casts(): array
+    {
+        return [
+            self::TYPE => IntegrationTypeEnum::class,
+            self::HANDLING_TYPE => IntegrationHandlingTypeEnum::class,
+            self::IS_VISIBLE => 'boolean',
+            self::IS_ENABLED => 'boolean',
+            self::IS_SYNCHRONOUS => 'boolean',
+            self::ALLOWS_DUPLICATES => 'boolean',
+            self::HEADERS => 'array',
+            self::PATH_PARAMETERS => 'array',
+            self::AUTHORIZATION => 'array',
+            self::IS_RUNNING => 'boolean',
+            self::LAST_RUN_AT => 'datetime',
+            self::FORWARD_HEADERS => 'array',
+            self::FORWARD_AUTHORIZATION => 'array',
+        ];
+    }
 
     protected static function booted(): void
     {
@@ -105,7 +130,15 @@ class IntegrationType extends Model
 
     public function isForwardable(): bool
     {
-        return $this->handling_type->equals(IntegrationHandlingTypeEnum::STORE_AND_SEND);
+        return $this->handling_type->equals(IntegrationHandlingTypeEnum::STORE_AND_SEND)
+            || $this->handling_type->equals(IntegrationHandlingTypeEnum::FETCH_AND_SEND);
+    }
+
+    public function isCallable(): bool
+    {
+        return $this->is_enabled
+            && ! $this->is_running
+            && $this->handling_type->equals(IntegrationHandlingTypeEnum::FETCH) || $this->handling_type->equals(IntegrationHandlingTypeEnum::FETCH_AND_SEND);
     }
 
     public function resolveTargetUrl(Payload $payload): string
@@ -117,16 +150,68 @@ class IntegrationType extends Model
         $inputPathParameters = collect($payload->path_parameters);
         $targetUrl = $this->target_url;
 
-        foreach ($this->path_parameters as $keyParameter) {
-            $parameter = $keyParameter['parameter'];
+        return collect($this->path_parameters)
+            ->sortByDesc(fn (array $item) => strlen($item['parameter']))
+            ->reduce(
+                fn (string $targetUrl, array $item) => Str::replace(":{$item['parameter']}", $inputPathParameters->get($item['parameter']), $targetUrl),
+                $targetUrl
+            );
+    }
 
-            if (! $inputPathParameters->has($parameter)) {
-                continue;
-            }
-
-            $targetUrl = Str::replace(":{$parameter}", $inputPathParameters->get($parameter), $targetUrl);
+    public function isDue(): bool
+    {
+        if (is_null($this->interval) || $this->interval <= 0) {
+            return false;
         }
 
-        return $targetUrl;
+        if (is_null($this->last_run_at)) {
+            return true;
+        }
+
+        return $this->last_run_at->diffInMinutes(Carbon::now()) >= $this->interval;
+    }
+
+    public function markAsRunning(): void
+    {
+        $this->update([
+            self::IS_RUNNING => true,
+            self::LAST_RUN_AT => Carbon::now(),
+        ]);
+    }
+
+    public function markAsStopped(): void
+    {
+        $this->update([
+            self::IS_RUNNING => false,
+        ]);
+    }
+
+    public function getAuthorizationHeader(array|null $authorization): array
+    {
+        if (is_null($authorization) || !isset($authorization['type'])) {
+            return [];
+        }
+
+        if ($authorization['type'] === 'basic') {
+            return [
+                'Authorization' => 'Basic '.base64_encode($authorization['username'].':'.$authorization['password']),
+            ];
+        }
+
+        return [];
+    }
+
+    public function getHeaders(): array
+    {
+        $authorizationHeader = $this->getAuthorizationHeader($this->authorization);
+
+        return array_merge($this->headers ?? [], $authorizationHeader);
+    }
+
+    public function getForwardHeaders(): array
+    {
+        $authorizationHeader = $this->getAuthorizationHeader($this->forward_authorization);
+
+        return array_merge($this->forward_headers ?? [], $authorizationHeader);
     }
 }

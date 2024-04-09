@@ -3,7 +3,7 @@
 namespace App\Jobs;
 
 use App\Filament\Resources\PurchaseRequestResource;
-use App\Mail\PurchaseRequestGeneratedMail;
+use App\Mail\QuotePortal\PurchaseRequestGeneratedMail;
 use App\Models\QuotesPortal\PurchaseRequest;
 use App\Models\QuotesPortal\Quote;
 use App\Models\QuotesPortal\Supplier;

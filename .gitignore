@@ -20,3 +20,4 @@ yarn-error.log
 .npmrc
 npm-debug.log*
 .phpactor.json
+.env.staging

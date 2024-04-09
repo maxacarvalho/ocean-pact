@@ -3,6 +3,8 @@
 return [
     'companies' => 'empresas',
     'company' => 'empresa',
+    'sellers' => 'vendedores',
+    'seller' => 'vendedor',
     'ID' => 'ID',
     'code' => 'código',
     'code_branch' => 'cód. filial',

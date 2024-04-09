@@ -2,8 +2,9 @@
 
 namespace App\Actions\QuotesPortal;
 
-use App\Data\QuotesPortal\QuoteData;
+use App\Data\QuotesPortal\StoreQuotePayloadData;
 use App\Events\QuotePortal\BuyerCreatedEvent;
+use App\Models\QuotesPortal\Company;
 use App\Models\QuotesPortal\CompanyUser;
 use App\Models\Role;
 use App\Models\User;
@@ -11,7 +12,7 @@ use App\Utils\Str;
 
 class FindOrCreateBuyerAction
 {
-    public function handle(QuoteData $data): User
+    public function handle(StoreQuotePayloadData $data, Company $company): User
     {
         /** @var User|null $buyer */
         $buyer = User::query()
@@ -34,16 +35,16 @@ class FindOrCreateBuyerAction
         /** @var CompanyUser|null $companyUser */
         $companyUser = CompanyUser::query()
             ->where(CompanyUser::USER_ID, '=', $buyer->id)
-            ->where(CompanyUser::COMPANY_ID, '=', $data->company_id)
-            ->where(CompanyUser::BUYER_CODE, '=', $data->buyer->buyer_company->buyer_code)
+            ->where(CompanyUser::COMPANY_ID, '=', $company->id)
+            ->where(CompanyUser::BUYER_CODE, '=', $data->buyer->buyerCompany->buyerCode)
             ->first();
 
         if (null === $companyUser) {
             CompanyUser::query()
                 ->create([
                     CompanyUser::USER_ID => $buyer->id,
-                    CompanyUser::COMPANY_ID => $data->company_id,
-                    CompanyUser::BUYER_CODE => $data->buyer->buyer_company->buyer_code,
+                    CompanyUser::COMPANY_ID => $company->id,
+                    CompanyUser::BUYER_CODE => $data->buyer->buyerCompany->buyerCode,
                 ]);
         }
 

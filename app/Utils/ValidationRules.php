@@ -14,6 +14,11 @@ class ValidationRules
             ->map(function ($rawRules, $fieldName) {
                 $rules = [];
 
+                if (Arr::has($rawRules, 'sometimes')) {
+                    unset($rawRules['sometimes']);
+                    $rawRules = array_merge(['sometimes' => true], $rawRules);
+                }
+
                 if (Arr::has($rawRules, 'numeric')) {
                     unset($rawRules['numeric']);
                     $rawRules = array_merge(['numeric' => true], $rawRules);

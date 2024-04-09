@@ -23,18 +23,18 @@ use Illuminate\Support\Carbon;
  */
 class Budget extends Model
 {
-    public const TABLE_NAME = 'budgets';
-    public const ID = 'id';
-    public const COMPANY_CODE = 'company_code';
-    public const COMPANY_CODE_BRANCH = 'company_code_branch';
-    public const BUDGET_NUMBER = 'budget_number';
-    public const STATUS = 'status';
-    public const CREATED_AT = 'created_at';
-    public const UPDATED_AT = 'updated_at';
+    public const string TABLE_NAME = 'budgets';
+    public const string ID = 'id';
+    public const string COMPANY_CODE = 'company_code';
+    public const string COMPANY_CODE_BRANCH = 'company_code_branch';
+    public const string BUDGET_NUMBER = 'budget_number';
+    public const string STATUS = 'status';
+    public const string CREATED_AT = 'created_at';
+    public const string UPDATED_AT = 'updated_at';
 
     // Relations
-    public const RELATION_COMPANY = 'company';
-    public const RELATION_QUOTES = 'quotes';
+    public const string RELATION_COMPANY = 'company';
+    public const string RELATION_QUOTES = 'quotes';
 
     protected $table = self::TABLE_NAME;
 
@@ -44,9 +44,12 @@ class Budget extends Model
         self::UPDATED_AT,
     ];
 
-    protected $casts = [
-        self::STATUS => BudgetStatusEnum::class,
-    ];
+    protected function casts(): array
+    {
+        return [
+            self::STATUS => BudgetStatusEnum::class,
+        ];
+    }
 
     public function company(): BelongsTo
     {

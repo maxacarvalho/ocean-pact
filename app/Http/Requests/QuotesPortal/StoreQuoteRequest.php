@@ -29,7 +29,7 @@ class StoreQuoteRequest extends FormRequest
                         ->where(Company::CODE_BRANCH, '=', $this->input('company_code_branch'))
                         ->exists();
 
-                    if (! $exists) {
+                    if (!$exists) {
                         $fail(__('company.validation_error_company_not_found', [
                             'code' => $value,
                             'code_branch' => $this->input('company_code_branch'),
@@ -45,7 +45,7 @@ class StoreQuoteRequest extends FormRequest
                         ->where(Company::CODE, '=', $this->input('company_code'))
                         ->exists();
 
-                    if (! $exists) {
+                    if (!$exists) {
                         $fail(__('company.validation_error_company_not_found', [
                             'code' => $this->input('company_code'),
                             'code_branch' => $value,
@@ -53,6 +53,7 @@ class StoreQuoteRequest extends FormRequest
                     }
                 },
             ],
+            Quote::PROPOSAL_NUMBER => ['required', 'string', 'size:2'],
             Quote::QUOTE_NUMBER => ['required'],
 
             Quote::COMMENTS => ['nullable'],
@@ -69,27 +70,6 @@ class StoreQuoteRequest extends FormRequest
             Quote::RELATION_PAYMENT_CONDITION => ['required', 'array'],
             Quote::RELATION_PAYMENT_CONDITION.'.'.PaymentCondition::CODE => ['required'],
             Quote::RELATION_PAYMENT_CONDITION.'.'.PaymentCondition::DESCRIPTION => ['required'],
-
-            Quote::RELATION_SUPPLIER => ['required', 'array'],
-            Quote::RELATION_SUPPLIER.'.'.Supplier::STORE => ['required'],
-            Quote::RELATION_SUPPLIER.'.'.Supplier::CODE => ['required'],
-            Quote::RELATION_SUPPLIER.'.'.Supplier::NAME => ['required'],
-            Quote::RELATION_SUPPLIER.'.'.Supplier::BUSINESS_NAME => ['nullable'],
-            Quote::RELATION_SUPPLIER.'.'.Supplier::ADDRESS => ['nullable'],
-            Quote::RELATION_SUPPLIER.'.'.Supplier::NUMBER => ['nullable'],
-            Quote::RELATION_SUPPLIER.'.'.Supplier::STATE_CODE => ['nullable'],
-            Quote::RELATION_SUPPLIER.'.'.Supplier::POSTAL_CODE => ['nullable'],
-            Quote::RELATION_SUPPLIER.'.'.Supplier::CNPJ_CPF => ['nullable', new CnpjRule()],
-            Quote::RELATION_SUPPLIER.'.'.Supplier::PHONE_CODE => ['nullable'],
-            Quote::RELATION_SUPPLIER.'.'.Supplier::PHONE_NUMBER => ['nullable'],
-            Quote::RELATION_SUPPLIER.'.'.Supplier::CONTACT => ['nullable'],
-            Quote::RELATION_SUPPLIER.'.'.Supplier::EMAIL => ['nullable', 'email'],
-
-            Quote::RELATION_SUPPLIER.'.'.Supplier::RELATION_SELLERS => ['required', 'array'],
-            Quote::RELATION_SUPPLIER.'.'.Supplier::RELATION_SELLERS.'.*.'.User::ACTIVE => ['required', 'boolean'],
-            Quote::RELATION_SUPPLIER.'.'.Supplier::RELATION_SELLERS.'.*.'.User::NAME => ['required', 'string'],
-            Quote::RELATION_SUPPLIER.'.'.Supplier::RELATION_SELLERS.'.*.'.User::EMAIL => ['required', 'email'],
-            Quote::RELATION_SUPPLIER.'.'.Supplier::RELATION_SELLERS.'.*.supplier_user.'.SupplierUser::CODE => ['required', 'string'],
 
             Quote::RELATION_BUYER => ['required', 'array'],
             Quote::RELATION_BUYER.'.'.User::NAME => ['required'],
@@ -108,6 +88,35 @@ class StoreQuoteRequest extends FormRequest
             Quote::RELATION_ITEMS.'.*.'.QuoteItem::RELATION_PRODUCT.'.'.Product::CODE => ['required'],
             Quote::RELATION_ITEMS.'.*.'.QuoteItem::RELATION_PRODUCT.'.'.Product::DESCRIPTION => ['required'],
             Quote::RELATION_ITEMS.'.*.'.QuoteItem::RELATION_PRODUCT.'.'.Product::MEASUREMENT_UNIT => ['required'],
+            Quote::RELATION_ITEMS.'.*.'.QuoteItem::RELATION_PRODUCT.'.'.Product::LAST_PRICE => ['required', 'array'],
+            Quote::RELATION_ITEMS.'.*.'.QuoteItem::RELATION_PRODUCT.'.'.Product::LAST_PRICE.'.currency' => ['required', 'in:BRL,EUR,NOK,GBP,USD'],
+            Quote::RELATION_ITEMS.'.*.'.QuoteItem::RELATION_PRODUCT.'.'.Product::LAST_PRICE.'.amount' => ['required', 'integer'],
+            Quote::RELATION_ITEMS.'.*.'.QuoteItem::RELATION_PRODUCT.'.'.Product::SMALLEST_PRICE => ['required', 'array'],
+            Quote::RELATION_ITEMS.'.*.'.QuoteItem::RELATION_PRODUCT.'.'.Product::SMALLEST_PRICE.'.currency' => ['required', 'in:BRL,EUR,NOK,GBP,USD'],
+            Quote::RELATION_ITEMS.'.*.'.QuoteItem::RELATION_PRODUCT.'.'.Product::SMALLEST_PRICE.'.amount' => ['required', 'integer'],
+            Quote::RELATION_ITEMS.'.*.'.QuoteItem::RELATION_PRODUCT.'.'.Product::SMALLEST_ETA => ['required', 'integer'],
+
+            'suppliers' => ['required', 'array'],
+            'suppliers.*'.Quote::RELATION_SUPPLIER => ['required', 'array'],
+            'suppliers.*'.Quote::RELATION_SUPPLIER.'.'.Supplier::STORE => ['required'],
+            'suppliers.*'.Quote::RELATION_SUPPLIER.'.'.Supplier::CODE => ['required'],
+            'suppliers.*'.Quote::RELATION_SUPPLIER.'.'.Supplier::NAME => ['required'],
+            'suppliers.*'.Quote::RELATION_SUPPLIER.'.'.Supplier::BUSINESS_NAME => ['nullable'],
+            'suppliers.*'.Quote::RELATION_SUPPLIER.'.'.Supplier::ADDRESS => ['nullable'],
+            'suppliers.*'.Quote::RELATION_SUPPLIER.'.'.Supplier::NUMBER => ['nullable'],
+            'suppliers.*'.Quote::RELATION_SUPPLIER.'.'.Supplier::STATE_CODE => ['nullable'],
+            'suppliers.*'.Quote::RELATION_SUPPLIER.'.'.Supplier::POSTAL_CODE => ['nullable'],
+            'suppliers.*'.Quote::RELATION_SUPPLIER.'.'.Supplier::CNPJ_CPF => ['nullable', new CnpjRule()],
+            'suppliers.*'.Quote::RELATION_SUPPLIER.'.'.Supplier::PHONE_CODE => ['nullable'],
+            'suppliers.*'.Quote::RELATION_SUPPLIER.'.'.Supplier::PHONE_NUMBER => ['nullable'],
+            'suppliers.*'.Quote::RELATION_SUPPLIER.'.'.Supplier::CONTACT => ['nullable'],
+            'suppliers.*'.Quote::RELATION_SUPPLIER.'.'.Supplier::EMAIL => ['nullable', 'email'],
+
+            'suppliers.*'.Quote::RELATION_SUPPLIER.'.'.Supplier::RELATION_SELLERS => ['required', 'array'],
+            'suppliers.*'.Quote::RELATION_SUPPLIER.'.'.Supplier::RELATION_SELLERS.'.*.'.User::ACTIVE => ['required', 'boolean'],
+            'suppliers.*'.Quote::RELATION_SUPPLIER.'.'.Supplier::RELATION_SELLERS.'.*.'.User::NAME => ['required', 'string'],
+            'suppliers.*'.Quote::RELATION_SUPPLIER.'.'.Supplier::RELATION_SELLERS.'.*.'.User::EMAIL => ['required', 'email'],
+            'suppliers.*'.Quote::RELATION_SUPPLIER.'.'.Supplier::RELATION_SELLERS.'.*.supplier_user.'.SupplierUser::CODE => ['required', 'string'],
         ];
     }
 

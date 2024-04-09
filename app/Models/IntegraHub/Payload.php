@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 /**
  * @property int                              $id
  * @property int                              $integration_type_id
+ * @property array                            $original_payload
  * @property array                            $payload
  * @property array|null                       $path_parameters
  * @property string|null                      $payload_hash
@@ -32,6 +33,7 @@ class Payload extends Model
     public const TABLE_NAME = 'payloads';
     public const ID = 'id';
     public const INTEGRATION_TYPE_ID = 'integration_type_id';
+    public const ORIGINAL_PAYLOAD = 'original_payload';
     public const PAYLOAD = 'payload';
     public const PATH_PARAMETERS = 'path_parameters';
     public const PAYLOAD_HASH = 'payload_hash';
@@ -56,15 +58,19 @@ class Payload extends Model
         self::UPDATED_AT,
     ];
 
-    protected $casts = [
-        self::PAYLOAD => 'array',
-        self::PATH_PARAMETERS => 'array',
-        self::STORED_AT => 'datetime',
-        self::STORING_STATUS => PayloadStoringStatusEnum::class,
-        self::PROCESSED_AT => 'datetime',
-        self::PROCESSING_STATUS => PayloadProcessingStatusEnum::class,
-        self::RESPONSE => 'array',
-    ];
+    protected function casts(): array
+    {
+        return [
+            self::PAYLOAD => 'array',
+            self::PATH_PARAMETERS => 'array',
+            self::STORED_AT => 'datetime',
+            self::STORING_STATUS => PayloadStoringStatusEnum::class,
+            self::PROCESSED_AT => 'datetime',
+            self::PROCESSING_STATUS => PayloadProcessingStatusEnum::class,
+            self::RESPONSE => 'array',
+            self::ORIGINAL_PAYLOAD => 'array',
+        ];
+    }
 
     public function integrationType(): BelongsTo
     {

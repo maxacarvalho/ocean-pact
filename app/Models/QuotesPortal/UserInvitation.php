@@ -47,11 +47,14 @@ class UserInvitation extends Model
         self::UPDATED_AT,
     ];
 
-    protected $casts = [
-        self::REGISTERED_AT => 'datetime',
-        self::SENT_AT => 'datetime',
-        self::STATUS => InvitationStatusEnum::class,
-    ];
+    protected function casts(): array
+    {
+        return [
+            self::REGISTERED_AT => 'datetime',
+            self::SENT_AT => 'datetime',
+            self::STATUS => InvitationStatusEnum::class,
+        ];
+    }
 
     public function user(): BelongsTo
     {
