@@ -6,9 +6,12 @@ use App\Data\QuotesPortal\StoreQuotePayloadData\SellerData;
 use App\Models\Role;
 use App\Models\User;
 use App\Utils\Str;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
 
 class CreateSellerAction
 {
+    /** @throws ValidationException */
     public function handle(SellerData $data): User
     {
         /** @var User|null $seller */
@@ -17,6 +20,12 @@ class CreateSellerAction
             ->first();
 
         if (null === $seller) {
+            Validator::make([
+                User::EMAIL => $data->email,
+            ], [
+                User::EMAIL => ['required', 'email'],
+            ])->validate();
+
             $seller = User::query()
                 ->create([
                     User::NAME => $data->name,
