@@ -214,4 +214,9 @@ class IntegrationType extends Model
 
         return array_merge($this->forward_headers ?? [], $authorizationHeader);
     }
+
+    public function integrationTypeLinks(): HasMany
+    {
+        return $this->hasMany(IntegrationTypeLink::class);
+    }
 }
