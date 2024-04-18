@@ -198,6 +198,9 @@ class PredictedPurchaseRequest extends Component implements HasActions, HasForms
                 $this->getTableQuery()
             )
             ->columns([
+                TextColumn::make(PredictedPurchaseRequestModel::ITEM)
+                    ->label(Str::title(__('quote_analysis_panel.item'))),
+
                 TextColumn::make(PredictedPurchaseRequestModel::RELATION_SUPPLIER.'.'.Supplier::NAME)
                     ->label(Str::title(__('predicted_purchase_request.supplier'))),
 
@@ -403,15 +406,17 @@ class PredictedPurchaseRequest extends Component implements HasActions, HasForms
             return;
         }
 
+        $quoteIds = Quote::query()
+            ->where(Quote::COMPANY_ID, '=', $this->companyId)
+            ->where(Quote::QUOTE_NUMBER, '=', $this->quoteNumber)
+            ->where(Quote::STATUS, '=', QuoteStatusEnum::RESPONDED)
+            ->pluck(Quote::ID);
+
         $allQuoteItems = QuoteItem::query()
             ->with([QuoteItem::RELATION_QUOTE, QuoteItem::RELATION_PRODUCT])
-            ->whereHas(QuoteItem::RELATION_QUOTE, function (Builder $query): void {
-                $query->where(Quote::COMPANY_ID, $this->companyId)
-                    ->where(Quote::QUOTE_NUMBER, $this->quoteNumber)
-                    ->where(Quote::TABLE_NAME.'.'.Quote::STATUS, '=', QuoteStatusEnum::RESPONDED);
-            })
+            ->whereIn(QuoteItem::QUOTE_ID, $quoteIds)
             ->where(QuoteItem::SHOULD_BE_QUOTED, '=', true)
-            ->whereNot(QuoteItem::TABLE_NAME.'.'.QuoteItem::STATUS, '=', QuoteItemStatusEnum::REJECTED)
+            ->whereNot(QuoteItem::STATUS, '=', QuoteItemStatusEnum::REJECTED)
             ->where(QuoteItem::UNIT_PRICE, '>', 0)
             ->when($filtering['lower_price'], function (Builder $query): void {
                 $query->orderBy(QuoteItem::UNIT_PRICE);
@@ -435,7 +440,7 @@ class PredictedPurchaseRequest extends Component implements HasActions, HasForms
             })
             ->get();
 
-        $uniqueQuoteItems = $allQuoteItems->pluck('item')->unique()->values();
+        $uniqueQuoteItems = $allQuoteItems->pluck('item')->unique()->sort()->values();
 
         PredictedPurchaseRequestModel::query()
             ->where(PredictedPurchaseRequestModel::QUOTE_NUMBER, $this->quoteNumber)

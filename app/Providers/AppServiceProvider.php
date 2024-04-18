@@ -8,6 +8,7 @@ use Filament\Support\Assets\Css;
 use Filament\Support\Assets\Js;
 use Filament\Support\Facades\FilamentAsset;
 use Filament\Support\Facades\FilamentView;
+use Filament\Tables\Table;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
@@ -38,6 +39,32 @@ class AppServiceProvider extends ServiceProvider
 
         Livewire::propertySynthesizer(MoneySynth::class);
 
+        $this->bootFilamentDefaults();
+        $this->bootFilamentAssets();
+
+        $this->bootAuth();
+
+        RateLimiter::for('api', function (Request $request) {
+            return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
+        });
+    }
+
+    private function bootAuth(): void
+    {
+        Gate::define('viewPulse', function (User $user) {
+            return $user->isSuperAdmin();
+        });
+    }
+
+    private function bootFilamentDefaults(): void
+    {
+        Table::configureUsing(function (Table $table) {
+            $table->paginationPageOptions([10, 25, 50]);
+        });
+    }
+
+    private function bootFilamentAssets(): void
+    {
         if ($this->app->environment('production')) {
             FilamentAsset::register([
                 Js::make('clarity.js', asset('js/clarity.js')),
@@ -58,18 +85,5 @@ class AppServiceProvider extends ServiceProvider
             'panels::user-menu.before',
             fn (): string => Blade::render('<livewire:locale-switcher/>'),
         );
-
-        $this->bootAuth();
-
-        RateLimiter::for('api', function (Request $request) {
-            return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
-        });
-    }
-
-    public function bootAuth(): void
-    {
-        Gate::define('viewPulse', function (User $user) {
-            return $user->isSuperAdmin();
-        });
     }
 }
