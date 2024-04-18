@@ -11,7 +11,6 @@ use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken as LaravelValidateCs
 use Illuminate\Http\Middleware\TrustProxies as LaravelTrustProxies;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use Sentry\Laravel\Integration;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withProviders()
@@ -34,10 +33,6 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->replaceInGroup('web', LaravelValidateCsrfToken::class, VerifyCsrfToken::class);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        $exceptions->reportable(function (Throwable $e) {
-            Integration::captureUnhandledException($e);
-        });
-
         $exceptions->render(function (AuthenticationException $exception, Request $request) {
             if ($request->expectsJson()) {
                 return response()->json(['message' => $exception->getMessage()], 401);

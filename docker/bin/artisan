@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+docker/bin/app php artisan "$@"
