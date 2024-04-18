@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+docker/bin/docker-compose ps

@@ -9,6 +9,7 @@ use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
 
 class ProcessingAttemptsRelationManager extends RelationManager
 {
@@ -19,6 +20,11 @@ class ProcessingAttemptsRelationManager extends RelationManager
     protected static ?string $recordTitleAttribute = 'status';
 
     public static function getNavigationLabel(): string
+    {
+        return Str::formatTitle(__('payload_processing_attempt.payload_processing_attempts'));
+    }
+
+    public static function getTitle(Model $ownerRecord, string $pageClass): string
     {
         return Str::formatTitle(__('payload_processing_attempt.payload_processing_attempts'));
     }

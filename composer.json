@@ -36,7 +36,6 @@
         "outhebox/blade-flags": "^1.5",
         "owenvoke/blade-fontawesome": "^2.6",
         "pxlrbt/filament-excel": "^2.1",
-        "sentry/sentry-laravel": "^4.3",
         "spatie/eloquent-sortable": "^4.2",
         "spatie/laravel-data": "^4.1",
         "spatie/laravel-ignition": "^2.4",

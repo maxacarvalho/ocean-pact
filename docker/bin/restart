@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+docker/bin/stop "$@"
+docker/bin/start "$@"
