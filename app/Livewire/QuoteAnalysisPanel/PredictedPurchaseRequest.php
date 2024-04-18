@@ -199,7 +199,7 @@ class PredictedPurchaseRequest extends Component implements HasActions, HasForms
             )
             ->columns([
                 TextColumn::make(PredictedPurchaseRequestModel::ITEM)
-                    ->label(Str::title(__('quote_analysis_panel.item'))),
+                    ->label(Str::title(__('quote_item.item'))),
 
                 TextColumn::make(PredictedPurchaseRequestModel::RELATION_SUPPLIER.'.'.Supplier::NAME)
                     ->label(Str::title(__('predicted_purchase_request.supplier'))),
