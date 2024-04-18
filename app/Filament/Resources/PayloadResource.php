@@ -6,20 +6,21 @@ use App\Enums\IntegraHub\PayloadProcessingStatusEnum;
 use App\Enums\IntegraHub\PayloadStoringStatusEnum;
 use App\Filament\Resources\PayloadResource\Pages\EditPayload;
 use App\Filament\Resources\PayloadResource\Pages\ListPayloads;
-use App\Filament\Resources\PayloadResource\Pages\ViewPayload;
 use App\Filament\Resources\PayloadResource\RelationManagers\ProcessingAttemptsRelationManager;
 use App\Models\IntegraHub\IntegrationType;
 use App\Models\IntegraHub\Payload;
 use App\Utils\Str;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\ViewField;
 use Filament\Forms\Form;
+use Filament\Infolists\Components\ViewEntry;
+use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
-use Filament\Tables\Actions\DeleteBulkAction as TableDeleteBulkAction;
-use Filament\Tables\Actions\ViewAction as TableViewAction;
+use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Filters\Filter as TableFilter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
@@ -47,15 +48,29 @@ class PayloadResource extends Resource
         return Str::formatTitle(__('payload.payloads'));
     }
 
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist
+            ->schema([
+                ViewEntry::make(Payload::PAYLOAD)
+                    ->label(Str::formatTitle(__('payload.payload')))
+                    ->view('filament-forms::components.prism')
+                    ->columnSpanFull(),
+
+                ViewEntry::make(Payload::RESPONSE)
+                    ->label(Str::formatTitle(__('payload.response')))
+                    ->view('filament-forms::components.prism')
+                    ->columnSpanFull(),
+            ]);
+    }
+
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Select::make(Payload::INTEGRATION_TYPE_ID)
+                Placeholder::make(Payload::INTEGRATION_TYPE_ID)
                     ->label(Str::formatTitle(__('integration_type.integration_type')))
-                    ->required()
-                    ->relationship('integrationType', 'code')
-                    ->preload(),
+                    ->content(fn (Payload $record): string => $record->integrationType->code),
 
                 Select::make(Payload::PROCESSING_STATUS)
                     ->label(Str::formatTitle(__('payload.processed_status')))
@@ -68,18 +83,6 @@ class PayloadResource extends Resource
                     ->json()
                     ->columnSpanFull()
                     ->hiddenOn(['view', 'edit']),
-
-                ViewField::make(Payload::PAYLOAD)
-                    ->label(Str::formatTitle(__('payload.payload')))
-                    ->view('filament-forms::components.prism')
-                    ->columnSpanFull()
-                    ->hiddenOn(['create']),
-
-                ViewField::make(Payload::RESPONSE)
-                    ->label(Str::formatTitle(__('payload.response')))
-                    ->view('filament-forms::components.prism')
-                    ->columnSpanFull()
-                    ->hiddenOn(['create']),
             ]);
     }
 
@@ -87,6 +90,9 @@ class PayloadResource extends Resource
     {
         return $table
             ->defaultSort(Payload::STORED_AT, 'desc')
+            ->actions([
+                EditAction::make()->label(Str::ucfirst(__('actions.open'))),
+            ])
             ->columns([
                 TextColumn::make(Payload::RELATION_INTEGRATION_TYPE.'.'.IntegrationType::CODE)
                     ->label(Str::formatTitle(__('integration_type.integration_type'))),
@@ -180,13 +186,7 @@ class PayloadResource extends Resource
                 SelectFilter::make(Payload::PROCESSING_STATUS)
                     ->label(Str::formatTitle(__('payload.processed_status')))
                     ->options(PayloadProcessingStatusEnum::class),
-            ])
-            ->actions([
-                TableViewAction::make(),
-            ])
-            ->bulkActions([
-                TableDeleteBulkAction::make(),
-            ]);
+            ], layout: FiltersLayout::AboveContentCollapsible);
     }
 
     public static function getRelations(): array
@@ -200,8 +200,7 @@ class PayloadResource extends Resource
     {
         return [
             'index' => ListPayloads::route('/'),
-            'view' => ViewPayload::route('/{record}'),
-            // 'edit' => EditPayload::route('/{record}/edit'),
+            'edit' => EditPayload::route('/{record}/edit'),
         ];
     }
 }

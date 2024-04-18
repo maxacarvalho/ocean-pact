@@ -2,4 +2,5 @@
 
 return [
     'export' => 'exportar',
+    'open' => 'abrir',
 ];
