@@ -31,7 +31,7 @@ services:
       - mysql
       - redis
       - mailpit
-      - mysql_testing
+      - mysql-testing
     environment:
       - IDE_KEY=${IDE_KEY:-docker}
       - XDEBUG_CLIENT_HOST=${XDEBUG_CLIENT_HOST:-host.docker.internal}
@@ -74,7 +74,7 @@ services:
       - MYSQL_USER=${DB_USERNAME:-oceanpact}
       - MYSQL_PASSWORD=${DB_PASSWORD:-secret}
 
-  mysql_testing:
+  mysql-testing:
     image: mysql:8
     ports:
       - "3307:3306"
@@ -85,7 +85,8 @@ services:
       - MYSQL_USER=${DB_USERNAME}
       - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
       - MYSQL_PASSWORD=${DB_PASSWORD}
-    tmpfs: /var/lib/mysql
+    volumes:
+      - "oceanpact-data-mysql-testing:/var/lib/mysql"
 
   node:
     image: node:18-alpine
