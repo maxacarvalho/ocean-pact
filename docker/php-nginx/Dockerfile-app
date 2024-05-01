@@ -1,16 +1,3 @@
 FROM maxacarvalho/ocean-pact-base:latest
 
-# Temporary switch to root
-USER root
-
-# Install composer from the official image
-COPY --from=composer /usr/bin/composer /usr/bin/composer
-
-# Switch back to non-root user
-USER nobody
-
 COPY . /var/www/html
-
-RUN /usr/bin/composer install --no-interaction --prefer-dist --no-progress --no-scripts --no-dev
-
-RUN npm install && npm run build
