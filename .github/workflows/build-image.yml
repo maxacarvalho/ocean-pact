@@ -9,41 +9,40 @@ jobs:
   dependencies:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      -
+        name: Checkout
         uses: actions/checkout@v4
-
-      - name: Setup PHP
+      -
+        name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: 8.3
           tools: composer:v2
-
-      - name: Cache composer dependencies
+      -
+        name: Cache composer dependencies
         uses: actions/cache@v4
         with:
           path: vendor
           key: composer-${{ hashFiles('composer.lock') }}
-
-      - name: Install Composer Dependencies
+      -
+        name: Install Composer Dependencies
         run: composer install --no-interaction --prefer-dist --no-progress --no-scripts --no-dev
-
-      - name: Cache NPM dependencies
+      -
+        name: Cache NPM dependencies
         uses: actions/cache@v4
         with:
           path: node_modules
           key: npm-${{ hashFiles('package-lock.json') }}
-
-      - name: Install NPM Dependencies
-        run: npm install
-
-      - name: Build NPM
+      -
+        name: Install NPM Dependencies
+        run: |
+          npm config set //npm.fontawesome.com/:_authToken=${FONTAWESOME_PACKAGE_TOKEN}
+          npm ci
+        env:
+          FONTAWESOME_PACKAGE_TOKEN: ${{ secrets.FONTAWESOME_PACKAGE_TOKEN }}
+      -
+        name: Build NPM
         run: npm run build
-
-  images:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
       -
         name: Set up QEMU
         uses: docker/setup-qemu-action@v3
