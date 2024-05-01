@@ -3,6 +3,7 @@
 !bootstrap/
 !config/
 !database/
+!docker/
 !lang/
 !node_modules/
 !public/
@@ -25,3 +26,5 @@
 !postcss.config.js
 !tailwind.config.js
 !vite.config.js
+!cert.pem
+!key.pem

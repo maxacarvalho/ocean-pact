@@ -1,3 +1,4 @@
+FROM node:21-alpine AS node
 FROM trafex/php-nginx:3.5.0
 
 # Temporary switch to root
@@ -21,6 +22,12 @@ RUN apk add --no-cache \
     php83-sodium \
     php83-xsl \
     php83-zip
+
+# NODE
+COPY --from=node /usr/local/lib/node_modules /usr/local/lib/node_modules
+COPY --from=node /usr/local/bin/node /usr/local/bin/node
+RUN ln -s /usr/local/lib/node_modules/npm/bin/npm-cli.js /usr/local/bin/npm && \
+    ln -s /usr/local/lib/node_modules/npm/bin/npx-cli.js /usr/local/bin/npx
 
 # Switch back to non-root user
 USER nobody
