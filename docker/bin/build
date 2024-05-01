@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
 set -o errexit
 
-docker/bin/docker-compose build
+docker build -f docker/php-nginx/Dockerfile-base -t ocean-pact/php-nginx-base:latest .
+docker build -f docker/php-nginx/Dockerfile-local -t ocean-pact/php-nginx-local:latest .
+#docker/bin/docker-compose build

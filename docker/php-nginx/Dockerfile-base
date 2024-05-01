@@ -1,0 +1,26 @@
+FROM trafex/php-nginx:3.5.0
+
+# Temporary switch to root
+USER root
+
+# Extensions
+RUN apk add --no-cache \
+    php83-bcmath \
+    php83-fpm \
+    php83-iconv \
+    php83-mysqlnd \
+    php83-pcntl \
+    php83-pdo \
+    php83-pdo_mysql \
+    php83-pdo_sqlite \
+    php83-pecl-redis \
+    php83-openssl \
+    php83-posix \
+    php83-simplexml \
+    php83-sockets \
+    php83-sodium \
+    php83-xsl \
+    php83-zip
+
+# Switch back to non-root user
+USER nobody

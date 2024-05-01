@@ -20,3 +20,5 @@ yarn-error.log
 npm-debug.log*
 .phpactor.json
 .env.staging
+cert.pem
+key.pem
