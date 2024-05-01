@@ -9,6 +9,8 @@ jobs:
   docker:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
       -
         name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -22,10 +24,18 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       -
-        name: Build and push
+        name: Build and push base image
         uses: docker/build-push-action@v5
         with:
           platforms: linux/amd64,linux/arm64
           file: "docker/php-nginx/Dockerfile-base"
           push: true
           tags: maxacarvalho/ocean-pact-base:latest
+      - name: Build and push app image
+        uses: docker/build-push-action@v5
+        with:
+          platforms: linux/amd64,linux/arm64
+          context: .
+          file: "docker/php-nginx/Dockerfile-app"
+          push: true
+          tags: maxacarvalho/ocean-pact-app:latest
