@@ -251,6 +251,9 @@ class QuoteResource extends Resource
                                 $query->where(SupplierUser::USER_ID, '=', $user->id);
                             }
                         );
+                    })
+                    ->when($user->isBuyer(), function (EloquentBuilder $query) use ($user) {
+                        $query->where(Quote::BUYER_ID, '=', $user->id);
                     });
             })
             ->columns(

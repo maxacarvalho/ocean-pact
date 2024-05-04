@@ -22,6 +22,11 @@ class QuotePolicy
                 && $user->can('view_quote') && ($quote->isResponded() || $quote->isAnalyzed());
         }
 
+        if ($user->isBuyer()) {
+            return $quote->buyer->id === $user->id
+                && $user->can('view_quote');
+        }
+
         return $user->can('view_quote') && ($quote->isResponded() || $quote->isAnalyzed());
     }
 
@@ -35,6 +40,11 @@ class QuotePolicy
         if ($user->isSeller()) {
             return $quote->supplier->sellers->contains($user)
                 && $user->can('update_quote') && $quote->canBeResponded();
+        }
+
+        if ($user->isBuyer()) {
+            return $quote->buyer->id === $user->id
+                && $user->can('update_quote');
         }
 
         return $user->can('update_quote') && $quote->canBeResponded();
