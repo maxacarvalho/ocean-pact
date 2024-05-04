@@ -4,7 +4,7 @@ FROM ocean-pact/php-nginx-base:latest
 USER root
 
 # Install xdebug
-RUN apk add --no-cache php83-pecl-xdebug
+RUN apk add --no-cache mysql-client mariadb-connector-c php83-pecl-xdebug
 
 # Add configuration
 COPY docker/php-nginx/config/conf.d/50_xdebug.ini ${PHP_INI_DIR}/conf.d/50_xdebug.ini

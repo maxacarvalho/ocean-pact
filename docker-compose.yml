@@ -65,10 +65,10 @@ services:
     networks:
       - oceanpact-net
     environment:
-      - MYSQL_DATABASE=${DB_DATABASE}
-      - MYSQL_USER=${DB_USERNAME}
-      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
-      - MYSQL_PASSWORD=${DB_PASSWORD}
+      - MYSQL_DATABASE=${DB_DATABASE:-oceanpact}
+      - MYSQL_USER=${DB_USERNAME:-oceanpact}
+      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD:-secret}
+      - MYSQL_PASSWORD=${DB_PASSWORD:-secret}
     volumes:
       - "oceanpact-data-mysql-testing:/var/lib/mysql"
 
