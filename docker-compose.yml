@@ -72,15 +72,6 @@ services:
     volumes:
       - "oceanpact-data-mysql-testing:/var/lib/mysql"
 
-  node:
-    image: node:18-alpine
-    volumes:
-      - "$PWD:/app"
-    working_dir: /app
-    tty: true
-    networks:
-      - oceanpact-net
-
 networks:
   oceanpact-net:
     driver: "bridge"

@@ -29,5 +29,7 @@ COPY --from=node /usr/local/bin/node /usr/local/bin/node
 RUN ln -s /usr/local/lib/node_modules/npm/bin/npm-cli.js /usr/local/bin/npm && \
     ln -s /usr/local/lib/node_modules/npm/bin/npx-cli.js /usr/local/bin/npx
 
+RUN mkdir -p "/.npm" && chown -R nobody.nobody /.npm
+
 # Switch back to non-root user
 USER nobody

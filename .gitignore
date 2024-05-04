@@ -22,3 +22,4 @@ npm-debug.log*
 .env.staging
 cert.pem
 key.pem
+.npmrc

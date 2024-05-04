@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+[ -z "$1" ] && echo "Please specify a NPM command (ex. install)" && exit
+docker/bin/app npm "$@"
