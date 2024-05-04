@@ -45,10 +45,14 @@ test('should call external api and forward payload', function () {
         IntegrationType::INTERVAL => 7200,
         IntegrationType::IS_SYNCHRONOUS => false,
     ]);
+    $targetField = IntegrationTypeField::factory()->create([
+        IntegrationTypeField::INTEGRATION_TYPE_ID => IntegrationType::factory()->create()->id,
+        IntegrationTypeField::FIELD_NAME => 'transformed_message',
+    ]);
     IntegrationTypeField::factory()->create([
         IntegrationTypeField::INTEGRATION_TYPE_ID => $integrationType->id,
         IntegrationTypeField::FIELD_NAME => 'message',
-        IntegrationTypeField::ALTERNATE_NAME => 'transformed_message',
+        IntegrationTypeField::TARGET_INTEGRATION_TYPE_FIELD_ID => $targetField->id,
     ]);
 
     $data = ['message' => 'Hello World'];

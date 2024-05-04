@@ -4,8 +4,6 @@ return [
     'integration_type_field' => 'integration type field',
     'integration_type_fields' => 'integration type fields',
     'field_name' => 'field name',
-    'alternate_name' => 'alternate name',
-    'alternate_name_tooltip' => 'this name will be used instead of the field name when consuming a saved payload.',
     'field_type' => 'field type',
     'field_rules' => 'field rules',
     'date' => 'date',
@@ -48,4 +46,6 @@ return [
     'numerics' => 'numerics',
     'optional' => 'optional',
     'in' => 'options',
+    'target_integration' => 'target integration',
+    'target_integration_type_field' => 'target field',
 ];
