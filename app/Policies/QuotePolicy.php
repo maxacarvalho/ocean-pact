@@ -23,6 +23,8 @@ class QuotePolicy
         }
 
         if ($user->isBuyer()) {
+            $quote->loadMissing(Quote::RELATION_BUYER);
+
             return $quote->buyer->id === $user->id
                 && $user->can('view_quote');
         }
