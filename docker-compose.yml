@@ -1,15 +1,33 @@
-version: '3'
-
 services:
-  oceanpact.dev:
-    image: ocean-pact/php-nginx-local:latest
+  web:
+    image: oceanpact/web
+    build: docker/web
+    depends_on:
+      - oceanpact.test
     ports:
       - "80:80"
       - "443:443"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - "$PWD/docker/web/nginx.conf:/etc/nginx/nginx.conf"
+      - "$PWD/docker/web/templates:/etc/nginx/http.d"
+      - "$PWD/docker/web/tls:/etc/nginx/tls"
+      - "$PWD/public:/app/public"
+    tty: true
+    networks:
+      oceanpact-net:
+        aliases:
+          - oceanpact.test
+
+  oceanpact.test:
+    image: oceanpact/oceanpact.test:latest
+    build:
+      dockerfile: docker/php/Dockerfile
     volumes:
       - "${HOME}/.ssh:/home/php/.ssh"
-      - "$PWD:/var/www/html"
-    working_dir: /var/www/html
+      - "$PWD:/app"
+    working_dir: /app
     tty: true
     depends_on:
       - mysql

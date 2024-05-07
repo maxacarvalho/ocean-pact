@@ -17,8 +17,10 @@
     @fortawesome:registry=https://npm.fontawesome.com/
     //npm.fontawesome.com/:_authToken=<PARA ADQUIRIR O TOKEN ENTRE EM CONTATO COM O ADMINISTRADOR DO PROJETO>
     ```
-4. Gere o certificado para HTTPS com o comando `mkcert -key-file key.pem -cert-file cert.pem oceanpact.dev`
-5. Execute o script `docker/bin/build`. Esse script vai construir as imagens Docker do projetos
+4. Gere o certificado para HTTPS
+   1. `cd docker/web/tls`
+   2. `mkcert -key-file key.pem -cert-file cert.pem oceanpact.test`
+5. Execute o script `docker/bin/build`.
 6. Inicie os containers com o script `docker/bin/start`
 7. Instale as dependências do composer com o script `docker/bin/composer install`
 8. Instale as dependências do npm com o script `docker/bin/npm install`
@@ -26,12 +28,12 @@
 10. Rode as migrations com o comando `docker/bin/artisan migrate`
 11. Crie um usuário para acesso `docker/bin/artisan make:filament-user`
 12. Gere a APP_KEY com o comando `docker/bin/artisan key:generate`
-13. Adicione o domínio `oceanpact.dev` no arquivo `/etc/hosts`
+13. Adicione o domínio `oceanpact.test` no arquivo `/etc/hosts`
     ```
-    127.0.0.1        oceanpact.dev
-    ::1              oceanpact.dev
+    127.0.0.1        oceanpact.test
+    ::1              oceanpact.test
     ```
-14. Acesse o sistema em `https://oceanpact.dev`
+14. Acesse o sistema em `https://oceanpact.test`
 
 ## Dando acesso super_admin para o seu usuário no ambiente local
 

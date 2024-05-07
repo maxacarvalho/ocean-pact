@@ -1,3 +1,0 @@
-FROM maxacarvalho/ocean-pact-base:latest
-
-COPY . /var/www/html
