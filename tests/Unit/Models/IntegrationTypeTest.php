@@ -2,7 +2,6 @@
 
 use App\Models\IntegraHub\IntegrationType;
 use Illuminate\Support\Carbon;
-use Mockery;
 
 describe('Scheduling interval is due method', function () {
     test('should be false when interval is not set', function () {

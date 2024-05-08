@@ -40,12 +40,6 @@ RUN set -ex && \
     chown -R $USER_NAME:$GROUP_NAME /var/lib/nginx/ && \
     chown -R $USER_NAME:$GROUP_NAME /var/log/nginx
 
-ARG TARGETARCH
-
-RUN cd /usr/local/bin/ \
-  && curl -L https://github.com/FiloSottile/mkcert/releases/download/v1.4.3/mkcert-v1.4.3-linux-$TARGETARCH -o mkcert \
-  && chmod +x mkcert
-
 # Workdir
 WORKDIR /app/
 

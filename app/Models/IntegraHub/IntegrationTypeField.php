@@ -18,7 +18,7 @@ use Spatie\EloquentSortable\SortableTrait;
  * @property string                       $field_name
  * @property IntegrationTypeFieldTypeEnum $field_type
  * @property array                        $field_rules
- * @property string                       $alternate_name
+ * @property ?IntegrationTypeField        $target_integration_type_field_id
  * @property ?Carbon                      $created_at
  * @property ?Carbon                      $updated_at
  */
@@ -33,7 +33,7 @@ class IntegrationTypeField extends Model implements Sortable
     public const FIELD_NAME = 'field_name';
     public const FIELD_TYPE = 'field_type';
     public const FIELD_RULES = 'field_rules';
-    public const ALTERNATE_NAME = 'alternate_name';
+    public const TARGET_INTEGRATION_TYPE_FIELD_ID = 'target_integration_type_field_id';
     public const CREATED_AT = 'created_at';
     public const UPDATED_AT = 'updated_at';
 
@@ -56,6 +56,11 @@ class IntegrationTypeField extends Model implements Sortable
     public function integrationType(): BelongsTo
     {
         return $this->belongsTo(IntegrationType::class);
+    }
+
+    public function targetIntegrationTypeField(): BelongsTo
+    {
+        return $this->belongsTo(IntegrationTypeField::class, self::TARGET_INTEGRATION_TYPE_FIELD_ID);
     }
 
     public function buildSortQuery(): Builder
