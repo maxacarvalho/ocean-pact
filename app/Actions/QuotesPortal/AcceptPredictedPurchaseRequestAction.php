@@ -26,8 +26,51 @@ class AcceptPredictedPurchaseRequestAction
     /** @throws MissingPredictedPurchaseRequestItemsException|PredictedPurchaseRequestAlreadyAcceptedException */
     public function handle(int $companyId, string $quoteNumber): void
     {
-        /** @var PredictedPurchaseRequest[]|Collection $purchaseRequestItems */
-        $purchaseRequestItems = PredictedPurchaseRequest::query()
+        $purchaseRequestItems = $this->getPredictedPurchaseRequestItems($companyId, $quoteNumber);
+
+        if ($purchaseRequestItems->isEmpty()) {
+            throw new MissingPredictedPurchaseRequestItemsException(
+                Str::ucfirst(__('quote_analysis_panel.missing_predicted_purchase_request_items'))
+            );
+        }
+
+        if ($purchaseRequestItems->contains(PredictedPurchaseRequest::STATUS, PredictedPurchaseRequestStatusEnum::ACCEPTED)) {
+            throw new PredictedPurchaseRequestAlreadyAcceptedException(
+                Str::ucfirst(__('quote_analysis_panel.predicted_purchase_request_already_accepted'))
+            );
+        }
+
+        $suppliers = $this->getSuppliersFromPredictedPurchaseRequest($purchaseRequestItems);
+
+        /** @var PredictedPurchaseRequest $first */
+        $first = $purchaseRequestItems->first();
+
+        $data = $this->getFinalizedPredictedPurchaseRequestData($quoteNumber, $first, $suppliers);
+
+        $this->markPredictedPurchaseRequestAsAccepted($companyId, $quoteNumber);
+
+        $purchaseRequestQuoteIds = $purchaseRequestItems->pluck(PredictedPurchaseRequest::QUOTE_ID)->toArray();
+        $purchaseRequestQuoteItemsIds = $purchaseRequestItems->pluck(PredictedPurchaseRequest::QUOTE_ITEM_ID)->toArray();
+
+        $this->markAllRelatedQuotesAsAnalyzed($companyId, $quoteNumber);
+
+        $this->markPurchaseRequestQuoteItemsAsAccepted($purchaseRequestQuoteItemsIds);
+
+        $this->markAllQuoteItemsNotIncludedInTheAcceptedPurchaseRequestAsRejected($companyId, $quoteNumber, $purchaseRequestQuoteItemsIds);
+
+        WebhookCall::create()
+            ->url(config('integra-hub.base_url').'/integra-hub/webhooks/payload?integration-type-code=analise-cotacao-finalizada')
+            ->payload($data->toArray())
+            ->useSecret(config('integra-hub.webhook-secret'))
+            ->dispatchSync();
+    }
+
+    /**
+     * @return PredictedPurchaseRequest[]|\Illuminate\Database\Eloquent\Builder[]|Collection
+     */
+    private function getPredictedPurchaseRequestItems(int $companyId, string $quoteNumber): array|Collection
+    {
+        return PredictedPurchaseRequest::query()
             ->with([
                 PredictedPurchaseRequest::RELATION_COMPANY,
                 PredictedPurchaseRequest::RELATION_QUOTE,
@@ -44,19 +87,10 @@ class AcceptPredictedPurchaseRequestAction
             ->orderBy(PredictedPurchaseRequest::SUPPLIER_ID)
             ->orderBy(PredictedPurchaseRequest::ITEM)
             ->get();
+    }
 
-        if ($purchaseRequestItems->isEmpty()) {
-            throw new MissingPredictedPurchaseRequestItemsException(
-                Str::ucfirst(__('quote_analysis_panel.missing_predicted_purchase_request_items'))
-            );
-        }
-
-        if ($purchaseRequestItems->contains(PredictedPurchaseRequest::STATUS, PredictedPurchaseRequestStatusEnum::ACCEPTED)) {
-            throw new PredictedPurchaseRequestAlreadyAcceptedException(
-                Str::ucfirst(__('quote_analysis_panel.predicted_purchase_request_already_accepted'))
-            );
-        }
-
+    private function getSuppliersFromPredictedPurchaseRequest(Collection|array $purchaseRequestItems): array
+    {
         $suppliers = [];
 
         /** @var PredictedPurchaseRequest $purchaseRequestItem */
@@ -97,10 +131,15 @@ class AcceptPredictedPurchaseRequestAction
             ];
         }
 
-        /** @var PredictedPurchaseRequest $first */
-        $first = $purchaseRequestItems->first();
+        return $suppliers;
+    }
 
-        $data = FinalizedPredictedPurchaseRequestData::from([
+    private function getFinalizedPredictedPurchaseRequestData(
+        string $quoteNumber,
+        PredictedPurchaseRequest $first,
+        array $suppliers
+    ): FinalizedPredictedPurchaseRequestData {
+        return FinalizedPredictedPurchaseRequestData::from([
             PredictedPurchaseRequest::QUOTE_NUMBER => $quoteNumber,
             PredictedPurchaseRequest::RELATION_COMPANY => $first->company,
             PredictedPurchaseRequest::RELATION_BUYER => [
@@ -121,41 +160,58 @@ class AcceptPredictedPurchaseRequestAction
                 ])
                 ->where(QuoteAnalysisAction::QUOTE_NUMBER, $quoteNumber)->get()->toArray(),
         ]);
+    }
 
+    private function markPredictedPurchaseRequestAsAccepted(int $companyId, string $quoteNumber): void
+    {
         PredictedPurchaseRequest::query()
             ->where(PredictedPurchaseRequest::COMPANY_ID, $companyId)
             ->where(PredictedPurchaseRequest::QUOTE_NUMBER, $quoteNumber)
             ->update([
                 PredictedPurchaseRequest::STATUS => PredictedPurchaseRequestStatusEnum::ACCEPTED,
             ]);
+    }
 
-        $quoteIds = $purchaseRequestItems->pluck(PredictedPurchaseRequest::QUOTE_ID)->toArray();
-        $quoteItemsIds = $purchaseRequestItems->pluck(PredictedPurchaseRequest::QUOTE_ITEM_ID)->toArray();
-
+    private function markAllRelatedQuotesAsAnalyzed(int $companyId, string $quoteNumber): void
+    {
         Quote::query()
-            ->whereIn(Quote::ID, $quoteIds)
+            ->whereIn(Quote::COMPANY_ID, $this->getAllRelatedQuotes($companyId, $quoteNumber))
             ->update([
                 Quote::STATUS => QuoteStatusEnum::ANALYZED,
             ]);
+    }
 
+    private function markPurchaseRequestQuoteItemsAsAccepted(array $purchaseRequestQuoteItemsIds): void
+    {
         QuoteItem::query()
-            ->whereIn(QuoteItem::ID, $quoteItemsIds)
+            ->whereIn(QuoteItem::ID, $purchaseRequestQuoteItemsIds)
             ->update([
                 QuoteItem::STATUS => QuoteItemStatusEnum::ACCEPTED,
             ]);
+    }
+
+    private function getAllRelatedQuotes(int $companyId, string $quoteNumber): array
+    {
+        return Quote::query()
+            ->where(Quote::COMPANY_ID, '=', $companyId)
+            ->where(Quote::QUOTE_NUMBER, '=', $quoteNumber)
+            ->pluck(Quote::ID)
+            ->toArray();
+    }
+
+    private function markAllQuoteItemsNotIncludedInTheAcceptedPurchaseRequestAsRejected(
+        int $companyId,
+        string $quoteNumber,
+        array $purchaseRequestQuoteItemsIds
+    ): void {
         QuoteItem::query()
-            ->where(function (Builder $query) use ($quoteIds, $quoteItemsIds) {
-                $query->whereIn(QuoteItem::QUOTE_ID, $quoteIds)
-                    ->whereNotIn(QuoteItem::ID, $quoteItemsIds);
+            ->where(function (Builder $query) use ($companyId, $quoteNumber, $purchaseRequestQuoteItemsIds) {
+                $query
+                    ->whereIn(QuoteItem::QUOTE_ID, $this->getAllRelatedQuotes($companyId, $quoteNumber))
+                    ->whereNotIn(QuoteItem::ID, $purchaseRequestQuoteItemsIds);
             })
             ->update([
                 QuoteItem::STATUS => QuoteItemStatusEnum::REJECTED,
             ]);
-
-        WebhookCall::create()
-            ->url(config('integra-hub.base_url').'/integra-hub/webhooks/payload?integration-type-code=analise-cotacao-finalizada')
-            ->payload($data->toArray())
-            ->useSecret(config('integra-hub.webhook-secret'))
-            ->dispatchSync();
     }
 }
