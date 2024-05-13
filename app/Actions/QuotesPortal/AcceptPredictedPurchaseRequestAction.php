@@ -49,7 +49,6 @@ class AcceptPredictedPurchaseRequestAction
 
         $this->markPredictedPurchaseRequestAsAccepted($companyId, $quoteNumber);
 
-        $purchaseRequestQuoteIds = $purchaseRequestItems->pluck(PredictedPurchaseRequest::QUOTE_ID)->toArray();
         $purchaseRequestQuoteItemsIds = $purchaseRequestItems->pluck(PredictedPurchaseRequest::QUOTE_ITEM_ID)->toArray();
 
         $this->markAllRelatedQuotesAsAnalyzed($companyId, $quoteNumber);
@@ -175,7 +174,7 @@ class AcceptPredictedPurchaseRequestAction
     private function markAllRelatedQuotesAsAnalyzed(int $companyId, string $quoteNumber): void
     {
         Quote::query()
-            ->whereIn(Quote::COMPANY_ID, $this->getAllRelatedQuotes($companyId, $quoteNumber))
+            ->whereIn(Quote::ID, $this->getAllRelatedQuotes($companyId, $quoteNumber))
             ->update([
                 Quote::STATUS => QuoteStatusEnum::ANALYZED,
             ]);
