@@ -6,6 +6,7 @@ return [
     'sent_at' => 'sent at',
     'purchase_request_number' => 'purchase request number',
     'viewed_at' => 'viewed at',
+    'status' => 'status',
     'file' => 'file',
     'created_at' => 'created at',
     'updated_at' => 'updated at',
