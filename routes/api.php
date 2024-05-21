@@ -9,7 +9,7 @@ use App\Http\Controllers\QuotesPortal\API\Product\MassCreateOrUpdateProductsCont
 use App\Http\Controllers\QuotesPortal\API\Product\StoreProductController;
 use App\Http\Controllers\QuotesPortal\API\Product\UpdateProductController;
 use App\Http\Controllers\QuotesPortal\API\StoreOrUpdatePaymentConditionBatchController;
-use App\Http\Controllers\QuotesPortal\API\StorePurchaseRequestController;
+use App\Http\Controllers\QuotesPortal\API\StoreOrUpdatePurchaseRequestController;
 use App\Http\Controllers\QuotesPortal\API\StoreQuoteController;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Router;
@@ -75,7 +75,7 @@ Route::middleware('auth:sanctum')
 
         $router->name('purchase-request.')
             ->group(function (Router $router) {
-                $router->post('/purchase-requests', StorePurchaseRequestController::class)
+                $router->post('/purchase-requests', StoreOrUpdatePurchaseRequestController::class)
                     ->name('store');
             });
 
