@@ -8,6 +8,7 @@ use App\Models\QuotesPortal\PurchaseRequest;
 use App\Models\QuotesPortal\PurchaseRequestItem;
 use App\Models\QuotesPortal\Quote;
 use App\Models\QuotesPortal\QuoteItem;
+use App\Models\QuotesPortal\Supplier;
 
 class CreateOrUpdatePurchaseRequestAction
 {
@@ -50,14 +51,29 @@ class CreateOrUpdatePurchaseRequestAction
     private function getQuote(StoreOrUpdatePurchaseRequest $storeOrUpdatePurchaseRequestData): Quote
     {
         $company = $this->getCompany($storeOrUpdatePurchaseRequestData);
+        $supplier = $this->getSupplier($storeOrUpdatePurchaseRequestData);
 
         /** @var Quote $quote */
         $quote = Quote::query()
             ->where(Quote::COMPANY_ID, $company->id)
             ->where(Quote::QUOTE_NUMBER, $storeOrUpdatePurchaseRequestData->quoteNumber)
-            ->firstOrFail();
+            ->where(Quote::SUPPLIER_ID, $supplier->id)
+            ->sole();
 
         return $quote;
+    }
+
+    private function getSupplier(StoreOrUpdatePurchaseRequest $storeOrUpdatePurchaseRequestData): Supplier
+    {
+        /** @var Supplier $supplier */
+        $supplier = Supplier::query()
+            ->where(Supplier::COMPANY_CODE, $storeOrUpdatePurchaseRequestData->company)
+            ->where(Supplier::COMPANY_CODE_BRANCH, $storeOrUpdatePurchaseRequestData->branch)
+            ->where(Supplier::CODE, $storeOrUpdatePurchaseRequestData->supplierCode)
+            ->where(Supplier::STORE, $storeOrUpdatePurchaseRequestData->supplierStore)
+            ->sole();
+
+        return $supplier;
     }
 
     private function getCompany(StoreOrUpdatePurchaseRequest $storeOrUpdatePurchaseRequestData): Company
@@ -66,7 +82,7 @@ class CreateOrUpdatePurchaseRequestAction
         $company = Company::query()
             ->where(Company::CODE, $storeOrUpdatePurchaseRequestData->company)
             ->where(Company::CODE_BRANCH, $storeOrUpdatePurchaseRequestData->branch)
-            ->firstOrFail();
+            ->sole();
 
         return $company;
     }
