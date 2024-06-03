@@ -23,6 +23,10 @@ class StoreOrUpdatePurchaseRequest extends Data
         #[Required]
         public string $quoteNumber,
         #[Required]
+        public string $supplierCode,
+        #[Required]
+        public string $supplierStore,
+        #[Required]
         public string $purchaseRequestNumber,
         #[Required]
         public PurchaseRequestStatus $status,
