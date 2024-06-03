@@ -5,8 +5,9 @@ namespace App\Http\Controllers\QuotesPortal\API;
 use App\Actions\QuotesPortal\CreateOrUpdatePurchaseRequestAction;
 use App\Data\QuotesPortal\PurchaseRequestData;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\QuotesPortal\StoreOrUpdatePurchaseRequestData;
+use App\Http\Requests\QuotesPortal\StoreOrUpdatePurchaseRequest;
 use App\Jobs\PurchaseRequestReceivedJob;
+use App\Models\QuotesPortal\PurchaseRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 use Throwable;
@@ -14,13 +15,15 @@ use Throwable;
 class StoreOrUpdatePurchaseRequestController extends Controller
 {
     public function __invoke(
-        StoreOrUpdatePurchaseRequestData $request,
+        StoreOrUpdatePurchaseRequest $request,
         CreateOrUpdatePurchaseRequestAction $createOrUpdatePurchaseRequestAction
     ): PurchaseRequestData|JsonResponse {
         try {
             $purchaseRequest = $createOrUpdatePurchaseRequestAction->handle($request);
 
             PurchaseRequestReceivedJob::dispatch($purchaseRequest->id);
+
+            $purchaseRequest->load(PurchaseRequest::RELATION_ITEMS);
 
             return PurchaseRequestData::from($purchaseRequest);
         } catch (Throwable $exception) {

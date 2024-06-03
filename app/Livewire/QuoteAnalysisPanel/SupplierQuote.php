@@ -133,6 +133,14 @@ class SupplierQuote extends Component implements HasForms, HasTable
                 TextColumn::make(QuoteItem::STATUS)
                     ->label(Str::formatTitle(__('quote_item.status'))),
 
+                TextColumn::make('purchase_request_number')
+                    ->label(Str::ucfirst(__('purchase_request.purchase_request_number')))
+                    ->state(function (QuoteItem $quoteItem) {
+                        $quoteItem->load(QuoteItem::RELATION_PURCHASE_REQUEST);
+
+                        return $quoteItem->purchaseRequest?->purchase_request_number;
+                    }),
+
                 CheckboxColumn::make('is_selected')
                     ->label(Str::ucfirst(__('quote_analysis_panel.is_selected')))
                     ->state(function (QuoteItem $quoteItem) {
