@@ -64,5 +64,9 @@ class PurchaseRequestReceivedJob implements ShouldQueue
                 )
             );
         }
+
+        $purchaseRequest->update([
+            PurchaseRequest::SENT_AT => now(),
+        ]);
     }
 }

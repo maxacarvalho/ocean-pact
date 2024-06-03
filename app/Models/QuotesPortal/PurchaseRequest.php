@@ -3,22 +3,25 @@
 namespace App\Models\QuotesPortal;
 
 use App\Enums\QuotesPortal\PurchaseRequestStatus;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 
 /**
- * @property int                   $id
- * @property int                   $quote_id
- * @property string                $purchase_request_number
- * @property Carbon|null           $sent_at
- * @property Carbon|null           $viewed_at
- * @property PurchaseRequestStatus $status
- * @property string|null           $file
- * @property Carbon|null           $created_at
- * @property Carbon|null           $updated_at
+ * @property int                                   $id
+ * @property int                                   $quote_id
+ * @property string                                $purchase_request_number
+ * @property Carbon|null                           $sent_at
+ * @property Carbon|null                           $viewed_at
+ * @property PurchaseRequestStatus                 $status
+ * @property string|null                           $file
+ * @property Carbon|null                           $created_at
+ * @property Carbon|null                           $updated_at
  * Relations
- * @property Quote                 $quote
+ * @property-read  Quote                           $quote
+ * @property-read PurchaseRequestItem[]|Collection $items
  */
 class PurchaseRequest extends Model
 {
@@ -35,6 +38,7 @@ class PurchaseRequest extends Model
 
     // Relations
     public const string RELATION_QUOTE = 'quote';
+    public const string RELATION_ITEMS = 'items';
 
     protected $guarded = [
         self::ID,
@@ -54,5 +58,10 @@ class PurchaseRequest extends Model
     public function quote(): BelongsTo
     {
         return $this->belongsTo(Quote::class);
+    }
+
+    public function items(): HasMany
+    {
+        return $this->hasMany(PurchaseRequestItem::class);
     }
 }
