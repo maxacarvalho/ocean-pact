@@ -128,6 +128,7 @@ class QuoteResource extends Resource
                                         return PaymentCondition::query()
                                             ->where(PaymentCondition::COMPANY_CODE, '=', $company->code)
                                             ->pluck(PaymentCondition::DESCRIPTION, PaymentCondition::ID)
+                                            ->unique()
                                             ->toArray();
                                     }),
 
