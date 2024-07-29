@@ -121,15 +121,7 @@ class QuoteResource extends Resource
                                 Select::make(Quote::PAYMENT_CONDITION_ID)
                                     ->label(Str::formatTitle(__('quote.payment_condition_id')))
                                     ->required()
-                                    ->options(function (Model|Quote $record) {
-                                        /** @var Company $company */
-                                        $company = Company::query()->findOrFail($record->company_id);
-
-                                        return PaymentCondition::query()
-                                            ->where(PaymentCondition::COMPANY_CODE, '=', $company->code)
-                                            ->pluck(PaymentCondition::DESCRIPTION, PaymentCondition::ID)
-                                            ->toArray();
-                                    }),
+                                    ->relationship(Quote::RELATION_PAYMENT_CONDITION, PaymentCondition::DESCRIPTION),
 
                                 DatePicker::make(Quote::VALID_UNTIL)
                                     ->label(Str::formatTitle(__('quote.valid_until')))
