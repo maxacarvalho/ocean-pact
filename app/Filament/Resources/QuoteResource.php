@@ -98,13 +98,19 @@ class QuoteResource extends Resource
                                     ->content(fn (Model|Quote $record) => $record->proposal_number),
                             ])
                             ->hiddenOn('create'),
+
                         Section::make()
                             ->columns(3)
                             ->schema([
                                 Select::make(Quote::CURRENCY_ID)
                                     ->label(Str::formatTitle(__('quote.currency_id')))
                                     ->required()
-                                    ->relationship(Quote::RELATION_CURRENCY, Currency::DESCRIPTION)
+                                    ->options(function (Model|Quote $record) {
+                                        return Currency::query()
+                                            ->where(Currency::COMPANY_CODE, $record->company->code)
+                                            ->orderBy(Currency::ISO_CODE)
+                                            ->pluck(Currency::ISO_CODE, Currency::ID);
+                                    })
                                     ->live()
                                     ->afterStateUpdated(function (?int $state, ?int $old, Model|Quote $record) {
                                         if (! $state) {
@@ -121,7 +127,13 @@ class QuoteResource extends Resource
                                 Select::make(Quote::PAYMENT_CONDITION_ID)
                                     ->label(Str::formatTitle(__('quote.payment_condition_id')))
                                     ->required()
-                                    ->relationship(Quote::RELATION_PAYMENT_CONDITION, PaymentCondition::DESCRIPTION),
+                                    ->options(function (Model|Quote $record) {
+                                        return PaymentCondition::query()
+                                            ->where(PaymentCondition::COMPANY_CODE, $record->company->code)
+                                            ->where(PaymentCondition::COMPANY_CODE_BRANCH, $record->company->code_branch)
+                                            ->orderBy(PaymentCondition::DESCRIPTION)
+                                            ->pluck(PaymentCondition::DESCRIPTION, PaymentCondition::ID);
+                                    }),
 
                                 DatePicker::make(Quote::VALID_UNTIL)
                                     ->label(Str::formatTitle(__('quote.valid_until')))
