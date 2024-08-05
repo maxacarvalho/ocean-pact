@@ -129,8 +129,6 @@ class QuoteResource extends Resource
                                     ->required()
                                     ->options(function (Model|Quote $record) {
                                         return PaymentCondition::query()
-                                            ->where(PaymentCondition::COMPANY_CODE, $record->company->code)
-                                            ->where(PaymentCondition::COMPANY_CODE_BRANCH, $record->company->code_branch)
                                             ->orderBy(PaymentCondition::DESCRIPTION)
                                             ->pluck(PaymentCondition::DESCRIPTION, PaymentCondition::ID);
                                     }),
