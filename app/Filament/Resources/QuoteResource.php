@@ -109,7 +109,7 @@ class QuoteResource extends Resource
                                         return Currency::query()
                                             ->where(Currency::COMPANY_CODE, $record->company->code)
                                             ->orderBy(Currency::ISO_CODE)
-                                            ->pluck(Currency::ISO_CODE, Currency::ID);
+                                            ->pluck(Currency::DESCRIPTION, Currency::ID);
                                     })
                                     ->live()
                                     ->afterStateUpdated(function (?int $state, ?int $old, Model|Quote $record) {
