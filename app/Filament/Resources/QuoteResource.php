@@ -98,13 +98,19 @@ class QuoteResource extends Resource
                                     ->content(fn (Model|Quote $record) => $record->proposal_number),
                             ])
                             ->hiddenOn('create'),
+
                         Section::make()
                             ->columns(3)
                             ->schema([
                                 Select::make(Quote::CURRENCY_ID)
                                     ->label(Str::formatTitle(__('quote.currency_id')))
                                     ->required()
-                                    ->relationship(Quote::RELATION_CURRENCY, Currency::DESCRIPTION)
+                                    ->options(function (Model|Quote $record) {
+                                        return Currency::query()
+                                            ->where(Currency::COMPANY_CODE, $record->company->code)
+                                            ->orderBy(Currency::ISO_CODE)
+                                            ->pluck(Currency::DESCRIPTION, Currency::ID);
+                                    })
                                     ->live()
                                     ->afterStateUpdated(function (?int $state, ?int $old, Model|Quote $record) {
                                         if (! $state) {
@@ -122,13 +128,9 @@ class QuoteResource extends Resource
                                     ->label(Str::formatTitle(__('quote.payment_condition_id')))
                                     ->required()
                                     ->options(function (Model|Quote $record) {
-                                        /** @var Company $company */
-                                        $company = Company::query()->findOrFail($record->company_id);
-
                                         return PaymentCondition::query()
-                                            ->where(PaymentCondition::COMPANY_CODE, '=', $company->code)
-                                            ->pluck(PaymentCondition::DESCRIPTION, PaymentCondition::ID)
-                                            ->toArray();
+                                            ->orderBy(PaymentCondition::DESCRIPTION)
+                                            ->pluck(PaymentCondition::DESCRIPTION, PaymentCondition::ID);
                                     }),
 
                                 DatePicker::make(Quote::VALID_UNTIL)

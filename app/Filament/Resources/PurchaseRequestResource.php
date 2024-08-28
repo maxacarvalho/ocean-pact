@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Enums\QuotesPortal\PurchaseRequestStatus;
 use App\Filament\Resources\PurchaseRequestResource\Pages\ListPurchaseRequests;
 use App\Models\QuotesPortal\Budget;
 use App\Models\QuotesPortal\Company;
@@ -59,12 +60,13 @@ class PurchaseRequestResource extends Resource
 
                 return $query
                     ->when($user->isSeller(), function (Builder $query) use ($user) {
-                        $query->whereHas(
-                            PurchaseRequest::RELATION_QUOTE.'.'.Quote::RELATION_SUPPLIER.'.'.Supplier::RELATION_SELLERS,
-                            function (Builder $query) use ($user) {
-                                $query->where(SupplierUser::USER_ID, '=', $user->id);
-                            }
-                        );
+                        $query->where(PurchaseRequest::STATUS, '=', PurchaseRequestStatus::APPROVED)
+                            ->whereHas(
+                                PurchaseRequest::RELATION_QUOTE.'.'.Quote::RELATION_SUPPLIER.'.'.Supplier::RELATION_SELLERS,
+                                function (Builder $query) use ($user) {
+                                    $query->where(SupplierUser::USER_ID, '=', $user->id);
+                                }
+                            );
                     });
             })
             ->columns([

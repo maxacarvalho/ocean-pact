@@ -1,10 +1,9 @@
 name: Php Lint
 on:
   push:
-  pull_request:
-    branches:
-      - main
-      - staging
+    branches-ignore:
+      - 'staging'
+      - 'main'
 jobs:
   php-lint:
     runs-on: ubuntu-latest

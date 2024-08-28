@@ -11,28 +11,30 @@ use Illuminate\Support\Carbon;
 use NumberFormatter;
 
 /**
- * @property int                 $id
- * @property int                 $quote_id
- * @property int                 $product_id
- * @property string              $description
- * @property string              $measurement_unit
- * @property string              $item
- * @property float               $quantity
- * @property Money               $unit_price
- * @property string              $currency
- * @property float               $ipi
- * @property float               $icms
- * @property int                 $delivery_in_days
- * @property bool                $should_be_quoted
- * @property QuoteItemStatusEnum $status
- * @property string|null         $comments
- * @property string|null         $seller_image
- * @property string|null         $buyer_image
- * @property Carbon|null         $created_at
- * @property Carbon|null         $updated_at
+ * @property int                       $id
+ * @property int                       $quote_id
+ * @property int                       $product_id
+ * @property string                    $description
+ * @property string                    $measurement_unit
+ * @property string                    $item
+ * @property float                     $quantity
+ * @property Money                     $unit_price
+ * @property string                    $currency
+ * @property float                     $ipi
+ * @property float                     $icms
+ * @property int                       $delivery_in_days
+ * @property bool                      $should_be_quoted
+ * @property QuoteItemStatusEnum       $status
+ * @property string|null               $comments
+ * @property string|null               $seller_image
+ * @property string|null               $buyer_image
+ * @property int|null                  $purchase_request_id
+ * @property Carbon|null               $created_at
+ * @property Carbon|null               $updated_at
  * Relations
- * @property-read Quote          $quote
- * @property-read Product        $product
+ * @property-read Quote                $quote
+ * @property-read Product              $product
+ * @property-read PurchaseRequest|null $purchaseRequest
  */
 class QuoteItem extends Model
 {
@@ -54,12 +56,14 @@ class QuoteItem extends Model
     public const string COMMENTS = 'comments';
     public const string SELLER_IMAGE = 'seller_image';
     public const string BUYER_IMAGE = 'buyer_image';
+    public const string PURCHASE_REQUEST_ID = 'purchase_request_id';
     public const string CREATED_AT = 'created_at';
     public const string UPDATED_AT = 'updated_at';
 
     // Relations
     public const string RELATION_QUOTE = 'quote';
     public const string RELATION_PRODUCT = 'product';
+    public const string RELATION_PURCHASE_REQUEST = 'purchaseRequest';
 
     protected $table = self::TABLE_NAME;
 
@@ -88,6 +92,11 @@ class QuoteItem extends Model
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);
+    }
+
+    public function purchaseRequest(): BelongsTo
+    {
+        return $this->belongsTo(PurchaseRequest::class);
     }
 
     public function canBeResponded(): bool

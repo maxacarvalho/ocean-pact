@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Enums\QuotesPortal\PurchaseRequestStatus;
 use App\Filament\Resources\PurchaseRequestResource;
 use App\Mail\QuotePortal\PurchaseRequestGeneratedMail;
 use App\Models\QuotesPortal\PurchaseRequest;
@@ -27,15 +28,22 @@ class PurchaseRequestReceivedJob implements ShouldQueue
     public function handle(): void
     {
         /** @var PurchaseRequest $purchaseRequest */
-        $purchaseRequest = PurchaseRequest::query()
-            ->with([
-                PurchaseRequest::RELATION_QUOTE => [
-                    Quote::RELATION_SUPPLIER => [
-                        Supplier::RELATION_SELLERS,
-                    ],
+        $purchaseRequest = PurchaseRequest::query()->findOrFail($this->purchaseRequestId);
+
+        if ($purchaseRequest->status !== PurchaseRequestStatus::APPROVED) {
+            $this->delete();
+
+            return;
+        }
+
+        /** @var PurchaseRequest $purchaseRequest */
+        $purchaseRequest = $purchaseRequest->load([
+            PurchaseRequest::RELATION_QUOTE => [
+                Quote::RELATION_SUPPLIER => [
+                    Supplier::RELATION_SELLERS,
                 ],
-            ])
-            ->findOrFail($this->purchaseRequestId);
+            ],
+        ]);
 
         $quote = $purchaseRequest->quote;
         $supplier = $purchaseRequest->quote->supplier;
@@ -43,7 +51,7 @@ class PurchaseRequestReceivedJob implements ShouldQueue
         $url = PurchaseRequestResource::getUrl();
 
         foreach ($supplier->sellers as $seller) {
-            if (! $seller->isActive()) {
+            if (!$seller->isActive()) {
                 continue;
             }
 
@@ -56,5 +64,9 @@ class PurchaseRequestReceivedJob implements ShouldQueue
                 )
             );
         }
+
+        $purchaseRequest->update([
+            PurchaseRequest::SENT_AT => now(),
+        ]);
     }
 }
