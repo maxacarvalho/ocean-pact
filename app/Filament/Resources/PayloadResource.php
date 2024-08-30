@@ -193,23 +193,23 @@ class PayloadResource extends Resource
                     ->indicateUsing(function (array $data) {
                         $payload = $data['payload'];
 
-                        if($payload !== null){
+                        if ($payload !== null) {
                             return 'Payload';
                         }
 
                         return null;
                     })
                     ->form([
-                        TextInput::make('payload')
+                        TextInput::make('payload'),
                     ])
-                    ->query(function (Builder $query, array $data): Builder { 
+                    ->query(function (Builder $query, array $data): Builder {
                         return $query
                             ->when(
                                 $data['payload'],
                                 fn (Builder $query, $payload): Builder => $query
-                                    ->where(Payload::PAYLOAD, "like" ,"%$payload%")
+                                    ->where(Payload::PAYLOAD, 'like', "%$payload%")
                             );
-                    })
+                    }),
 
             ], layout: FiltersLayout::AboveContentCollapsible);
     }
