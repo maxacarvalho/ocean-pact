@@ -14,6 +14,7 @@ use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Infolists\Components\ViewEntry;
 use Filament\Infolists\Infolist;
@@ -186,6 +187,30 @@ class PayloadResource extends Resource
                 SelectFilter::make(Payload::PROCESSING_STATUS)
                     ->label(Str::formatTitle(__('payload.processed_status')))
                     ->options(PayloadProcessingStatusEnum::class),
+
+                TableFilter::make('payload_filter')
+                    ->label('Payload')
+                    ->indicateUsing(function (array $data) {
+                        $payload = $data['payload'];
+
+                        if($payload !== null){
+                            return 'Payload';
+                        }
+
+                        return null;
+                    })
+                    ->form([
+                        TextInput::make('payload')
+                    ])
+                    ->query(function (Builder $query, array $data): Builder { 
+                        return $query
+                            ->when(
+                                $data['payload'],
+                                fn (Builder $query, $payload): Builder => $query
+                                    ->where(Payload::PAYLOAD, "like" ,"%$payload%")
+                            );
+                    })
+
             ], layout: FiltersLayout::AboveContentCollapsible);
     }
 
