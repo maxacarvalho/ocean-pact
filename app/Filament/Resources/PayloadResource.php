@@ -191,9 +191,7 @@ class PayloadResource extends Resource
                 TableFilter::make('payload_filter')
                     ->label('Payload')
                     ->indicateUsing(function (array $data) {
-                        $payload = $data['payload'];
-
-                        if ($payload !== null) {
+                        if (filled($data['payload'])) {
                             return 'Payload';
                         }
 
