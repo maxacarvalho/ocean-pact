@@ -1,4 +1,5 @@
 {
+    "name": "oceanpact",
     "private": true,
     "scripts": {
         "dev": "vite",
