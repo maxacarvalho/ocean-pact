@@ -21,22 +21,22 @@ use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 
 /**
- * @property int                        $id
- * @property string                     $name
- * @property string                     $email
- * @property string|null                $buyer_code
- * @property int|null                   $supplier_id
- * @property Carbon|null                $email_verified_at
- * @property string                     $password
- * @property string|null                $two_factor_secret
- * @property string|null                $two_factor_recovery_codes
- * @property Carbon|null                $two_factor_confirmed_at
- * @property string|null                $remember_token
- * @property bool                       $is_draft
- * @property Carbon|null                $created_at
- * @property Carbon|null                $updated_at
- * @property bool                       $active
- * Relations
+ * @property int $id
+ * @property string $name
+ * @property string $email
+ * @property string|null $buyer_code
+ * @property int|null $supplier_id
+ * @property Carbon|null $email_verified_at
+ * @property string $password
+ * @property string|null $two_factor_secret
+ * @property string|null $two_factor_recovery_codes
+ * @property Carbon|null $two_factor_confirmed_at
+ * @property string|null $remember_token
+ * @property bool $is_draft
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property bool $active
+ *                        Relations
  * @property-read Company[]|Collection  $companies
  * @property-read Role[]|Collection     $roles
  * @property-read Supplier[]|Collection $suppliers
@@ -46,26 +46,44 @@ use Spatie\Permission\Traits\HasRoles;
 class User extends Authenticatable implements FilamentUser
 {
     public const TABLE_NAME = 'users';
+
     public const ID = 'id';
+
     public const NAME = 'name';
+
     public const EMAIL = 'email';
+
     public const BUYER_CODE = 'buyer_code';
+
     public const SUPPLIER_ID = 'supplier_id';
+
     public const EMAIL_VERIFIED_AT = 'email_verified_at';
+
     public const PASSWORD = 'password';
+
     public const TWO_FACTOR_SECRET = 'two_factor_secret';
+
     public const TWO_FACTOR_RECOVERY_CODES = 'two_factor_recovery_codes';
+
     public const TWO_FACTOR_CONFIRMED_AT = 'two_factor_confirmed_at';
+
     public const REMEMBER_TOKEN = 'remember_token';
+
     public const IS_DRAFT = 'is_draft';
+
     public const CREATED_AT = 'created_at';
+
     public const UPDATED_AT = 'updated_at';
+
     public const ACTIVE = 'active';
 
     // Relations
     public const RELATION_COMPANIES = 'companies';
+
     public const RELATION_ROLES = 'roles';
+
     public const RELATION_SUPPLIERS = 'suppliers';
+
     public const RELATION_SUPPLIER = 'supplier';
 
     use HasApiTokens, HasFactory, HasRoles, Notifiable;
@@ -136,7 +154,7 @@ class User extends Authenticatable implements FilamentUser
 
     public function isNotSuperAdmin(): bool
     {
-        return !$this->isSuperAdmin();
+        return ! $this->isSuperAdmin();
     }
 
     public function isAdmin(): bool

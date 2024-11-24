@@ -16,6 +16,7 @@ class StoreQuotePayloadData extends Data
 {
     /** @var Collection<int, ItemData> */
     public Collection $items;
+
     /** @var Collection<int, SupplierData> */
     public Collection $suppliers;
 

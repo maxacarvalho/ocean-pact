@@ -61,7 +61,7 @@ class BudgetResource extends Resource
                     ->options(function (\Filament\Forms\Get $get) {
                         $companyCode = $get(Budget::COMPANY_CODE);
 
-                        if (null === $companyCode) {
+                        if ($companyCode === null) {
                             return [];
                         }
 

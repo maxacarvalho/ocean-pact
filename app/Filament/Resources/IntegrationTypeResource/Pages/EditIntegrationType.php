@@ -21,7 +21,7 @@ class EditIntegrationType extends EditRecord
             Action::make('execute')
                 ->label(Str::formatTitle(__('integration_type.execute')))
                 ->icon('heroicon-o-play')
-                ->disabled(fn () => !$this->record->isCallable() || $savedData !== $this->data)
+                ->disabled(fn () => ! $this->record->isCallable() || $savedData !== $this->data)
                 ->visible(fn () => $this->record->isCallable())
                 ->action('executeIntegrationType'),
             PageDeleteAction::make(),

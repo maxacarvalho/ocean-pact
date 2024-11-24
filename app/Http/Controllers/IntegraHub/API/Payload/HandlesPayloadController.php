@@ -141,7 +141,7 @@ class HandlesPayloadController extends Controller
             ->exists();
 
         if ($duplicatedPayloadExists) {
-            throw new DuplicatedPayloadException();
+            throw new DuplicatedPayloadException;
         }
     }
 

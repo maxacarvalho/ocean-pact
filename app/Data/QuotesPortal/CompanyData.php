@@ -15,9 +15,9 @@ class CompanyData extends Data
         public readonly string $branch,
         public readonly string $name,
         public readonly string $business_name,
-        public readonly string|null $code_code_branch_and_business_name,
-        public readonly string|null $code_code_branch_and_branch,
-        public readonly string|null $code_and_business_name,
+        public readonly ?string $code_code_branch_and_business_name,
+        public readonly ?string $code_code_branch_and_branch,
+        public readonly ?string $code_and_business_name,
         public readonly Carbon|null|Optional $created_at,
         public readonly Carbon|null|Optional $updated_at,
     ) {

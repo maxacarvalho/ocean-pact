@@ -19,14 +19,20 @@ use Livewire\Attributes\On;
 class QuoteAnalysisPanel extends Page
 {
     public int $companyId;
+
     public string $quoteNumber;
+
     #[Locked]
     public array $quoteIds = [];
+
     public Collection|array $quoteItems = [];
+
     public Collection|array $predictedPurchaseRequestItems = [];
+
     public bool $isReadOnly = false;
 
     protected static string $resource = QuoteResource::class;
+
     protected static string $view = 'filament.resources.quote-resource.pages.quote-analysis-panel';
 
     public function mount(int $companyId, string $quoteNumber): void

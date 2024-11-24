@@ -20,7 +20,7 @@ class FindOrCreateBuyerAction
             ->where(User::EMAIL, '=', $data->buyer->email)
             ->first();
 
-        if (null === $buyer) {
+        if ($buyer === null) {
             /** @var User $buyer */
             $buyer = User::query()->create([
                 User::NAME => $data->buyer->name,
@@ -39,7 +39,7 @@ class FindOrCreateBuyerAction
             ->where(CompanyUser::BUYER_CODE, '=', $data->buyer->buyerCompany->buyerCode)
             ->first();
 
-        if (null === $companyUser) {
+        if ($companyUser === null) {
             CompanyUser::query()
                 ->create([
                     CompanyUser::USER_ID => $buyer->id,
@@ -48,7 +48,7 @@ class FindOrCreateBuyerAction
                 ]);
         }
 
-        if (false === $buyer->hasRole(Role::ROLE_BUYER)) {
+        if ($buyer->hasRole(Role::ROLE_BUYER) === false) {
             $buyer->assignRole(Role::ROLE_BUYER);
         }
 

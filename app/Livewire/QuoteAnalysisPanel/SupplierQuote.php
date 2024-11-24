@@ -38,13 +38,20 @@ class SupplierQuote extends Component implements HasForms, HasTable
     use InteractsWithTable;
 
     public Quote $quote;
+
     #[Locked]
     public int $quoteId;
+
     public QuoteStatusEnum $quoteStatus;
+
     public bool $isQuoteBuyerOwner;
+
     public string $supplierName;
+
     public ?array $contactRequestFormData = [];
+
     public ?array $predictedPurchaseRequestSelectedQuoteItems = [];
+
     public bool $isReadOnly = false;
 
     public function mount(int $quoteId, bool $isQuoteBuyerOwner, bool $isReadOnly): void
@@ -148,7 +155,7 @@ class SupplierQuote extends Component implements HasForms, HasTable
                     })
                     ->disabled(fn (QuoteItem $quoteItem): bool => $this->canBeSelected($quoteItem) === false)
                     ->updateStateUsing(function ($state, QuoteItem $quoteItem) {
-                        if (false === $state) {
+                        if ($state === false) {
                             $this->predictedPurchaseRequestSelectedQuoteItems = array_diff($this->predictedPurchaseRequestSelectedQuoteItems, [$quoteItem->id]);
                         } else {
                             $this->predictedPurchaseRequestSelectedQuoteItems[] = $quoteItem->id;

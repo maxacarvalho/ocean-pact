@@ -10,7 +10,7 @@ class BuyerCompanyData extends Data
     public function __construct(
         public readonly int|Optional $company_id,
         public readonly int|Optional $user_id,
-        public readonly string|null $buyer_code,
+        public readonly ?string $buyer_code,
     ) {
         //
     }

@@ -43,7 +43,7 @@ readonly class FindOrCreateSuppliersAction
                 ]
             );
 
-            if (!$supplier->companies->contains($company->id)) {
+            if (! $supplier->companies->contains($company->id)) {
                 $supplier->companies()->attach($company->id);
             }
 

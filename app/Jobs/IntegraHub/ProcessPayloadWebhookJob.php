@@ -16,7 +16,7 @@ class ProcessPayloadWebhookJob extends ProcessWebhookJob
 
         $integrationTypeCode = $query['integration-type-code'] ?? null;
 
-        if (null === $integrationTypeCode) {
+        if ($integrationTypeCode === null) {
             $this->delete();
         }
 

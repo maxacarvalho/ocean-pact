@@ -19,14 +19,14 @@ final class PayloadData extends Data
         public readonly int $integration_type_id,
         public readonly array $original_payload,
         public readonly array $payload,
-        public readonly array|null $path_parameters,
-        public readonly string|null $payload_hash,
-        public readonly Carbon|null $stored_at,
+        public readonly ?array $path_parameters,
+        public readonly ?string $payload_hash,
+        public readonly ?Carbon $stored_at,
         #[WithCast(EnumCast::class)]
-        public readonly PayloadStoringStatusEnum|null $storing_status,
-        public readonly Carbon|null $processed_at,
+        public readonly ?PayloadStoringStatusEnum $storing_status,
+        public readonly ?Carbon $processed_at,
         #[WithCast(EnumCast::class)]
-        public readonly PayloadProcessingStatusEnum|null $processing_status,
+        public readonly ?PayloadProcessingStatusEnum $processing_status,
         public readonly array|null|Optional $response,
         public readonly string|null|Optional $error,
         public readonly Carbon|null|Optional $created_at,
@@ -121,7 +121,7 @@ final class PayloadData extends Data
      *     'empresas.(\d+).produtos.(\d+).id' => 'companies.$1.products.$2.id',
      * ]
      *
-     * @param array<string, string> $mappingConfig
+     * @param  array<string, string>  $mappingConfig
      * @return array<string, string>
      */
     private static function createRegexMapping(array $mappingConfig): array

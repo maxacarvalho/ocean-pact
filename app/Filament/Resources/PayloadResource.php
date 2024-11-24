@@ -140,7 +140,7 @@ class PayloadResource extends Resource
                             );
                         }
 
-                        if (null !== $stored_at_from) {
+                        if ($stored_at_from !== null) {
                             return Str::ucfirst(
                                 __('payload.received_from', [
                                     'date' => Carbon::parse($stored_at_from)->toFormattedDateString(),
@@ -148,7 +148,7 @@ class PayloadResource extends Resource
                             );
                         }
 
-                        if (null !== $stored_at_until) {
+                        if ($stored_at_until !== null) {
                             return Str::ucfirst(
                                 __('payload.received_until', [
                                     'date' => Carbon::parse($stored_at_until)->toFormattedDateString(),

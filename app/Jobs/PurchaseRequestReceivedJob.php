@@ -51,7 +51,7 @@ class PurchaseRequestReceivedJob implements ShouldQueue
         $url = PurchaseRequestResource::getUrl();
 
         foreach ($supplier->sellers as $seller) {
-            if (!$seller->isActive()) {
+            if (! $seller->isActive()) {
                 continue;
             }
 

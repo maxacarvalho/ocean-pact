@@ -46,6 +46,7 @@ class Str extends LaravelStr
         'FOB',
         'UM',
     ];
+
     public const ACRONYMS = [
         '2D',
         '3D',
@@ -134,6 +135,7 @@ class Str extends LaravelStr
         'NPS',
         'DDD',
     ];
+
     public const PREPOSITIONS = [
         'about',
         'above',
@@ -215,6 +217,7 @@ class Str extends LaravelStr
         'sobre',
         'trás',
     ];
+
     public const CONJUNCTIONS = [
         'and',
         'that',
@@ -278,7 +281,7 @@ class Str extends LaravelStr
                     return $isAcronym;
                 }
 
-                if (0 === $index) {
+                if ($index === 0) {
                     return $word;
                 }
 

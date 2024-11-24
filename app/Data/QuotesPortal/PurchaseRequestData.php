@@ -19,10 +19,10 @@ class PurchaseRequestData extends Data
         public readonly int $id,
         public readonly int $quoteId,
         public readonly string $purchaseRequestNumber,
-        public readonly Carbon|null $sentAt,
-        public readonly Carbon|null $viewedAt,
+        public readonly ?Carbon $sentAt,
+        public readonly ?Carbon $viewedAt,
         public readonly PurchaseRequestStatus $status,
-        public readonly string|null $file,
+        public readonly ?string $file,
         public readonly Carbon $createdAt,
         public readonly Carbon $updatedAt,
         /** @var Collection<int, PurchaseRequestItemData> */
