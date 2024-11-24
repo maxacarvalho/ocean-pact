@@ -14,6 +14,7 @@ use Spatie\LaravelData\Support\DataProperty;
 class Money implements Castable
 {
     public string $currency;
+
     public int $amount;
 
     public function __construct(string $currency, int $amount)
@@ -29,7 +30,7 @@ class Money implements Castable
 
     public static function ofFormatted(string $currency, string $amount): static
     {
-        if ('BRL' === $currency) {
+        if ($currency === 'BRL') {
             $amount = str_replace(',', '.', str_replace('.', '', $amount));
         } else {
             $amount = str_replace(',', '', $amount);
@@ -55,7 +56,7 @@ class Money implements Castable
 
     public function getFormattedAmount(): string
     {
-        if ('BRL' === $this->currency) {
+        if ($this->currency === 'BRL') {
             $formatter = new NumberFormatter('pt_BR', NumberFormatter::DECIMAL);
             $formatter->setSymbol(NumberFormatter::DECIMAL_SEPARATOR_SYMBOL, ',');
             $formatter->setSymbol(NumberFormatter::GROUPING_SEPARATOR_SYMBOL, '.');

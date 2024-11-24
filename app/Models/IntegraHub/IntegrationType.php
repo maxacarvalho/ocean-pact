@@ -14,29 +14,29 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 
 /**
- * @property int                                     $id
- * @property int|null                                $company_id
- * @property string                                  $code
- * @property string                                  $description
- * @property IntegrationTypeEnum                     $type
- * @property IntegrationHandlingTypeEnum             $handling_type
- * @property string                                  $target_url
- * @property bool                                    $is_visible
- * @property bool                                    $is_enabled
- * @property bool                                    $is_synchronous
- * @property bool                                    $allows_duplicates
- * @property array                                   $headers
- * @property array|null                              $path_parameters
- * @property array|null                              $authorization
- * @property string|null                             $forward_url
- * @property array|null                              $forward_headers
- * @property array|null                              $forward_authorization
- * @property int|null                                $interval
- * @property bool                                    $is_running
- * @property Carbon|null                             $last_run_at
- * @property Carbon|null                             $created_at
- * @property Carbon|null                             $updated_at
- * Relations
+ * @property int $id
+ * @property int|null $company_id
+ * @property string $code
+ * @property string $description
+ * @property IntegrationTypeEnum $type
+ * @property IntegrationHandlingTypeEnum $handling_type
+ * @property string $target_url
+ * @property bool $is_visible
+ * @property bool $is_enabled
+ * @property bool $is_synchronous
+ * @property bool $allows_duplicates
+ * @property array $headers
+ * @property array|null $path_parameters
+ * @property array|null $authorization
+ * @property string|null $forward_url
+ * @property array|null $forward_headers
+ * @property array|null $forward_authorization
+ * @property int|null $interval
+ * @property bool $is_running
+ * @property Carbon|null $last_run_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ *                                   Relations
  * @property-read  Company|null                      $company
  * @property-read  IntegrationTypeField[]|Collection $fields
  * @property-read  Payload[]|Collection              $payloads
@@ -46,32 +46,56 @@ class IntegrationType extends Model
     use HasFactory;
 
     public const TABLE_NAME = 'integration_types';
+
     public const ID = 'id';
+
     public const COMPANY_ID = 'company_id';
+
     public const CODE = 'code';
+
     public const DESCRIPTION = 'description';
+
     public const TYPE = 'type';
+
     public const HANDLING_TYPE = 'handling_type';
+
     public const TARGET_URL = 'target_url';
+
     public const IS_VISIBLE = 'is_visible';
+
     public const IS_ENABLED = 'is_enabled';
+
     public const IS_SYNCHRONOUS = 'is_synchronous';
+
     public const ALLOWS_DUPLICATES = 'allows_duplicates';
+
     public const HEADERS = 'headers';
+
     public const PATH_PARAMETERS = 'path_parameters';
+
     public const AUTHORIZATION = 'authorization';
+
     public const FORWARD_URL = 'forward_url';
+
     public const FORWARD_HEADERS = 'forward_headers';
+
     public const FORWARD_AUTHORIZATION = 'forward_authorization';
+
     public const INTERVAL = 'interval';
+
     public const IS_RUNNING = 'is_running';
+
     public const LAST_RUN_AT = 'last_run_at';
+
     public const CREATED_AT = 'created_at';
+
     public const UPDATED_AT = 'updated_at';
 
     // Relations
     public const RELATION_COMPANY = 'company';
+
     public const RELATION_FIELDS = 'fields';
+
     public const RELATION_PAYLOADS = 'payloads';
 
     protected $table = self::TABLE_NAME;
@@ -186,9 +210,9 @@ class IntegrationType extends Model
         ]);
     }
 
-    public function getAuthorizationHeader(array|null $authorization): array
+    public function getAuthorizationHeader(?array $authorization): array
     {
-        if (is_null($authorization) || !isset($authorization['type'])) {
+        if (is_null($authorization) || ! isset($authorization['type'])) {
             return [];
         }
 

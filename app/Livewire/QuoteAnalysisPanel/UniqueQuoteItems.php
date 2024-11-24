@@ -27,8 +27,10 @@ class UniqueQuoteItems extends Component implements HasForms, HasTable
 
     #[Locked]
     public string $quoteNumber;
+
     #[Locked]
     public int $companyId;
+
     public bool $isQuoteBuyerOwner;
 
     public function mount(int $companyId, string $quoteNumber, bool $isQuoteBuyerOwner): void

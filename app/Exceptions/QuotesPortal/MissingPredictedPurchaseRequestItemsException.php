@@ -4,6 +4,4 @@ namespace App\Exceptions\QuotesPortal;
 
 use Exception;
 
-class MissingPredictedPurchaseRequestItemsException extends Exception
-{
-}
+class MissingPredictedPurchaseRequestItemsException extends Exception {}

@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\URL;
 
 class CreateAndSendUserInvitationAction
 {
-    public function handle(User $buyer = null, Quote $quote = null): void
+    public function handle(?User $buyer = null, ?Quote $quote = null): void
     {
         if ($buyer) {
             $this->createAndSendNotification($buyer);
@@ -65,7 +65,7 @@ class CreateAndSendUserInvitationAction
         $userInvitation->markAsSent();
     }
 
-    private function createUserInvitation(User $user, Quote $quote = null): UserInvitation
+    private function createUserInvitation(User $user, ?Quote $quote = null): UserInvitation
     {
         /** @var UserInvitation $userInvitation */
         $userInvitation = UserInvitation::query()

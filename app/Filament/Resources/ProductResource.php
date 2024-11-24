@@ -63,7 +63,7 @@ class ProductResource extends Resource
                     ->options(function (Get $get) {
                         $companyCode = $get(Product::COMPANY_CODE);
 
-                        if (null === $companyCode) {
+                        if ($companyCode === null) {
                             return [];
                         }
 
@@ -101,19 +101,19 @@ class ProductResource extends Resource
                                     ->label(Str::title(__('product.last_price')))
                                     ->required()
                                     ->formatStateUsing(function ($state, Model|Product|null $record, Get $get) {
-                                        $currency = null === $record ? $get('last_price_currency') : $record->last_price->currency;
+                                        $currency = $record === null ? $get('last_price_currency') : $record->last_price->currency;
 
-                                        if (null === $record) {
-                                            return 'BRL' === $currency ? '0,00' : '0.00';
+                                        if ($record === null) {
+                                            return $currency === 'BRL' ? '0,00' : '0.00';
                                         }
 
                                         return $record->last_price->getFormattedAmount();
 
                                     })
                                     ->mask(function (TextInput $component, Model|Product|null $record, Get $get) {
-                                        $currency = null === $record ? $get('last_price_currency') : $record->last_price->currency;
+                                        $currency = $record === null ? $get('last_price_currency') : $record->last_price->currency;
 
-                                        if ('BRL' === $currency) {
+                                        if ($currency === 'BRL') {
                                             return RawJs::make('$money($input, \',\', \'.\')');
                                         }
 
@@ -134,18 +134,18 @@ class ProductResource extends Resource
                                     ->label(Str::title(__('product.smallest_price')))
                                     ->required()
                                     ->formatStateUsing(function ($state, Model|Product|null $record, Get $get) {
-                                        $currency = null === $record ? $get('smallest_price_currency') : $record->last_price->currency;
+                                        $currency = $record === null ? $get('smallest_price_currency') : $record->last_price->currency;
 
-                                        if (null === $record) {
-                                            return 'BRL' === $currency ? '0,00' : '0.00';
+                                        if ($record === null) {
+                                            return $currency === 'BRL' ? '0,00' : '0.00';
                                         }
 
                                         return $record->smallest_price->getFormattedAmount();
                                     })
                                     ->mask(function (Model|Product|null $record, Get $get) {
-                                        $currency = null === $record ? $get('smallest_price_currency') : $record->last_price->currency;
+                                        $currency = $record === null ? $get('smallest_price_currency') : $record->last_price->currency;
 
-                                        if ('BRL' === $currency) {
+                                        if ($currency === 'BRL') {
                                             return RawJs::make('$money($input, \',\', \'.\')');
                                         }
 

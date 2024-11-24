@@ -19,7 +19,7 @@ class SendQuoteProposalNotificationAction
         ]);
 
         foreach ($quote->supplier->sellers as $seller) {
-            if (!$seller->isActive()) {
+            if (! $seller->isActive()) {
                 continue;
             }
 

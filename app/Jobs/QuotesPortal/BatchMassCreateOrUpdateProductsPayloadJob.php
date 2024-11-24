@@ -22,8 +22,7 @@ class BatchMassCreateOrUpdateProductsPayloadJob implements ShouldQueue
 
     public function __construct(
         private readonly string $filename,
-    ) {
-    }
+    ) {}
 
     public function handle(): void
     {

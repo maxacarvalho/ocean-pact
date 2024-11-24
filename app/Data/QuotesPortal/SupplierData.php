@@ -14,18 +14,18 @@ class SupplierData extends Data
     public function __construct(
         public readonly int|Optional $id,
         public readonly string|Optional $company_code,
-        public readonly string|null $company_code_branch,
+        public readonly ?string $company_code_branch,
         public readonly string $code,
         public readonly string $store,
         public readonly string $name,
         public readonly string $business_name,
-        public readonly string|null $address,
-        public readonly string|null $number,
-        public readonly string|null $state_code,
-        public readonly string|null $postal_code,
-        public readonly string|null $cnpj_cpf,
-        public readonly string|null $phone_code,
-        public readonly string|null $phone_number,
+        public readonly ?string $address,
+        public readonly ?string $number,
+        public readonly ?string $state_code,
+        public readonly ?string $postal_code,
+        public readonly ?string $cnpj_cpf,
+        public readonly ?string $phone_code,
+        public readonly ?string $phone_number,
         public readonly string|null|Optional $contact,
         public readonly string|null|Optional $email,
         public readonly Carbon|null|Optional $created_at,
@@ -35,6 +35,5 @@ class SupplierData extends Data
         public readonly Lazy|DataCollection|Optional $companies,
         #[DataCollectionOf(SellerData::class)]
         public readonly Lazy|DataCollection|Optional $sellers
-    ) {
-    }
+    ) {}
 }

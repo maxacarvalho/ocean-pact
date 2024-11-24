@@ -10,6 +10,5 @@ class QuoteRespondedEvent
 
     public function __construct(
         public int $quoteId
-    ) {
-    }
+    ) {}
 }

@@ -18,8 +18,7 @@ class UserInvitationMail extends Mailable implements ShouldQueue
     public function __construct(
         public readonly User $user,
         public readonly string $url
-    ) {
-    }
+    ) {}
 
     public function envelope(): Envelope
     {

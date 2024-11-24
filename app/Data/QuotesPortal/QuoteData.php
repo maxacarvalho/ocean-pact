@@ -27,15 +27,15 @@ class QuoteData extends Data
         public readonly int|Optional $buyer_id,
         public readonly int|Optional $budget_id,
         public readonly string $quote_number,
-        public readonly Carbon|null $valid_until,
+        public readonly ?Carbon $valid_until,
         #[WithCast(EnumCast::class)]
         public readonly QuoteStatusEnum|Optional $status,
-        public readonly string|null $comments,
+        public readonly ?string $comments,
         public readonly int|Optional $expenses,
         public readonly int|Optional $freight_cost,
         #[WithCast(EnumCast::class)]
-        public readonly FreightTypeEnum|null $freight_type,
-        public readonly int|null $currency_id,
+        public readonly ?FreightTypeEnum $freight_type,
+        public readonly ?int $currency_id,
         public readonly Carbon|null|Optional $created_at,
         public readonly Carbon|null|Optional $updated_at,
         // Relations

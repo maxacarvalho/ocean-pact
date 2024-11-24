@@ -57,11 +57,16 @@ class PredictedPurchaseRequest extends Component implements HasActions, HasForms
 
     #[Locked]
     public int $companyId;
+
     #[Locked]
     public string $quoteNumber;
+
     public bool $isQuoteBuyerOwner;
+
     public int $predictedPurchaseRequestCount = 0;
+
     public ?string $cannotAcceptPredictedPurchaseRequestModalContent = null;
+
     public bool $isReadOnly = false;
 
     public function mount(int $companyId, string $quoteNumber, bool $isQuoteBuyerOwner, bool $isReadOnly): void
@@ -89,11 +94,11 @@ class PredictedPurchaseRequest extends Component implements HasActions, HasForms
     #[On('predictedPurchaseRequestItemToggled')]
     public function onPredictedPurchaseRequestItemToggled(int $quoteItemId, string $item, int $productId, $state): void
     {
-        if (false === $state) {
+        if ($state === false) {
             $this->getTableQuery()->where(PredictedPurchaseRequestModel::QUOTE_ITEM_ID, '=', $quoteItemId)->delete();
         }
 
-        if (true === $state) {
+        if ($state === true) {
             $this->getTableQuery()
                 ->where(PredictedPurchaseRequestModel::ITEM, '=', $item)
                 ->where(PredictedPurchaseRequestModel::PRODUCT_ID, '=', $productId)
@@ -142,7 +147,7 @@ class PredictedPurchaseRequest extends Component implements HasActions, HasForms
             ->requiresConfirmation()
             ->action(function () {
                 try {
-                    (new AcceptPredictedPurchaseRequestAction())->handle(
+                    (new AcceptPredictedPurchaseRequestAction)->handle(
                         $this->companyId,
                         $this->quoteNumber
                     );
@@ -396,7 +401,7 @@ class PredictedPurchaseRequest extends Component implements HasActions, HasForms
     {
         $filtering = $this->form->getState();
 
-        if (!$filtering['lower_price'] && !$filtering['lower_eta'] && !$filtering['last_price'] && !$filtering['necessity']) {
+        if (! $filtering['lower_price'] && ! $filtering['lower_eta'] && ! $filtering['last_price'] && ! $filtering['necessity']) {
             Notification::make()
                 ->title(Str::ucfirst(__('quote_analysis_panel.quick_actions_panel_required')))
                 ->danger()

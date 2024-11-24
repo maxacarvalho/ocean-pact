@@ -19,8 +19,7 @@ class CreateQuoteRespondedPayloadJob implements ShouldQueue
 
     public function __construct(
         public int $quoteId
-    ) {
-    }
+    ) {}
 
     public function handle(): void
     {
@@ -43,7 +42,7 @@ class CreateQuoteRespondedPayloadJob implements ShouldQueue
             $this->delete();
         }
 
-        if (null === $quote->buyer) {
+        if ($quote->buyer === null) {
             Log::warning('Quote without buyer', [
                 'quote_id' => $quote->id,
             ]);
