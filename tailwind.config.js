@@ -1,11 +1,9 @@
-/* eslint-env node */
+import defaultTheme from "tailwindcss/defaultTheme";
+import colors from "tailwindcss/colors";
+import forms from "@tailwindcss/forms";
+import typography from "@tailwindcss/typography";
 
-/** @type {import("tailwindcss").Config} */
-
-const colors = require('tailwindcss/colors');
-const defaultTheme = require('tailwindcss/defaultTheme')
-
-module.exports = {
+export default {
     content: [
         "./resources/**/*.blade.php",
         './app/Filament/**/*.php',
@@ -26,7 +24,7 @@ module.exports = {
         },
     },
     plugins: [
-        require('@tailwindcss/forms'),
-        require('@tailwindcss/typography'),
-    ],
-};
+        forms,
+        typography,
+    ]
+}
