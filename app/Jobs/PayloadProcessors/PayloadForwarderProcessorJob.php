@@ -23,8 +23,7 @@ class PayloadForwarderProcessorJob implements ShouldQueue
 
     public function __construct(
         public int $payloadId
-    ) {
-    }
+    ) {}
 
     public function handle(
         RecordSuccessfulPayloadProcessingAttemptAction $recordSuccessfulPayloadProcessingAttemptAction,

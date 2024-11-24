@@ -11,7 +11,7 @@ class SupplierUserData extends Data
     public function __construct(
         public int|Optional $supplier_id,
         public int|Optional $user_id,
-        public string|null $code,
+        public ?string $code,
         public readonly Carbon|null|Optional $created_at,
         public readonly Carbon|null|Optional $updated_at,
     ) {

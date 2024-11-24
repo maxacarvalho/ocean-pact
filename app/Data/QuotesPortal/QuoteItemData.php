@@ -32,9 +32,9 @@ class QuoteItemData extends Data
         public readonly bool|Optional $should_be_quoted,
         #[WithCast(EnumCast::class)]
         public readonly QuoteItemStatusEnum|Optional $status,
-        public readonly string|null $comments,
-        public readonly string|null $seller_image,
-        public readonly string|null $buyer_image,
+        public readonly ?string $comments,
+        public readonly ?string $seller_image,
+        public readonly ?string $buyer_image,
         public readonly Carbon|null|Optional $created_at,
         public readonly Carbon|null|Optional $updated_at,
         // Relations

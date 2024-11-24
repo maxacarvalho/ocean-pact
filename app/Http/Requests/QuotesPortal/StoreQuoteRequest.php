@@ -29,7 +29,7 @@ class StoreQuoteRequest extends FormRequest
                         ->where(Company::CODE_BRANCH, '=', $this->input('company_code_branch'))
                         ->exists();
 
-                    if (!$exists) {
+                    if (! $exists) {
                         $fail(__('company.validation_error_company_not_found', [
                             'code' => $value,
                             'code_branch' => $this->input('company_code_branch'),
@@ -45,7 +45,7 @@ class StoreQuoteRequest extends FormRequest
                         ->where(Company::CODE, '=', $this->input('company_code'))
                         ->exists();
 
-                    if (!$exists) {
+                    if (! $exists) {
                         $fail(__('company.validation_error_company_not_found', [
                             'code' => $this->input('company_code'),
                             'code_branch' => $value,
@@ -106,7 +106,7 @@ class StoreQuoteRequest extends FormRequest
             'suppliers.*'.Quote::RELATION_SUPPLIER.'.'.Supplier::NUMBER => ['nullable'],
             'suppliers.*'.Quote::RELATION_SUPPLIER.'.'.Supplier::STATE_CODE => ['nullable'],
             'suppliers.*'.Quote::RELATION_SUPPLIER.'.'.Supplier::POSTAL_CODE => ['nullable'],
-            'suppliers.*'.Quote::RELATION_SUPPLIER.'.'.Supplier::CNPJ_CPF => ['nullable', new CnpjRule()],
+            'suppliers.*'.Quote::RELATION_SUPPLIER.'.'.Supplier::CNPJ_CPF => ['nullable', new CnpjRule],
             'suppliers.*'.Quote::RELATION_SUPPLIER.'.'.Supplier::PHONE_CODE => ['nullable'],
             'suppliers.*'.Quote::RELATION_SUPPLIER.'.'.Supplier::PHONE_NUMBER => ['nullable'],
             'suppliers.*'.Quote::RELATION_SUPPLIER.'.'.Supplier::CONTACT => ['nullable'],

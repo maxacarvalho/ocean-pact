@@ -38,7 +38,7 @@ class MassCreateOrUpdateProductPayloadProcessorJob implements ShouldQueue
             ->where(Product::COMPANY_CODE_BRANCH, '=', $productData->company_code_branch)
             ->first();
 
-        if (null === $product) {
+        if ($product === null) {
             $createProductAction->handle($productData);
         } else {
             $updateProductAction->handle(

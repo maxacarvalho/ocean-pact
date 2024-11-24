@@ -5,18 +5,18 @@ use Illuminate\Support\Carbon;
 
 describe('Scheduling interval is due method', function () {
     test('should be false when interval is not set', function () {
-        $integrationType = new IntegrationType();
+        $integrationType = new IntegrationType;
         expect($integrationType->isDue())->toBeFalse();
     });
 
     test('should be false when interval is 0', function () {
-        $integrationType = new IntegrationType();
+        $integrationType = new IntegrationType;
         $integrationType->interval = 0;
         expect($integrationType->isDue())->toBeFalse();
     });
 
     test('should be true when interval is set and last_run_at is null', function () {
-        $integrationType = new IntegrationType();
+        $integrationType = new IntegrationType;
         $integrationType->interval = 10;
         expect($integrationType->isDue())->toBeTrue();
     });
@@ -40,12 +40,12 @@ describe('Scheduling interval is due method', function () {
 
 describe('getAuthorizationHeader method', function () {
     test('should return empty when authorization is not set', function () {
-        $integrationType = new IntegrationType();
+        $integrationType = new IntegrationType;
         expect($integrationType->getAuthorizationHeader([]))->toBeEmpty();
     });
 
     test('should return basic auth header when authorization is set to basic', function () {
-        $integrationType = new IntegrationType();
+        $integrationType = new IntegrationType;
         $authorization = [
             'type' => 'basic',
             'username' => 'test',
@@ -59,12 +59,12 @@ describe('getAuthorizationHeader method', function () {
 
 describe('getHeaders method', function () {
     test('should return empty header is not set', function () {
-        $integrationType = new IntegrationType();
+        $integrationType = new IntegrationType;
         expect($integrationType->getHeaders())->toBeEmpty();
     });
 
     test('should return array of headers when they are set', function () {
-        $integrationType = new IntegrationType();
+        $integrationType = new IntegrationType;
         $integrationType->headers = [
             'Accept' => 'application/json',
             'Content-Type' => 'application/json',
@@ -76,7 +76,7 @@ describe('getHeaders method', function () {
     });
 
     test('should include authorization headers', function () {
-        $integrationType = new IntegrationType();
+        $integrationType = new IntegrationType;
         $integrationType->headers = [
             'Accept' => 'application/json',
             'Content-Type' => 'application/json',
@@ -96,12 +96,12 @@ describe('getHeaders method', function () {
 
 describe('getForwardHeaders method', function () {
     test('should return empty when forward_headers is not set', function () {
-        $integrationType = new IntegrationType();
+        $integrationType = new IntegrationType;
         expect($integrationType->getHeaders())->toBeEmpty();
     });
 
     test('should return array of headers when they are set', function () {
-        $integrationType = new IntegrationType();
+        $integrationType = new IntegrationType;
         $integrationType->forward_headers = [
             'Accept' => 'application/json',
             'Content-Type' => 'application/json',
@@ -113,7 +113,7 @@ describe('getForwardHeaders method', function () {
     });
 
     test('should include forward_authorization headers', function () {
-        $integrationType = new IntegrationType();
+        $integrationType = new IntegrationType;
         $integrationType->forward_headers = [
             'Accept' => 'application/json',
             'Content-Type' => 'application/json',

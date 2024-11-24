@@ -19,7 +19,7 @@ class CreateSellerAction
             ->where(User::EMAIL, '=', $data->email)
             ->first();
 
-        if (null === $seller) {
+        if ($seller === null) {
             Validator::make([
                 User::EMAIL => $data->email,
             ], [
@@ -36,7 +36,7 @@ class CreateSellerAction
                 ]);
         }
 
-        if (false === $seller->hasRole(Role::ROLE_SELLER)) {
+        if ($seller->hasRole(Role::ROLE_SELLER) === false) {
             $seller->assignRole(Role::ROLE_SELLER);
         }
 

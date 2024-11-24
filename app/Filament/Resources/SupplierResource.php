@@ -70,7 +70,7 @@ class SupplierResource extends Resource
                             ->label(Str::formatTitle(__('supplier.cnpj_cpf')))
                             ->required()
                             ->unique(table: Supplier::TABLE_NAME, column: Supplier::CNPJ_CPF)
-                            ->rules([new CnpjRule()])
+                            ->rules([new CnpjRule])
                             ->mask('99.999.999/9999-99'),
                     ]),
             ]);

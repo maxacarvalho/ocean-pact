@@ -65,7 +65,7 @@ class UserAccountActivation extends SimplePage
             ->where(UserInvitation::STATUS, '=', InvitationStatusEnum::SENT)
             ->firstOrFail();
 
-        if (null === $invitation->user) {
+        if ($invitation->user === null) {
             abort(404);
         }
 

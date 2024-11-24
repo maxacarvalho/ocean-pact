@@ -10,7 +10,7 @@ class PayloadInputData extends Data
     public function __construct(
         public readonly array $payload,
         #[MapInputName('path_parameters')]
-        public readonly array|null $pathParameters,
+        public readonly ?array $pathParameters,
     ) {
         //
     }

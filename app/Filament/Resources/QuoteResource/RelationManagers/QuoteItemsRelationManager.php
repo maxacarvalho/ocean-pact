@@ -128,7 +128,7 @@ class QuoteItemsRelationManager extends RelationManager
                         TextInput::make(QuoteItem::IPI)
                             ->label(Str::formatTitle(__('quote_item.ipi')))
                             ->mask(function (Model|Quote $record) {
-                                if ('BRL' === $record->currency) {
+                                if ($record->currency === 'BRL') {
                                     return RawJs::make('$money($input, \',\', \'.\')');
                                 }
 
@@ -139,7 +139,7 @@ class QuoteItemsRelationManager extends RelationManager
                                 new PercentageMaxValueRule(100),
                             ])
                             ->formatStateUsing(function (string $state, Model|Quote $record) {
-                                if ('BRL' === $record->currency) {
+                                if ($record->currency === 'BRL') {
                                     return str_replace('.', ',', $state);
                                 }
 
@@ -151,7 +151,7 @@ class QuoteItemsRelationManager extends RelationManager
                             ->label(Str::formatTitle(__('quote_item.icms')))
                             ->required(fn (Get $get) => $get(QuoteItem::SHOULD_BE_QUOTED))
                             ->mask(function (Model|Quote $record) {
-                                if ('BRL' === $record->currency) {
+                                if ($record->currency === 'BRL') {
                                     return RawJs::make('$money($input, \',\', \'.\')');
                                 }
 
@@ -161,7 +161,7 @@ class QuoteItemsRelationManager extends RelationManager
                                 new PercentageMaxValueRule(100),
                             ])
                             ->formatStateUsing(function (string $state, Model|Quote $record) {
-                                if ('BRL' === $record->currency) {
+                                if ($record->currency === 'BRL') {
                                     return str_replace('.', ',', $state);
                                 }
 
@@ -177,7 +177,7 @@ class QuoteItemsRelationManager extends RelationManager
                                 return $record->getFormattedUnitPrice();
                             })
                             ->mask(function (Model|Quote $record) {
-                                if ('BRL' === $record->currency) {
+                                if ($record->currency === 'BRL') {
                                     return RawJs::make('$money($input, \',\', \'.\')');
                                 }
 
@@ -269,7 +269,7 @@ class QuoteItemsRelationManager extends RelationManager
                         return number_format($asFloat, 2, ',', '.');
                     })
                     ->mask(function (Model|Quote $record) {
-                        if ('BRL' === $record->currency) {
+                        if ($record->currency === 'BRL') {
                             return RawJs::make('$money($input, \',\', \'.\')');
                         }
 
@@ -294,7 +294,7 @@ class QuoteItemsRelationManager extends RelationManager
                         return number_format($asFloat, 2, ',', '.');
                     })
                     ->mask(function (Model|Quote $record) {
-                        if ('BRL' === $record->currency) {
+                        if ($record->currency === 'BRL') {
                             return RawJs::make('$money($input, \',\', \'.\')');
                         }
 
@@ -317,7 +317,7 @@ class QuoteItemsRelationManager extends RelationManager
                         return $record->getFormattedUnitPrice();
                     })
                     ->mask(function (Model|Quote $record) {
-                        if ('BRL' === $record->currency) {
+                        if ($record->currency === 'BRL') {
                             return RawJs::make('$money($input, \',\', \'.\')');
                         }
 
@@ -350,17 +350,17 @@ class QuoteItemsRelationManager extends RelationManager
                 TableEditAction::make()
                     ->using(function (QuoteItem $record, array $data) {
                         if (
-                            null !== $record->seller_image
+                            $record->seller_image !== null
                             &&
-                            (isset($data[QuoteItem::SELLER_IMAGE]) && (null === $data[QuoteItem::SELLER_IMAGE] || $record->seller_image !== $data[QuoteItem::SELLER_IMAGE]))
+                            (isset($data[QuoteItem::SELLER_IMAGE]) && ($data[QuoteItem::SELLER_IMAGE] === null || $record->seller_image !== $data[QuoteItem::SELLER_IMAGE]))
                         ) {
                             Storage::disk('s3')->delete($record->seller_image);
                         }
 
                         if (
-                            null !== $record->buyer_image
+                            $record->buyer_image !== null
                             &&
-                            (isset($data[QuoteItem::BUYER_IMAGE]) && (null === $data[QuoteItem::BUYER_IMAGE] || $record->buyer_image !== $data[QuoteItem::BUYER_IMAGE]))
+                            (isset($data[QuoteItem::BUYER_IMAGE]) && ($data[QuoteItem::BUYER_IMAGE] === null || $record->buyer_image !== $data[QuoteItem::BUYER_IMAGE]))
                         ) {
                             Storage::disk('s3')->delete($record->buyer_image);
                         }

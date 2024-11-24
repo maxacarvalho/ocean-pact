@@ -10,7 +10,7 @@ trait HasMoneyAttribute
     {
         $currency = $this->currency;
 
-        if ('BRL' === $currency) {
+        if ($currency === 'BRL') {
             $formatter = new NumberFormatter('pt_BR', NumberFormatter::DECIMAL);
             $formatter->setSymbol(NumberFormatter::DECIMAL_SEPARATOR_SYMBOL, ',');
             $formatter->setSymbol(NumberFormatter::GROUPING_SEPARATOR_SYMBOL, '.');

@@ -16,7 +16,7 @@ class MassCreateOrUpdateProductsRequest extends FormRequest
     {
         return [
             'products' => ['required', 'array'],
-            'products.*.'.Product::COMPANY_CODE => Rule::forEach(function (string|null $value, string $attribute) {
+            'products.*.'.Product::COMPANY_CODE => Rule::forEach(function (?string $value, string $attribute) {
                 $companyCodeBranchAttribute = Str::replace(
                     Product::COMPANY_CODE,
                     Product::COMPANY_CODE_BRANCH,
@@ -41,7 +41,7 @@ class MassCreateOrUpdateProductsRequest extends FormRequest
                 ];
             }),
 
-            'products.*.'.Product::COMPANY_CODE_BRANCH => Rule::forEach(function (string|null $value, string $attribute) {
+            'products.*.'.Product::COMPANY_CODE_BRANCH => Rule::forEach(function (?string $value, string $attribute) {
                 $companyCodeAttribute = Str::replace(
                     Product::COMPANY_CODE_BRANCH,
                     Product::COMPANY_CODE,
@@ -66,7 +66,7 @@ class MassCreateOrUpdateProductsRequest extends FormRequest
                 ];
             }),
 
-            'products.*.'.Product::CODE => Rule::forEach(function (string|null $value, string $attribute) {
+            'products.*.'.Product::CODE => Rule::forEach(function (?string $value, string $attribute) {
                 $companyCodeAttribute = Str::replace(
                     Product::COMPANY_CODE_BRANCH,
                     Product::COMPANY_CODE,

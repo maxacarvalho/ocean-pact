@@ -12,29 +12,38 @@ use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
 
 /**
- * @property int                          $id
- * @property int                          $integration_type_id
- * @property int                          $order_column
- * @property string                       $field_name
+ * @property int $id
+ * @property int $integration_type_id
+ * @property int $order_column
+ * @property string $field_name
  * @property IntegrationTypeFieldTypeEnum $field_type
- * @property array                        $field_rules
- * @property ?IntegrationTypeField        $target_integration_type_field_id
- * @property ?Carbon                      $created_at
- * @property ?Carbon                      $updated_at
+ * @property array $field_rules
+ * @property ?IntegrationTypeField $target_integration_type_field_id
+ * @property ?Carbon $created_at
+ * @property ?Carbon $updated_at
  */
 class IntegrationTypeField extends Model implements Sortable
 {
     use HasFactory, SortableTrait;
 
     public const TABLE_NAME = 'integration_type_fields';
+
     public const ID = 'id';
+
     public const INTEGRATION_TYPE_ID = 'integration_type_id';
+
     public const ORDER_COLUMN = 'order_column';
+
     public const FIELD_NAME = 'field_name';
+
     public const FIELD_TYPE = 'field_type';
+
     public const FIELD_RULES = 'field_rules';
+
     public const TARGET_INTEGRATION_TYPE_FIELD_ID = 'target_integration_type_field_id';
+
     public const CREATED_AT = 'created_at';
+
     public const UPDATED_AT = 'updated_at';
 
     protected $table = self::TABLE_NAME;

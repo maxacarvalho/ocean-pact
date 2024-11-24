@@ -49,13 +49,13 @@ class ValidationRules
                     unset($rawRules['custom']);
 
                     foreach ($customRules as $customRule) {
-                        $rawRules[] = new $customRule();
+                        $rawRules[] = new $customRule;
                     }
                 }
 
                 if (is_array($rawRules)) {
                     foreach ($rawRules as $key => $value) {
-                        if (true === $value) {
+                        if ($value === true) {
                             $rules[] = $key;
                         } elseif (is_a($value, ValidationRule::class)) {
                             $rules[] = $value;

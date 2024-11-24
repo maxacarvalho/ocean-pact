@@ -80,7 +80,7 @@ class UserResource extends Resource
                     })
                     ->preload()
                     ->visible(function (string $context, \Filament\Forms\Get $get) {
-                        if ('create' !== $context) {
+                        if ($context !== 'create') {
                             return false;
                         }
 

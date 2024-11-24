@@ -10,44 +10,59 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
- * @property int                              $id
- * @property int                              $integration_type_id
- * @property array                            $original_payload
- * @property array                            $payload
- * @property array|null                       $path_parameters
- * @property string|null                      $payload_hash
- * @property Carbon|null                      $stored_at
- * @property PayloadStoringStatusEnum         $storing_status
- * @property Carbon|null                      $processed_at
+ * @property int $id
+ * @property int $integration_type_id
+ * @property array $original_payload
+ * @property array $payload
+ * @property array|null $path_parameters
+ * @property string|null $payload_hash
+ * @property Carbon|null $stored_at
+ * @property PayloadStoringStatusEnum $storing_status
+ * @property Carbon|null $processed_at
  * @property PayloadProcessingStatusEnum|null $processing_status
- * @property array|null                       $response
- * @property string|null                      $error
- * @property Carbon|null                      $created_at
- * @property Carbon|null                      $updated_at
- * Relations
+ * @property array|null $response
+ * @property string|null $error
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ *                                   Relations
  * @property-read IntegrationType             $integrationType
  * @property-read PayloadProcessingAttempt    $processingAttempts
  */
 class Payload extends Model
 {
     public const TABLE_NAME = 'payloads';
+
     public const ID = 'id';
+
     public const INTEGRATION_TYPE_ID = 'integration_type_id';
+
     public const ORIGINAL_PAYLOAD = 'original_payload';
+
     public const PAYLOAD = 'payload';
+
     public const PATH_PARAMETERS = 'path_parameters';
+
     public const PAYLOAD_HASH = 'payload_hash';
+
     public const STORED_AT = 'stored_at';
+
     public const STORING_STATUS = 'storing_status';
+
     public const PROCESSED_AT = 'processed_at';
+
     public const PROCESSING_STATUS = 'processing_status';
+
     public const RESPONSE = 'response';
+
     public const ERROR = 'error';
+
     public const CREATED_AT = 'created_at';
+
     public const UPDATED_AT = 'updated_at';
 
     // Relations
     public const RELATION_INTEGRATION_TYPE = 'integrationType';
+
     public const RELATION_PROCESSING_ATTEMPTS = 'processingAttempts';
 
     protected $table = self::TABLE_NAME;

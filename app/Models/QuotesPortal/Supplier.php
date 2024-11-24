@@ -12,25 +12,25 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 
 /**
- * @property int                       $id
- * @property string                    $company_code
- * @property string|null               $company_code_branch
- * @property string                    $code
- * @property string                    $store
- * @property string                    $name
- * @property string                    $business_name
- * @property string|null               $address
- * @property string|null               $number
- * @property string|null               $state_code
- * @property string|null               $postal_code
- * @property string|null               $cnpj_cpf
- * @property string|null               $phone_code
- * @property string|null               $phone_number
- * @property string                    $contact
- * @property string                    $email
- * @property Carbon|null               $created_at
- * @property Carbon|null               $updated_at
- * Relations
+ * @property int $id
+ * @property string $company_code
+ * @property string|null $company_code_branch
+ * @property string $code
+ * @property string $store
+ * @property string $name
+ * @property string $business_name
+ * @property string|null $address
+ * @property string|null $number
+ * @property string|null $state_code
+ * @property string|null $postal_code
+ * @property string|null $cnpj_cpf
+ * @property string|null $phone_code
+ * @property string|null $phone_number
+ * @property string $contact
+ * @property string $email
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ *                                   Relations
  * @property-read Company|null         $company
  * @property-read Company[]|Collection $companies
  * @property-read User[]|Collection    $users
@@ -39,30 +39,52 @@ use Illuminate\Support\Carbon;
 class Supplier extends Model
 {
     public const TABLE_NAME = 'suppliers';
+
     public const ID = 'id';
+
     public const COMPANY_CODE = 'company_code';
+
     public const COMPANY_CODE_BRANCH = 'company_code_branch';
+
     public const CODE = 'code';
+
     public const STORE = 'store';
+
     public const NAME = 'name';
+
     public const BUSINESS_NAME = 'business_name';
+
     public const ADDRESS = 'address';
+
     public const NUMBER = 'number';
+
     public const STATE_CODE = 'state_code';
+
     public const POSTAL_CODE = 'postal_code';
+
     public const CNPJ_CPF = 'cnpj_cpf';
+
     public const PHONE_CODE = 'phone_code';
+
     public const PHONE_NUMBER = 'phone_number';
+
     public const CONTACT = 'contact';
+
     public const EMAIL = 'email';
+
     public const CREATED_AT = 'created_at';
+
     public const UPDATED_AT = 'updated_at';
 
     // Relations
     public const RELATION_COMPANY = 'company';
+
     public const RELATION_USERS = 'users';
+
     public const RELATION_COMPANIES = 'companies';
+
     public const RELATION_SELLERS = 'sellers';
+
     public const RELATION_QUOTES = 'quotes';
 
     protected $table = self::TABLE_NAME;

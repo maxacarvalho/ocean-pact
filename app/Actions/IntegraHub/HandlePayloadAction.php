@@ -13,8 +13,7 @@ readonly class HandlePayloadAction
 {
     public function __construct(
         private HandlesSynchronousIntegrationPayloadAction $handlesSynchronousIntegrationPayloadAction,
-    ) {
-    }
+    ) {}
 
     /** @throws JsonException */
     public function handle(

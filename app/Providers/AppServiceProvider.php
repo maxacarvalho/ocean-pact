@@ -29,9 +29,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public const string HOME = '/';
 
-    public function register(): void
-    {
-    }
+    public function register(): void {}
 
     public function boot(): void
     {

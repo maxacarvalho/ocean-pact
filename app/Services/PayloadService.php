@@ -22,8 +22,7 @@ readonly class PayloadService
         private HandlePayloadAction $handlePayloadAction,
         private CreatePayloadAction $createPayloadAction,
         private RecordFailedPayloadProcessingAttemptAction $recordFailedPayloadProcessingAttemptAction
-    ) {
-    }
+    ) {}
 
     public function handlePayload(IntegrationType $integrationType, array $payloadInput): void
     {
@@ -98,7 +97,7 @@ readonly class PayloadService
             ->exists();
 
         if ($duplicatedPayloadExists) {
-            throw new DuplicatedPayloadException();
+            throw new DuplicatedPayloadException;
         }
     }
 
