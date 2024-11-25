@@ -3,6 +3,7 @@
 namespace App\Providers\Filament;
 
 use App\Filament\Pages\Auth\Login;
+use App\Filament\Pages\Auth\RequestPasswordReset;
 use App\Http\Middleware\SetLocaleMiddleware;
 use App\Livewire\UserAccountActivation;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
@@ -34,7 +35,9 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login(Login::class)
-            ->passwordReset()
+            ->passwordReset(
+                requestAction: RequestPasswordReset::class
+            )
             ->colors([
                 'primary' => Color::Amber,
             ])
