@@ -18,5 +18,6 @@ return [
     'throttled' => 'Please wait before retrying.',
     'token' => 'This password reset token is invalid.',
     'user' => "We can't find a user with that email address.",
+    'generic_password_request_message' => 'If the email address you entered belongs to an account, we\'ll send you a password reset link.',
 
 ];
