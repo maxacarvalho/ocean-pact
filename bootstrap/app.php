@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\HSTS;
 use App\Http\Middleware\TrustProxies;
 use App\Http\Middleware\VerifyCsrfToken;
 use App\Providers\AppServiceProvider;
@@ -34,6 +35,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->replaceInGroup('web', LaravelValidateCsrfToken::class, VerifyCsrfToken::class);
 
         $middleware->appendToGroup('web', AddCspHeaders::class);
+
+        $middleware->appendToGroup('web', HSTS::class);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         $exceptions->render(function (AuthenticationException $exception, Request $request) {
