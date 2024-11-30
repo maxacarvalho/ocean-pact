@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Middleware\HSTS;
 use App\Http\Middleware\TrustProxies;
 use App\Http\Middleware\VerifyCsrfToken;
 use App\Providers\AppServiceProvider;
@@ -12,7 +11,6 @@ use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken as LaravelValidateCs
 use Illuminate\Http\Middleware\TrustProxies as LaravelTrustProxies;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use Spatie\Csp\AddCspHeaders;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withProviders()
@@ -33,10 +31,6 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->replace(LaravelTrustProxies::class, TrustProxies::class);
 
         $middleware->replaceInGroup('web', LaravelValidateCsrfToken::class, VerifyCsrfToken::class);
-
-        $middleware->appendToGroup('web', AddCspHeaders::class);
-
-        $middleware->appendToGroup('web', HSTS::class);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         $exceptions->render(function (AuthenticationException $exception, Request $request) {
