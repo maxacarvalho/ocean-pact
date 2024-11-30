@@ -60,6 +60,8 @@ class SupplierQuote extends Component implements HasForms, HasTable
         $this->isQuoteBuyerOwner = $isQuoteBuyerOwner;
         $this->isReadOnly = $isReadOnly;
 
+        $this->contactRequestForm->fill();
+
         $this->quote = $this->getQuote($quoteId);
 
         $this->quoteStatus = $this->quote->status;
