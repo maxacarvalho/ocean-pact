@@ -4,6 +4,7 @@ namespace App\Providers\Filament;
 
 use App\Filament\Pages\Auth\Login;
 use App\Filament\Pages\Auth\RequestPasswordReset;
+use App\Http\Middleware\HSTS;
 use App\Http\Middleware\SetLocaleMiddleware;
 use App\Livewire\UserAccountActivation;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
@@ -25,6 +26,7 @@ use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Support\Facades\Route;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Jeffgreco13\FilamentBreezy\BreezyCore;
+use Spatie\Csp\AddCspHeaders;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -63,6 +65,8 @@ class AdminPanelProvider extends PanelProvider
                 DisableBladeIconComponents::class,
                 SetLocaleMiddleware::class,
                 DispatchServingFilamentEvent::class,
+                AddCspHeaders::class,
+                HSTS::class,
             ])
             ->authMiddleware([
                 Authenticate::class,
